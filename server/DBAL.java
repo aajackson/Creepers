@@ -39,6 +39,7 @@ public class DBAL
 	// Terminate Connection
 	public void close()
 	{
+		if (!isConnected) return;
 		stmt.close();
 		conn.close();
 	}
@@ -46,7 +47,8 @@ public class DBAL
 	// Get a ResultSet for a query
 	public ResultSet query(String query)
 	{
-		 return stmt.executeQuery(query);
+		if (!isConnected) return null;
+		return stmt.executeQuery(query);
 	}
 	
 	// SHA256 easy hashing method, good for passwords

@@ -22,22 +22,25 @@ public class DBAL
 	protected DBAL() 
 	{
 		// Don't call this from outside, use getInstance()
-		try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:8889/cse3330a?user=root&password=root");
-            stmt = conn.createStatement();
-            isConnected = true;
-        } catch (Exception e) {
+		try 
+		{
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:8889/cse3330a?user=root&password=root");
+			stmt = conn.createStatement();
+			isConnected = true;
+		} 
+		catch (Exception e) 
+		{
 			System.out.println("Unable to connect to MySQL server");
 			isConnected = false;
-        }
+		}
 	}
 	
 	// Terminate Connection
 	public void close()
 	{
 		stmt.close();
-        conn.close();
+		conn.close();
 	}
 	
 	// Get a ResultSet for a query

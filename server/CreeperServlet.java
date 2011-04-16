@@ -58,7 +58,7 @@ public class CreeperServlet extends HttpServlet
 		{
 			if (type.equalsIgnoreCase("song"))
 			{
-				//create song, assigned to album
+				//create song, assigned to album and artist
 				String name = req.getParameter("name");
 				String album_id = req.getParameter("album_id");
 				String artist_id = req.getParameter("artist_id");
@@ -104,25 +104,94 @@ public class CreeperServlet extends HttpServlet
 				// Invalid numbers!
 				catch (NumberFormatException e)
 				{
-					out.println("{success:false,error:\"Either the `album_id` or `track_number` was not a valid number or index.\"}");
+					out.println("{success:false,error:\"One of the integer parameters was out of range or an invalid number.\"}");
 					return;
 				}
 				// Oh noes!
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
-					out.println(e);
+					//out.println(e);
 					return;
 				}
 			}
 			else if (type.equalsIgnoreCase("album"))
 			{
 				//create album, assigned to artist
+				String name = req.getParameter("name");
+				String artist_id = req.getParameter("artist_id");
+				// Do we have all parameters?
+				if (name == null || artist_id == null) 
+				{
+					out.println("{success:false,error:\"Missing a parameter needed for album creation.\"}");
+					return;
+				}
+				try 
+				{
+					// Check all numbers are in range or actually integers
+					if (Integer.parseInt(artist_id) < 1)
+					{
+						throw new NumberFormatException();
+					}
+					// Check if valid IDs
+					ResultSet rs = db.query("SELECT artist_id FROM artist WHERE artist_id = " + Integer.parseInt(artist_id));
+					if (!rs.next())
+					{
+						out.println("{success:false,error:\"There is no artist associated with the artist id specified.\"}");
+						return;
+					}
+					// Insertion time!
+					PreparedStatement query = db.preparedStatement("INSERT INTO album (name, artist_id) VALUES (?, ?)");
+					query.setString(1, name);
+					query.setInt(2, Integer.parseInt(artist_id));
+					query.executeUpdate();
+					rs = db.query("SELECT LAST_INSERT_ID()");
+					rs.next();
+					out.println("{success:true;id:"+rs.getInt(1)+"}");
+					return;
+				}
+				// Invalid numbers!
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"One of the integer parameters was out of range or an invalid number.\"}");
+					return;
+				}
+				// Oh noes!
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
+					//out.println(e);
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("artist"))
 			{
 				//create artist
 				String name = req.getParameter("name");
+				// Do we have all parameters?
+				if (name == null) 
+				{
+					out.println("{success:false,error:\"Missing a parameter needed for artist creation.\"}");
+					return;
+				}
+				try 
+				{
+					// Insertion time!
+					PreparedStatement query = db.preparedStatement("INSERT INTO artist (name) VALUES (?)");
+					query.setString(1, name);
+					query.executeUpdate();
+					ResultSet rs = db.query("SELECT LAST_INSERT_ID()");
+					rs.next();
+					out.println("{success:true;id:"+rs.getInt(1)+"}");
+					return;
+				}
+				// Oh noes!
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
+					//out.println(e);
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("playlist"))
 			{

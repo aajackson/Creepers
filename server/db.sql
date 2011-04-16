@@ -3,7 +3,7 @@ CREATE TABLE album (
   album_id int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (album_id)
-);;
+);
 
 DROP TABLE IF EXISTS artist;
 CREATE TABLE artist (

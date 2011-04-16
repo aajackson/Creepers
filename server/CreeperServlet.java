@@ -40,13 +40,7 @@ public class CreeperServlet extends HttpServlet
 		res.setContentType("application/json");
 		
 		PrintWriter out = res.getWriter();
-		DBAL dbal = DBAL.getInstance(out);
-		
-		ArrayList<Album> list = new ArrayList<Album>();
-		Album a = new Album(3, 5, "artist name", "album name");
-		a.addSong(new Song(5, "Awesome Song", 5, 5, "Awesome Album", 5, "Awesome Artist"));
-		list.add(a);
-		out.println(gson.toJson(list));
+		DBAL db = DBAL.getInstance(out);
 		
 		HttpSession session = req.getSession(true);
 		//boolean isLoggedIn = ((String)session.getAttribute("logged-in")).equals("Y");
@@ -54,11 +48,57 @@ public class CreeperServlet extends HttpServlet
 		String method = req.getParameter("method");
 		String type = req.getParameter("type");
 		
+		if (method == null || type == null)
+		{ 
+			out.println("{success:false,error:\"Missing a method or type parameter. Request aborted.\"}");
+			return;
+		}
+		
 		if (method.equalsIgnoreCase("create"))
 		{
 			if (type.equalsIgnoreCase("song"))
 			{
 				//create song, assigned to album
+				String name = req.getParameter("name");
+				String album_id = req.getParameter("album_id");
+				String artist_id = req.getParameter("artist_id");
+				String track_number = req.getParameter("track_number");
+				// Do we have all parameters?
+				if (name == null || album_id == null || track_number == null || artist_id == null) 
+				{
+					out.println("{success:false,error:\"Missing a parameter needed for song creation.\"}");
+					return;
+				}
+				try 
+				{
+					// Check all numbers are in range or valid
+					if (Integer.parseInt(artist_id) < 1 || Integer.parseInt(album_id) < 1 || Integer.parseInt(track_number) < 1)
+					{
+						throw new NumberFormatException();
+					}
+					// Insertion time!
+					PreparedStatement query = db.preparedStatement("INSERT INTO song (name, album_id, artist_id, track_number) VALUES (?, ?, ?, ?)");
+					query.setString(1, name);
+					query.setInt(2, Integer.parseInt(album_id));
+					query.setInt(3, Integer.parseInt(artist_id));
+					query.setInt(4, Integer.parseInt(track_number));
+					query.executeUpdate();
+					out.println("{success:true}");
+					return;
+				}
+				// Invalid numbers!
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"Either the `album_id` or `track_number` was not a valid number or index.\"}");
+					return;
+				}
+				// Oh noes!
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
+					//out.println(e);
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("album"))
 			{
@@ -67,7 +107,7 @@ public class CreeperServlet extends HttpServlet
 			else if (type.equalsIgnoreCase("artist"))
 			{
 				//create artist
-				String name = req.getParameter("artist_name");
+				String name = req.getParameter("name");
 			}
 			else if (type.equalsIgnoreCase("playlist"))
 			{

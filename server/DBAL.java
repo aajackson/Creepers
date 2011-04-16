@@ -28,7 +28,7 @@ public class DBAL
 		try 
 		{
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:8889/cse3330a?user=root&password=root");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:8889/creepers?user=root&password=root");
 			stmt = conn.createStatement();
 			isConnected = true;
 		} 
@@ -67,6 +67,23 @@ public class DBAL
 		catch (Exception e) 
 		{
 			out.println("Unable to run query.");
+			out.println(e);
+			out.println("Query attempted:");
+			out.println(query);
+		}
+		return null;
+	}
+	
+	public PreparedStatement preparedStatement(String query)
+	{
+		if (!isConnected) return null;
+		try
+		{
+			return conn.prepareStatement(query);
+		}
+		catch (Exception e) 
+		{
+			out.println("Unable to prepare statement for query.");
 			out.println(e);
 			out.println("Query attempted:");
 			out.println(query);

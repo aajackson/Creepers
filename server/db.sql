@@ -1,15 +1,17 @@
-DROP TABLE IF EXISTS album;
-CREATE TABLE album (
-  album_id int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (album_id)
-);
-
 DROP TABLE IF EXISTS artist;
 CREATE TABLE artist (
   artist_id int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (artist_id)
+);
+
+DROP TABLE IF EXISTS album;
+CREATE TABLE album (
+  album_id int(11) NOT NULL AUTO_INCREMENT,
+  artist_id int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (album_id),
+  FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 
 DROP TABLE IF EXISTS member;

@@ -71,10 +71,23 @@ public class CreeperServlet extends HttpServlet
 				}
 				try 
 				{
-					// Check all numbers are in range or valid
+					// Check all numbers are in range or actually integers
 					if (Integer.parseInt(artist_id) < 1 || Integer.parseInt(album_id) < 1 || Integer.parseInt(track_number) < 1)
 					{
 						throw new NumberFormatException();
+					}
+					// Check if valid IDs
+					ResultSet rs = db.query("SELECT album_id FROM album WHERE album_id = " + Integer.parseInt(album_id));
+					if (!rs.next())
+					{
+						out.println("{success:false,error:\"There is no album associated with the album id specified.\"}");
+						return;
+					}
+					rs = db.query("SELECT artist_id FROM artist WHERE artist_id = " + Integer.parseInt(artist_id));
+					if (!rs.next())
+					{
+						out.println("{success:false,error:\"There is no artist associated with the artist id specified.\"}");
+						return;
 					}
 					// Insertion time!
 					PreparedStatement query = db.preparedStatement("INSERT INTO song (name, album_id, artist_id, track_number) VALUES (?, ?, ?, ?)");
@@ -83,7 +96,9 @@ public class CreeperServlet extends HttpServlet
 					query.setInt(3, Integer.parseInt(artist_id));
 					query.setInt(4, Integer.parseInt(track_number));
 					query.executeUpdate();
-					out.println("{success:true}");
+					rs = db.query("SELECT LAST_INSERT_ID()");
+					rs.next();
+					out.println("{success:true;id:"+rs.getInt(1)+"}");
 					return;
 				}
 				// Invalid numbers!
@@ -96,7 +111,7 @@ public class CreeperServlet extends HttpServlet
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
-					//out.println(e);
+					out.println(e);
 					return;
 				}
 			}

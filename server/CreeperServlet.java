@@ -43,7 +43,9 @@ public class CreeperServlet extends HttpServlet
 		DBAL dbal = DBAL.getInstance(out);
 		
 		ArrayList<Album> list = new ArrayList<Album>();
-		list.add(new Album(3, "3453453"));
+		Album a = new Album(3, 5, "artist name", "album name");
+		a.addSong(new Song(5, "Awesome Song", 5, 5, "Awesome Album", 5, "Awesome Artist"));
+		list.add(a);
 		out.println(gson.toJson(list));
 		
 		HttpSession session = req.getSession(true);

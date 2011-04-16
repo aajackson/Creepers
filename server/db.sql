@@ -36,6 +36,7 @@ CREATE TABLE song (
   `name` varchar(255) NOT NULL,
   album_id int(11) NOT NULL,
   artist_id int(11) NOT NULL,
+  track_number int(11) NOT NULL,
   PRIMARY KEY (song_id),
   FOREIGN KEY (album_id) REFERENCES album(album_id),
   FOREIGN KEY (artist_id) REFERENCES artist(artist_id)

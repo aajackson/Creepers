@@ -31,7 +31,8 @@ public class DBAL
 		} 
 		catch (Exception e) 
 		{
-			System.out.println("Unable to connect to MySQL server");
+			System.out.println("Unable to connect to MySQL server.");
+			System.out.println(e);
 			isConnected = false;
 		}
 	}
@@ -40,23 +41,42 @@ public class DBAL
 	public void close()
 	{
 		if (!isConnected) return;
-		stmt.close();
-		conn.close();
+		try 
+		{
+			stmt.close();
+			conn.close();
+		} 
+		catch (Exception e) 
+		{
+			System.out.println("Error with closing connection to MySQL server.");
+			System.out.println(e);
+		}
 	}
 	
 	// Get a ResultSet for a query
 	public ResultSet query(String query)
 	{
 		if (!isConnected) return null;
-		return stmt.executeQuery(query);
+		try 
+		{
+			return stmt.executeQuery(query);
+		} 
+		catch (Exception e) 
+		{
+			System.out.println("Unable to run query.");
+			System.out.println(e);
+			System.out.println("Query attempted:");
+			System.out.println(query);
+		}
+		return null;
 	}
 	
 	// SHA256 easy hashing method, good for passwords
-	public static String SHA256(String text)
+	/*public static String SHA256(String text)
 	{
 		MessageDigest sha = MessageDigest.getInstance("SHA-256");
 		sha.update(text.getBytes("UTF-8"));
 		byte[] digest = sha.digest();
 		return new String(Hex.encode(digest));
-	}
+	}*/
 }

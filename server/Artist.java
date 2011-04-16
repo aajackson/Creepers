@@ -1,7 +1,7 @@
 
 public class Artist
 {
-	public Arist()
+	public Artist()
 	{
 		
 	}

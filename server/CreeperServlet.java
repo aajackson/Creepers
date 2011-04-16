@@ -105,6 +105,17 @@ public class CreeperServlet extends HttpServlet
 								break;
 						}
 						break;
+					case "member":
+						switch (action)
+						{
+							case "login":
+								//login user
+								break;
+							case "logout":
+								//logout user
+								break;
+						}
+						break;
 					//placeholders
 					/*case "artist":
 						

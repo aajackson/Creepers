@@ -35,7 +35,7 @@ public class CreeperServlet extends HttpServlet
 		*/
 		
 		HttpSession session = req.getSession(true);
-		boolean isLoggedIn = (boolean)session.getAttribute("logged-in");
+		boolean isLoggedIn = ((String)session.getAttribute("logged-in")).equals("Y");
 		
 		String method = req.getParameter("method");
 		String type = req.getParameter("type");

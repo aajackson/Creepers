@@ -35,117 +35,99 @@ public class CreeperServlet extends HttpServlet
 		*/
 		
 		HttpSession session = req.getSession(true);
-		boolean isLoggedIn = (boolean)session.getAttribute("logged-in")
+		boolean isLoggedIn = (boolean)session.getAttribute("logged-in");
 		
 		String method = req.getParameter("method");
 		String type = req.getParameter("type");
-		switch (method)
+		
+		if (method.equalsIgnoreCase("create"))
 		{
-			case "create":
-				switch (type)
+			if (type.equalsIgnoreCase("song"))
+			{
+				//create song, assigned to album
+			}
+			else if (type.equalsIgnoreCase("album"))
+			{
+				//create album, assigned to artist
+			}
+			else if (type.equalsIgnoreCase("artist"))
+			{
+				//create artist
+			}
+			else if (type.equalsIgnoreCase("playlist"))
+			{
+				//create playlist (from list of songs)
+			}
+		}
+		else if (method.equalsIgnoreCase("read"))
+		{
+			if (type.equalsIgnoreCase("playlists"))
+			{
+				//get list of playlists [name, list of songs]
+				//	can search by member or random
+				//	can sort by playlist name
+				//	can also specify by id to return that playlist
+			}
+			else if (type.equalsIgnoreCase("artists"))
+			{
+				//get list of artists [name, list of albums]
+				//	can search by artist info
+				//	can sort by artist name
+				//	can also specify by id to return that artist
+			}
+			else if (type.equalsIgnoreCase("albums"))
+			{
+				//get list of albums [name, artist info, list of songs]
+				//	can search by album name
+				//	can sort by album name, artist name 
+				//	can also specify an id to return that album
+			}
+			else if (type.equalsIgnoreCase("members"))
+			{
+				//get list of members [info, list of playlists]
+				//	can search by member name
+				//	can sort by member name
+				//	can also specify an id to return that member
+			}
+		}
+		else if (method.equalsIgnoreCase("update"))
+		{
+			String action = req.getParameter("action");
+			if (type.equalsIgnoreCase("playlist"))
+			{
+				if (action.equalsIgnoreCase("rename"))
 				{
-					case "song":
-						//create song, assigned to album
-						break;
-					case "album":
-						//create album, assigned to artist
-						break;
-					case "artist":
-						//create artist
-						break;
-					case "playlist":
-						//create playlist (from list of songs)
-						break;
+					//renames playlist
 				}
-				break;
-			case "read":
-				switch (type)
+				else if (action.equalsIgnoreCase("addsongs"))
 				{
-					case "playlists":
-						//get list of playlists [name, list of songs]
-						//	can search by member or random
-						//	can sort by playlist name
-						//	can also specify by id to return that playlist
-						break;
-					case "artists":
-						//get list of artists [name, list of albums]
-						//	can search by artist info
-						//	can sort by artist name
-						//	can also specify by id to return that artist
-						break;
-					case "albums":
-						//get list of albums [name, artist info, list of songs]
-						//	can search by album name
-						//	can sort by album name, artist name 
-						//	can also specify an id to return that album
-						break;
-					case "members":
-						//get list of members [info, list of playlists]
-						//	can search by member name
-						//	can sort by member name
-						//	can also specify an id to return that member
-						break;
+					//adds list of song ids to playlist
 				}
-				break;
-			case "update":
-				String action = req.getParameter("action");
-				switch (type)
+				else if (action.equalsIgnoreCase("removesongs"))
 				{
-					case "playlist":
-						switch (action)
-						{
-							case "rename":
-								//renames playlist
-								break;
-							case "addsongs":
-								//adds list of song ids to playlist
-								break;
-							case "removesongs":
-								//removes list of song ids from playlist
-								break;
-						}
-						break;
-					case "member":
-						switch (action)
-						{
-							case "login":
-								//login user
-								break;
-							case "logout":
-								//logout user
-								break;
-						}
-						break;
-					//placeholders
-					/*case "artist":
-						
-						break;
-					case "album":
-						
-						break;
-					case "member":
-						
-						break;*/
+					//removes list of song ids from playlist
 				}
-				break;
-			case "delete":
-				switch (type)
+			}
+			else if (type.equalsIgnoreCase("user"))
+			{
+				if (action.equalsIgnoreCase("login"))
 				{
-					case "playlist":
-						//deletes playlist with given id 
-						break;
-					//placeholders
-					/*case "artist":
-						
-						break;
-					case "album":
-						
-						break;
-					case "member":
-						
-						break;*/
+					String username = req.getParameter("username");
+					String password = req.getParameter("password");
+					//login user
 				}
-				break;
+				else if (action.equalsIgnoreCase("logout"))
+				{
+					//logout user
+				}
+			}
+		}
+		else if (method.equalsIgnoreCase("delete"))
+		{
+			if (type.equalsIgnoreCase("playlist"))
+			{
+				//deletes playlist with given id 
+			}
 		}
 	}
 }

@@ -1,14 +1,15 @@
 import java.sql.*;
+import java.io.PrintWriter;
 
 public class DBAL
 {
 	// Singleton instance
 	private static DBAL instance = null;
-	public static DBAL getInstance()
+	public static DBAL getInstance(PrintWriter out)
 	{
 		if (instance == null)
 		{
-			instance = new DBAL();	
+			instance = new DBAL(out);	
 		}
 		return instance;
 	}
@@ -16,12 +17,14 @@ public class DBAL
 	// Instance Variables
 	private Connection conn;
 	private Statement stmt;
+	private PrintWriter out;
 	private boolean isConnected;
 	
 	// Constructor
-	protected DBAL() 
+	protected DBAL(PrintWriter pw) 
 	{
 		// Don't call this from outside, use getInstance()
+		out = pw;
 		try 
 		{
 			Class.forName("com.mysql.jdbc.Driver");
@@ -31,8 +34,8 @@ public class DBAL
 		} 
 		catch (Exception e) 
 		{
-			System.out.println("Unable to connect to MySQL server.");
-			System.out.println(e);
+			out.println("Unable to connect to MySQL server.");
+			out.println(e);
 			isConnected = false;
 		}
 	}
@@ -48,8 +51,8 @@ public class DBAL
 		} 
 		catch (Exception e) 
 		{
-			System.out.println("Error with closing connection to MySQL server.");
-			System.out.println(e);
+			out.println("Error with closing connection to MySQL server.");
+			out.println(e);
 		}
 	}
 	
@@ -63,10 +66,10 @@ public class DBAL
 		} 
 		catch (Exception e) 
 		{
-			System.out.println("Unable to run query.");
-			System.out.println(e);
-			System.out.println("Query attempted:");
-			System.out.println(query);
+			out.println("Unable to run query.");
+			out.println(e);
+			out.println("Query attempted:");
+			out.println(query);
 		}
 		return null;
 	}

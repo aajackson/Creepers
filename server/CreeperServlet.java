@@ -19,6 +19,7 @@ public class CreeperServlet extends HttpServlet
 	}
 	public void doStuff(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
+		res.setContentType("application/json");
 		/*
 		HttpSession session = req.getSession(true);
 		session.setAttribute("key", "value");
@@ -33,6 +34,9 @@ public class CreeperServlet extends HttpServlet
 		/*
 		res.sendRedirect("success.html");
 		*/
+		
+		PrintWriter out = res.getWriter();
+		DBAL dbal = DBAL.getInstance(out);
 		
 		HttpSession session = req.getSession(true);
 		boolean isLoggedIn = ((String)session.getAttribute("logged-in")).equals("Y");
@@ -53,10 +57,15 @@ public class CreeperServlet extends HttpServlet
 			else if (type.equalsIgnoreCase("artist"))
 			{
 				//create artist
+				String name = req.getParameter("artist_name");
 			}
 			else if (type.equalsIgnoreCase("playlist"))
 			{
 				//create playlist (from list of songs)
+			}
+			else if (type.equalsIgnoreCase("member"))
+			{
+				//member signup
 			}
 		}
 		else if (method.equalsIgnoreCase("read"))
@@ -129,5 +138,6 @@ public class CreeperServlet extends HttpServlet
 				//deletes playlist with given id 
 			}
 		}
+		out.close();
 	}
 }

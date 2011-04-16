@@ -6,6 +6,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import java.sql.*;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
 
 public class CreeperServlet extends HttpServlet
 {
@@ -19,7 +22,6 @@ public class CreeperServlet extends HttpServlet
 	}
 	public void doStuff(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
-		res.setContentType("application/json");
 		/*
 		HttpSession session = req.getSession(true);
 		session.setAttribute("key", "value");
@@ -34,12 +36,18 @@ public class CreeperServlet extends HttpServlet
 		/*
 		res.sendRedirect("success.html");
 		*/
+		Gson gson = new Gson();
+		res.setContentType("application/json");
 		
 		PrintWriter out = res.getWriter();
 		DBAL dbal = DBAL.getInstance(out);
 		
+		ArrayList<Album> list = new ArrayList<Album>();
+		list.add(new Album(3, "3453453"));
+		out.println(gson.toJson(list));
+		
 		HttpSession session = req.getSession(true);
-		boolean isLoggedIn = ((String)session.getAttribute("logged-in")).equals("Y");
+		//boolean isLoggedIn = ((String)session.getAttribute("logged-in")).equals("Y");
 		
 		String method = req.getParameter("method");
 		String type = req.getParameter("type");

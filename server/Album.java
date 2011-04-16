@@ -1,8 +1,11 @@
 
 public class Album
 {
-	public Album()
+	private int artist_id;
+	private String name;
+	public Album(int a, String n)
 	{
-		Artist a = new Artist();
+		artist_id = a;
+		name = n;
 	}
 }

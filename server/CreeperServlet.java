@@ -106,7 +106,7 @@ public class CreeperServlet extends HttpServlet
 						return;
 					}
 					// Insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO song (name, album_id, artist_id, track_number) VALUES (?, ?, ?, ?)");
+					PreparedStatement query = db.preparedStatement("INSERT INTO song (`name`, album_id, artist_id, track_number) VALUES (?, ?, ?, ?)");
 					query.setString(1, name);
 					query.setInt(2, Integer.parseInt(album_id));
 					query.setInt(3, Integer.parseInt(artist_id));
@@ -157,7 +157,7 @@ public class CreeperServlet extends HttpServlet
 						return;
 					}
 					// Insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO album (name, artist_id) VALUES (?, ?)");
+					PreparedStatement query = db.preparedStatement("INSERT INTO album (`name`, artist_id) VALUES (?, ?)");
 					query.setString(1, name);
 					query.setInt(2, Integer.parseInt(artist_id));
 					query.executeUpdate();
@@ -193,7 +193,7 @@ public class CreeperServlet extends HttpServlet
 				try 
 				{
 					// Insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO artist (name) VALUES (?)");
+					PreparedStatement query = db.preparedStatement("INSERT INTO artist (`name`) VALUES (?)");
 					query.setString(1, name);
 					query.executeUpdate();
 					ResultSet rs = db.query("SELECT LAST_INSERT_ID()");
@@ -241,7 +241,7 @@ public class CreeperServlet extends HttpServlet
 						return;
 					}
 					//all good, insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO playlist (name, member_id) VALUES (?, ?)");
+					PreparedStatement query = db.preparedStatement("INSERT INTO playlist (`name`, member_id) VALUES (?, ?)");
 					query.setString(1, name);
 					query.setInt(2, uid);
 					query.executeUpdate();
@@ -341,6 +341,11 @@ public class CreeperServlet extends HttpServlet
 			String action = req.getParameter("action");
 			if (type.equalsIgnoreCase("playlist"))
 			{
+				if (uid == 0)
+				{
+					out.println("{success:false,error:\"You must be logged in to take this action.\"}");
+					return;
+				}
 				String playlist_id = req.getParameter("playlist_id");
 				if (playlist_id == null)
 				{
@@ -377,7 +382,7 @@ public class CreeperServlet extends HttpServlet
 					}
 					try 
 					{
-						PreparedStatement query = db.preparedStatement("UPDATE playlist SET name = ? WHERE playlist_id = ?");
+						PreparedStatement query = db.preparedStatement("UPDATE playlist SET `name` = ? WHERE playlist_id = ?");
 						query.setString(1, name);
 						query.setInt(2, Integer.parseInt(playlist_id));
 						query.executeUpdate();
@@ -470,11 +475,37 @@ public class CreeperServlet extends HttpServlet
 					}
 					try 
 					{
-						
+						int[] song_ids = gson.fromJson(songs, int[].class);
+						for (int i = 0; i < song_ids.length; i++)
+						{
+							//check if each song id valid
+							if (song_ids[i] < 1) throw new Exception();
+						}
+						//clip off the square brackets
+						String song_id_list = songs.substring(1, songs.length() - 1);
+						//just delete all song ids listed from the playlist
+						//	no point in checking if songs are even in playlist
+						PreparedStatement query = db.preparedStatement("DELETE FROM playlistsong WHERE playlist_id = ? AND song_id IN ("+song_id_list+")");
+						query.setInt(1, Integer.parseInt(playlist_id));
+						query.executeUpdate();
+						//fix the track numbers while maintaining the order
+						query = db.preparedStatement("SELECT playlistsong_id FROM playlistsong WHERE playlist_id = ? ORDER BY track_number ASC");
+						query.setInt(1, Integer.parseInt(playlist_id));
+						ResultSet rs = query.executeQuery();
+						int track_num = 1;
+						while (rs.next())
+						{
+							query = db.preparedStatement("UPDATE playlistsong SET track_number = ? WHERE playlistsong_id = ?");
+							query.setInt(1, track_num++);
+							query.setInt(2, rs.getInt(1));
+							query.executeUpdate();
+						}
+						out.println("{success:true}"+track_num);
+						return;
 					}
 					catch (Exception e)
 					{
-						out.println("{success:false,error:\"There was an error in removing songs from the playlist.\"}");
+						out.println("{success:false,error:\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
 						//out.println(e);
 						return;
 					}

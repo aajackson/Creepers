@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS playlist;
 CREATE TABLE playlist (
   playlist_id int(11) NOT NULL AUTO_INCREMENT,
   member_id int(11) NOT NULL,
-  playlist_name varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
   PRIMARY KEY (playlist_id)
 );
 

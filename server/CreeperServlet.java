@@ -43,7 +43,11 @@ public class CreeperServlet extends HttpServlet
 		DBAL db = DBAL.getInstance(out);
 		
 		HttpSession session = req.getSession(true);
-		//boolean isLoggedIn = ((String)session.getAttribute("logged-in")).equals("Y");
+		
+		String uidString = (String)session.getAttribute("user_id");
+		int uid = 0; //user id is 0 when not logged in
+		if (uidString != null)
+			uid = Integer.parseInt(uidString);
 		
 		String method = req.getParameter("method");
 		String type = req.getParameter("type");
@@ -56,6 +60,12 @@ public class CreeperServlet extends HttpServlet
 		
 		if (method.equalsIgnoreCase("create"))
 		{
+			//check for login when needed
+			if (!type.equalsIgnoreCase("member") && uid == 0)
+			{
+				out.println("{success:false,error:\"You need to be logged in to do this action.\"}");
+				return;
+			}
 			if (type.equalsIgnoreCase("song"))
 			{
 				//create song, assigned to album and artist
@@ -196,10 +206,57 @@ public class CreeperServlet extends HttpServlet
 			else if (type.equalsIgnoreCase("playlist"))
 			{
 				//create playlist (from list of songs)
+				String name = req.getParameter("name");
+				String songs = req.getParameter("songs");
+				int[] song_ids;
+				ArrayList<String> queries = new ArrayList<String>();
+				try
+				{
+					//get the integer array of song ids
+					song_ids = gson.fromJson(songs, int[].class); 
+					for (int i = 0; i < song_ids.length; i++)
+					{
+						//check if each song id valid
+						if (song_ids[i] < 1) throw new Exception();
+					}
+					//clip off the square brackets
+					String song_id_list = songs.substring(1, songs.length() - 1);
+					//check all song ids are valid
+					ResultSet rs = db.query("SELECT COUNT(*) FROM song WHERE song_id IN ("+song_id_list+")");
+					rs.next();
+					if (rs.getInt(1) != song_ids.length) //check length of results
+					{
+						out.println("{success:false,error:\"At least one of the provided songs does not exist.\"}");
+						return;
+					}
+					//all good, insertion time!
+					PreparedStatement query = db.preparedStatement("INSERT INTO playlist (name, member_id) VALUES (?, ?)");
+					query.setString(1, name);
+					query.setInt(2, uid);
+					query.executeUpdate();
+					rs = db.query("SELECT LAST_INSERT_ID()");
+					rs.next();
+					int playlist_id = rs.getInt(1);
+					for (int i = 0; i < song_ids.length; i++)
+					{
+						query = db.preparedStatement("INSERT INTO playlistsong (playlist_id, song_id, track_number) VALUES (?, ?, ?)");
+						query.setInt(1, playlist_id);
+						query.setInt(2, song_ids[i]);
+						query.setInt(3, i);
+						query.executeUpdate();
+					}
+					return;
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
+					//out.println(e);
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("member"))
 			{
-				//member signup
+				//create a new member
 			}
 		}
 		else if (method.equalsIgnoreCase("read"))

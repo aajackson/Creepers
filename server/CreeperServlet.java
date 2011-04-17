@@ -310,6 +310,8 @@ public class CreeperServlet extends HttpServlet
 			String search = req.getParameter("search"); //optional query string
 			String sort = req.getParameter("sort"); //optional sort (asc or desc)
 			String id = req.getParameter("id"); //optional id for a single item
+			String duration = req.getParameter("duration"); //optional limit count of result
+			String start = req.getParameter("start"); //optional start index of result
 			if (id != null) //parse the id if exists
 			{
 				try
@@ -320,6 +322,32 @@ public class CreeperServlet extends HttpServlet
 				catch (NumberFormatException e)
 				{
 					out.println("{success:false,error:\"ID must be an integer above zero.\"}");
+					return;
+				}
+			}
+			if (start != null) //parse the start index if exists
+			{
+				try
+				{
+					if (Integer.parseInt(start) < 0)
+						throw new NumberFormatException();
+				}
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"Start index must be an integer at or above zero.\"}");
+					return;
+				}
+			}
+			if (duration != null) //parse the count limit if exists
+			{
+				try
+				{
+					if (Integer.parseInt(duration) < 1)
+						throw new NumberFormatException();
+				}
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"Limit duration must be an integer above zero.\"}");
 					return;
 				}
 			}
@@ -355,6 +383,15 @@ public class CreeperServlet extends HttpServlet
 				{
 					queryStr += " ORDER BY playlist_id ASC";
 				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
 				try
 				{
 					PreparedStatement query = db.preparedStatement(queryStr);
@@ -383,7 +420,7 @@ public class CreeperServlet extends HttpServlet
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in searching for playlists.\"}");
-					out.println(e.getMessage());
+					//out.println(e.getMessage());
 					return;
 				}
 			}
@@ -409,6 +446,15 @@ public class CreeperServlet extends HttpServlet
 				else
 				{
 					queryStr += " ORDER BY artist_id ASC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
 				}
 				try
 				{
@@ -436,8 +482,8 @@ public class CreeperServlet extends HttpServlet
 				}
 				catch (Exception e)
 				{
-					out.println("{success:false,error:\"There was an error in searching for playlists.\"}");
-					out.println(e.getMessage());
+					out.println("{success:false,error:\"There was an error in searching for artists.\"}");
+					//out.println(e.getMessage());
 					return;
 				}
 			}
@@ -447,6 +493,62 @@ public class CreeperServlet extends HttpServlet
 				//	can search by album name
 				//	can sort by album name, artist name 
 				//	can also specify an id to return that album
+				String queryStr = "SELECT album_id, artist.artist_id, artist.name AS artist_name, album.name AS album_name FROM album, artist WHERE artist.artist_id = album.artist_id";
+				if (id != null) //return just one result
+				{
+					queryStr += " AND album.album_id = ?";
+				}
+				else if (search != null) //searching
+				{
+					queryStr += " AND album.name LIKE ?";
+				}
+				if (sort != null)
+				{
+					queryStr += " ORDER BY album.name " + sort;
+				}
+				else
+				{
+					queryStr += " ORDER BY artist.artist_id ASC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement(queryStr);
+					if (id != null)
+						query.setInt(1, Integer.parseInt(id));
+					else if (search != null)
+						query.setString(1, "%"+search+"%");
+					ResultSet rs = query.executeQuery();
+					ArrayList<Album> list = new ArrayList<Album>();
+					while (rs.next())
+					{
+						Album al = new Album(rs.getInt("album_id"), rs.getInt("artist_id"), rs.getString("artist_name"), rs.getString("album_name"));
+						PreparedStatement query2 = db.preparedStatement("SELECT artist.artist_id, song_id, song.name AS song_name, track_number, artist.name AS artist_name FROM song, artist WHERE artist.artist_id = song.artist_id AND album_id = ? ORDER BY track_number ASC");
+						query2.setInt(1, rs.getInt("album_id"));
+						ResultSet rs2 = query2.executeQuery();
+						while (rs2.next())
+						{
+							al.addSong(new Song(rs2.getInt("song_id"), rs2.getString("song_name"), rs2.getInt("track_number"), -1, null, rs2.getInt("artist_id"), rs2.getString("artist_name")));
+						}
+						list.add(al);
+					}
+					out.println("{success:true,results:"+gson.toJson(list)+"}");
+					return;
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in searching for playlists.\"}");
+					//out.println(e.getMessage());
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("members"))
 			{

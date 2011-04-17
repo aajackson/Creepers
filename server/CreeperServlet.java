@@ -66,6 +66,11 @@ public class CreeperServlet extends HttpServlet
 				out.println("{success:false,error:\"You need to be logged in to do this action.\"}");
 				return;
 			}
+			else if (type.equalsIgnoreCase("member") && uid != 0)
+			{
+				out.println("{success:false,error:\"You need to be logged out to do this action.\"}");
+				return;
+			}
 			if (type.equalsIgnoreCase("song"))
 			{
 				//create song, assigned to album and artist
@@ -245,18 +250,47 @@ public class CreeperServlet extends HttpServlet
 						query.setInt(3, i);
 						query.executeUpdate();
 					}
+					out.println("{success:true;id:"+playlist_id+"}");
 					return;
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
-					//out.println(e);
+					//out.println(e.getMessage());
 					return;
 				}
 			}
 			else if (type.equalsIgnoreCase("member"))
 			{
 				//create a new member
+				String username = req.getParameter("username");
+				String password = req.getParameter("password");
+				try 
+				{
+					PreparedStatement query = db.preparedStatement("SELECT username FROM member WHERE username = ?");
+					query.setString(1, username);
+					ResultSet rs = query.executeQuery();
+					if (rs.next())
+					{
+						out.println("{success:false,error:\"There is already a user with this username.\"}");
+						return;
+					}
+					query = db.preparedStatement("INSERT INTO member (username, password) VALUES (?, ?)");
+					query.setString(1, username);
+					query.setString(2, password);
+					query.executeUpdate();
+					rs = db.query("SELECT LAST_INSERT_ID()");
+					rs.next();
+					uid = rs.getInt(1);
+					session.setAttribute("user_id", "" + uid);
+					out.println("{success:true}");
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in creating a new member.\"}");
+					//out.println(e.getMessage());
+					return;
+				}
 			}
 		}
 		else if (method.equalsIgnoreCase("read"))

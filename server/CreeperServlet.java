@@ -37,7 +37,8 @@ public class CreeperServlet extends HttpServlet
 		res.sendRedirect("success.html");
 		*/
 		Gson gson = new Gson();
-		res.setContentType("application/json");
+		res.setContentType("text/html");
+		//res.setContentType("application/json");
 		
 		PrintWriter out = res.getWriter();
 		DBAL db = DBAL.getInstance(out);
@@ -344,25 +345,93 @@ public class CreeperServlet extends HttpServlet
 			}
 			else if (type.equalsIgnoreCase("user"))
 			{
+				if (action.equalsIgnoreCase("login") && uid != 0)
+				{
+					out.println("{success:false,error:\"You are already logged in.\"}");
+					return;
+				}
+				if (action.equalsIgnoreCase("logout") && uid == 0)
+				{
+					out.println("{success:false,error:\"You are not logged in.\"}");
+					return;
+				}
 				if (action.equalsIgnoreCase("login"))
 				{
+					//login user
 					String username = req.getParameter("username");
 					String password = req.getParameter("password");
-					//login user
+					try
+					{
+						PreparedStatement query = db.preparedStatement("SELECT member_id FROM member WHERE username = ? AND password = ?");
+						query.setString(1, username);
+						query.setString(2, password);
+						ResultSet rs = query.executeQuery();
+						if (rs.next())
+						{
+							session.setAttribute("user_id", "" + rs.getInt("member_id"));
+							out.println("{success:true}");
+							return;
+						}
+						else
+						{
+							session.setAttribute("user_id", "" + 0);
+							out.println("{success:false,error:\"Invalid username/password combination.\"}");
+							return;
+						}
+					}
+					catch (Exception e)
+					{
+						out.println("{success:false,error:\"There was an error in logging in.\"}");
+						//out.println(e);
+						return;
+					}
 				}
 				else if (action.equalsIgnoreCase("logout"))
 				{
 					//logout user
+					session.setAttribute("user_id", "" + 0);
+					out.println("{success:true}");
 				}
 			}
 		}
 		else if (method.equalsIgnoreCase("delete"))
 		{
+			if (uid == 0)
+			{
+				out.println("{success:false,error:\"You need to be logged in to do this action.\"}");
+				return;
+			}
 			if (type.equalsIgnoreCase("playlist"))
 			{
 				//deletes playlist with given id 
+				String playlist_id = req.getParameter("playlist_id");
+				try
+				{
+					ResultSet rs = db.query("SELECT playlist_id FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
+					if (!rs.next())
+					{
+						out.println("{success:false,error:\"The specified playlist does not exist.\"}");
+						return;
+					}
+					db.query("DELETE FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
+					db.query("DELETE FROM playlistsong WHERE playlist_id = " + Integer.parseInt(playlist_id));
+					out.println("{success:true}");
+				}
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"One of the integer parameters was out of range or an invalid number.\"}");
+					return;
+				}
+				// Oh noes!
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in running the deletion.\"}");
+					//out.println(e);
+					return;
+				}
 			}
 		}
+		out.println("{success:false,error:\"This action does not exist.\"}");
 		out.close();
 	}
 }

@@ -5,19 +5,39 @@
 <title>My Faves</title>
 <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
-
 <body>
-<div id="body">
-<div class="topsearch">
-  
-    <ul class="navigation">
-      <li class="login"><a href="/login"><input id="navbutton" type="button" value="Login" /></a></li>
+<div class="main">
+  <div class="header"><ul class="topnav">
+      <li class="login"><a href="/login">Login
+        </a></li>
       <li class="register"><a href="/register">Register</a></li>
     </ul>
-  
-</div>
-<h1>MyFaves</h1>
-<p>And here goes the body of the webpage. </p>
+    <img class="mainlogo" src="josh_logo.png" width="300" height="80" alt="logo" />
+    <br />
+  <div class="menu">
+  	<form name="searchForm" action="s" method="get">
+      <input type="text" class="searchbox" name="search" value="Search for playsists, songs, and more!" />
+      <input type="submit" value="Search!" />
+    </form>
+    <ul class="mainnav">
+      <li class="browse">Browse</li>
+      <li class="create">Create</li>
+      <li class="add">Add Your Songs</li>
+      <li class="members">Members</li>
+      <li class="help">Learn More</li>
+      <li class="about">About MyFaves</li>
+    </ul>
+  </div> 
+  </div>
+  <div class="body">
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>Welcome to MyFaves, where you can create your own playlists from scratch and search for them!</p>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque   sollicitudin. Fusce varius pellentesque ligula. Proin condimentum purus a   nunc tempor pellentesque. Proin ac pede in leo tincidunt varius. Ut sed   nibh. Praesent adipiscing, sapien sit amet sagittis convallis, dolor   neque venenatis diam, at feugiat lacus quam vel pede. Mauris vel enim.   Nunc nunc nibh, bibendum ornare, mattis ac, elementum at, mi. Mauris   orci massa, vehicula ut, elementum nec, bibendum pretium, elit. </p>
+  </div>
+  <div class="footer">
+  This is where the very boring footer will be.
+  </div>
 </div>
 </body>
 </html>

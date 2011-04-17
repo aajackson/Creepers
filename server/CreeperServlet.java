@@ -214,8 +214,13 @@ public class CreeperServlet extends HttpServlet
 				//create playlist (from list of songs)
 				String name = req.getParameter("name");
 				String songs = req.getParameter("songs");
+				// Do we have all parameters?
+				if (name == null || songs == null) 
+				{
+					out.println("{success:false,error:\"Missing a parameter needed for playlist creation.\"}");
+					return;
+				}
 				int[] song_ids;
-				ArrayList<String> queries = new ArrayList<String>();
 				try
 				{
 					//get the integer array of song ids
@@ -266,6 +271,12 @@ public class CreeperServlet extends HttpServlet
 				//create a new member
 				String username = req.getParameter("username");
 				String password = req.getParameter("password");
+				// Do we have all parameters?
+				if (username == null || password == null) 
+				{
+					out.println("{success:false,error:\"Missing a parameter needed for member creation.\"}");
+					return;
+				}
 				try 
 				{
 					PreparedStatement query = db.preparedStatement("SELECT username FROM member WHERE username = ?");
@@ -330,17 +341,143 @@ public class CreeperServlet extends HttpServlet
 			String action = req.getParameter("action");
 			if (type.equalsIgnoreCase("playlist"))
 			{
+				String playlist_id = req.getParameter("playlist_id");
+				if (playlist_id == null)
+				{
+					out.println("{success:false,error:\"No playlist was specified.\"}");
+					return;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement("SELECT member_id FROM playlist WHERE playlist_id = ? AND member_id = ?");
+					query.setInt(1, Integer.parseInt(playlist_id));
+					query.setInt(2, uid);
+					ResultSet rs = query.executeQuery();
+					if (!rs.next())
+					{
+						out.println("{success:false,error:\"The specified playlist could not be found.\"}");
+						return;
+					}
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in checking the playlist.\"}");
+					//out.println(e);
+					return;
+				}
 				if (action.equalsIgnoreCase("rename"))
 				{
 					//renames playlist
+					String name = req.getParameter("name");
+					// Do we have all parameters?
+					if (name == null) 
+					{
+						out.println("{success:false,error:\"Missing a parameter needed for playlist update.\"}");
+						return;
+					}
+					try 
+					{
+						PreparedStatement query = db.preparedStatement("UPDATE playlist SET name = ? WHERE playlist_id = ?");
+						query.setString(1, name);
+						query.setInt(2, Integer.parseInt(playlist_id));
+						query.executeUpdate();
+						out.println("{success:true}");
+					}
+					catch (Exception e)
+					{
+						out.println("{success:false,error:\"There was an error in renaming the playlist.\"}");
+						//out.println(e);
+						return;
+					}
+					out.println("{success:true}");
+					return;
 				}
 				else if (action.equalsIgnoreCase("addsongs"))
 				{
 					//adds list of song ids to playlist
+					String songs = req.getParameter("songs");
+					// Do we have all parameters?
+					if (songs == null) 
+					{
+						out.println("{success:false,error:\"Missing a parameter needed for playlist update.\"}");
+						return;
+					}
+					try 
+					{
+						int[] song_ids = gson.fromJson(songs, int[].class);
+						for (int i = 0; i < song_ids.length; i++)
+						{
+							//check if each song id valid
+							if (song_ids[i] < 1) throw new Exception();
+						}
+						//clip off the square brackets
+						String song_id_list = songs.substring(1, songs.length() - 1);
+						//check all songs exist
+						ResultSet rs = db.query("SELECT COUNT(*) FROM song WHERE song_id IN ("+song_id_list+")");
+						rs.next();
+						if (rs.getInt(1) != song_ids.length) //check length of results
+						{
+							out.println("{success:false,error:\"At least one of the provided songs does not exist.\"}");
+							return;
+						}
+						//remove any songs already in the playlist
+						rs = db.query("SELECT song_id FROM playlistsong WHERE playlist_id = "+Integer.parseInt(playlist_id)+" AND song_id IN ("+song_id_list+")");
+						ArrayList<Integer> existing = new ArrayList<Integer>();
+						while (rs.next())
+						{
+							existing.add(new Integer(rs.getInt("song_id")));
+						}
+						ArrayList<Integer> adding = new ArrayList<Integer>();
+						for (int i = 0; i < song_ids.length; i++)
+						{
+							//only add songs to the add list if they don't already exist
+							if (!existing.contains(new Integer(song_ids[i])))
+								adding.add(new Integer(song_ids[i]));
+						}
+						//get the current highest value of track num
+						rs = db.query("SELECT MAX(track_number) FROM playlistsong WHERE playlist_id = "+Integer.parseInt(playlist_id));
+						rs.next();
+						int nextTrackNum = rs.getInt(1) + 1;
+						
+						//finally add the songs to the playlist
+						for (int i = 0; i < adding.size(); i++)
+						{
+							PreparedStatement query = db.preparedStatement("INSERT INTO playlistsong (playlist_id, song_id, track_number) VALUES (?, ?, ?)");
+							query.setInt(1, Integer.parseInt(playlist_id));
+							query.setInt(2, adding.get(i).intValue());
+							query.setInt(3, nextTrackNum++);
+							query.executeUpdate();
+						}
+						out.println("{success:true}");
+						return;
+					}
+					catch (Exception e)
+					{
+						out.println("{success:false,error:\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
+						//out.println(e);
+						return;
+					}
 				}
 				else if (action.equalsIgnoreCase("removesongs"))
 				{
 					//removes list of song ids from playlist
+					String songs = req.getParameter("songs");
+					// Do we have all parameters?
+					if (songs == null) 
+					{
+						out.println("{success:false,error:\"Missing a parameter needed for playlist update.\"}");
+						return;
+					}
+					try 
+					{
+						
+					}
+					catch (Exception e)
+					{
+						out.println("{success:false,error:\"There was an error in removing songs from the playlist.\"}");
+						//out.println(e);
+						return;
+					}
 				}
 			}
 			else if (type.equalsIgnoreCase("user"))
@@ -360,6 +497,12 @@ public class CreeperServlet extends HttpServlet
 					//login user
 					String username = req.getParameter("username");
 					String password = req.getParameter("password");
+					// Do we have all parameters?
+					if (username == null || password == null) 
+					{
+						out.println("{success:false,error:\"Missing a parameter needed for login.\"}");
+						return;
+					}
 					try
 					{
 						PreparedStatement query = db.preparedStatement("SELECT member_id FROM member WHERE username = ? AND password = ?");
@@ -405,6 +548,12 @@ public class CreeperServlet extends HttpServlet
 			{
 				//deletes playlist with given id 
 				String playlist_id = req.getParameter("playlist_id");
+				// Do we have all parameters?
+				if (playlist_id == null) 
+				{
+					out.println("{success:false,error:\"Missing a parameter needed for playlist deletion.\"}");
+					return;
+				}
 				try
 				{
 					ResultSet rs = db.query("SELECT playlist_id FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);

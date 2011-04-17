@@ -556,6 +556,62 @@ public class CreeperServlet extends HttpServlet
 				//	can search by member name
 				//	can sort by member name
 				//	can also specify an id to return that member
+				String queryStr = "SELECT member_id, username FROM member";
+				if (id != null) //return just one result
+				{
+					queryStr += " WHERE member_id = ?";
+				}
+				else if (search != null) //searching
+				{
+					queryStr += " WHERE username LIKE ?";
+				}
+				if (sort != null)
+				{
+					queryStr += " ORDER BY username " + sort;
+				}
+				else
+				{
+					queryStr += " ORDER BY member_id ASC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement(queryStr);
+					if (id != null)
+						query.setInt(1, Integer.parseInt(id));
+					else if (search != null)
+						query.setString(1, "%"+search+"%");
+					ResultSet rs = query.executeQuery();
+					ArrayList<Member> list = new ArrayList<Member>();
+					while (rs.next())
+					{
+						Member m = new Member(rs.getInt("member_id"), rs.getString("username"));
+						PreparedStatement query2 = db.preparedStatement("SELECT * FROM playlist WHERE member_id = ? ORDER BY `name` ASC");
+						query2.setInt(1, rs.getInt("member_id"));
+						ResultSet rs2 = query2.executeQuery();
+						while (rs2.next())
+						{
+							m.addPlaylist(new Playlist(rs2.getInt("playlist_id"), -1, rs2.getString("name"), ""));
+						}
+						list.add(m);
+					}
+					out.println("{success:true,results:"+gson.toJson(list)+"}");
+					return;
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in searching for artists.\"}");
+					//out.println(e.getMessage());
+					return;
+				}
 			}
 		}
 		else if (method.equalsIgnoreCase("update"))

@@ -1,15 +1,15 @@
 @charset "utf-8";
-h1 {
-	font-size: 64px;
+h3 {
+	margin-top:15px;
+	margin-bottom:10px;
+	font-size: 1.1em;
 	font-weight: bold;
-	text-align:left;
-	padding-left:30px;
+	color:#081F4C;
+	padding:3px;
+	border-bottom:1px #081F4C solid;
 }
-hr {
-	width:80%;
-	margin:10px;
-	color:#333;
-	text-align:center;
+h3:first-child {
+	margin-top:5px;
 }
 div {
 	width: 800px;
@@ -35,7 +35,7 @@ body {
 	background-color: #EEE;
 	background-image: url(./header.png);
 	background-repeat: repeat-x;
-	font-family: Verdana, Geneva, sans-serif;
+	font-family: Century Gothic, Geneva, sans-serif;
 	font-size:18px;
 }
 div.body {
@@ -51,6 +51,26 @@ div.body {
 	color:#333;
 	text-align:justify;
 }
+
+div.content {
+	width:770px;
+}
+
+div.content li {
+	margin-bottom:3px;
+}
+
+div.content .box {
+	float:left;
+	width:375px;
+	padding:5px;
+}
+
+div.content .playlists {
+	float:none;
+	width:770px;
+}
+
 div.footer {
 	height:25px;
 	background-image:url(./bot.png);
@@ -80,10 +100,32 @@ div.menu {
 div.searchbox
 {
 	padding-bottom:10px;
+	margin:0 auto;
 }
 div.searchbox #searchbox{
-	width:60%;
-	margin-right:20px;
+	width:485px;
+	height:40px;
+	background:url(search.png) top left no-repeat;
+	padding-left:10px;
+	padding-right:10px;
+	outline:none;
+	border:none;
+}
+div.searchbox #searchbox:focus{
+	background-image:url(searchfocus.png);
+}
+div.searchbox #searchbox:hover{
+	background-image:url(searchfocus.png);
+}
+
+div.searchbox #searchbtn {
+	width:90px;
+	height:35px;
+	background:url(searchbtn.png) top left no-repeat;
+	cursor:pointer;
+	text-indent:-9999px;
+	border:none;
+	margin-top:-7px;
 }
 
 .mainnav, .mainnav li {

@@ -381,7 +381,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY playlist_id ASC";
+					queryStr += " ORDER BY playlist_id DESC";
 				}
 				if (duration != null) //limit
 				{
@@ -445,7 +445,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY artist_id ASC";
+					queryStr += " ORDER BY artist_id DESC";
 				}
 				if (duration != null) //limit
 				{
@@ -508,7 +508,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY artist.artist_id ASC";
+					queryStr += " ORDER BY artist.artist_id DESC";
 				}
 				if (duration != null) //limit
 				{
@@ -571,7 +571,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY member_id ASC";
+					queryStr += " ORDER BY member_id DESC";
 				}
 				if (duration != null) //limit
 				{

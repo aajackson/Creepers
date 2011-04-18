@@ -25,7 +25,7 @@ div.header {
 	background-position:bottom;
 	height:135px;
 	margin-top:30px;
-	padding-bottom:50px;
+	padding-bottom:25px;
 }
 .mainlogo {
 	margin-top:-25px;
@@ -59,10 +59,9 @@ div.footer {
 div.copyright {
 	font-size:.7em;
 	color:#999;
-	padding-left:40px;
-	padding-right:40px;
-	width:720px;
 	text-align:center;
+	margin-top:5px;
+	margin-bottom:15px;
 }
 .topnav li {
 	list-style-type: none;
@@ -77,8 +76,6 @@ div.copyright {
 }
 div.menu {
 	text-align:center;
-	padding-bottom:20px;
-	padding-top:0px;
 }
 div.searchbox
 {

@@ -1,43 +1,41 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>My Faves</title>
+<link href="reset.css" rel="stylesheet" type="text/css" />
 <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div class="main">
-  <div class="header"><ul class="topnav">
-      <li class="login"><a href="/login">Login
-        </a></li>
-      <li class="register"><a href="/register">Register</a></li>
+  <div class="header">
+    <ul class="topnav">
+      <li class="login"><a href="#">login</a></li>
+      <li class="register"><a href="#">register</a></li>
+      <li><a href="#">about</a></li>
+      <li><a href="#">help</a></li>
     </ul>
-    <img class="mainlogo" src="josh_logo.png" width="300" height="80" alt="logo" />
-    <br />
-  <div class="menu">
-  	<form name="searchForm" action="s" method="get">
-      <input type="text" class="searchbox" name="search" value="Search for playsists, songs, and more!" />
-      <input type="submit" value="Search!" />
-    </form>
-    <ul class="mainnav">
-      <li class="browse">Browse</li>
-      <li class="create">Create</li>
-      <li class="add">Add Your Songs</li>
-      <li class="members">Members</li>
-      <li class="help">Learn More</li>
-      <li class="about">About MyFaves</li>
-    </ul>
-  </div> 
+    <a href="" ><img class="mainlogo" src="josh_logo.png" width="300" height="80" alt="logo" /></a> <br />
+    <div class="menu">
+     
+      <form name="searchForm" >
+        <div>
+        <input type="text" class="searchbox" name="search" value="Search for playlists, songs, and more!" />
+        <input type="submit" value="Search!" />
+        </div>
+      <ul class="mainnav">
+        <li><input type="checkbox" name="albums" checked />albums</li>
+        <li><input type="checkbox" name="artists" checked />artists</li>
+        <li><input type="checkbox" name="playlists" checked />playlists</li>
+        <li><input type="checkbox" name="songs" checked />songs</li>
+        <li><input type="checkbox" name="members" checked />members</li>
+      </ul>
+      </form>
+    </div>
   </div>
-  <div class="body">
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>Welcome to MyFaves, where you can create your own playlists from scratch and search for them!</p>
-    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque   sollicitudin. Fusce varius pellentesque ligula. Proin condimentum purus a   nunc tempor pellentesque. Proin ac pede in leo tincidunt varius. Ut sed   nibh. Praesent adipiscing, sapien sit amet sagittis convallis, dolor   neque venenatis diam, at feugiat lacus quam vel pede. Mauris vel enim.   Nunc nunc nibh, bibendum ornare, mattis ac, elementum at, mi. Mauris   orci massa, vehicula ut, elementum nec, bibendum pretium, elit. </p>
-  </div>
-  <div class="footer">
-  This is where the very boring footer will be.
-  </div>
+  <div class="body"> Welcome to MyFaves, where you can create your own playlists from scratch and search for them! <br />
+    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque   sollicitudin. Fusce varius pellentesque ligula. Proin condimentum purus a   nunc tempor pellentesque. Proin ac pede in leo tincidunt varius. Ut sed   nibh. Praesent adipiscing, sapien sit amet sagittis convallis, dolor   neque venenatis diam, at feugiat lacus quam vel pede. Mauris vel enim.   Nunc nunc nibh, bibendum ornare, mattis ac, elementum at, mi. Mauris   orci massa, vehicula ut, elementum nec, bibendum pretium, elit. </div>
+  <div class="footer"> </div>
+  <div class="copyright"> </div>
 </div>
 </body>
 </html>

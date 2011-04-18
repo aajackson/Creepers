@@ -307,19 +307,185 @@ public class CreeperServlet extends HttpServlet
 		}
 		else if (method.equalsIgnoreCase("read"))
 		{
+			String search = req.getParameter("search"); //optional query string
+			String sort = req.getParameter("sort"); //optional sort (asc or desc)
+			String id = req.getParameter("id"); //optional id for a single item
+			String duration = req.getParameter("duration"); //optional limit count of result
+			String start = req.getParameter("start"); //optional start index of result
+			if (id != null) //parse the id if exists
+			{
+				try
+				{
+					if (Integer.parseInt(id) < 1)
+						throw new NumberFormatException();
+				}
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"ID must be an integer above zero.\"}");
+					return;
+				}
+			}
+			if (start != null) //parse the start index if exists
+			{
+				try
+				{
+					if (Integer.parseInt(start) < 0)
+						throw new NumberFormatException();
+				}
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"Start index must be an integer at or above zero.\"}");
+					return;
+				}
+			}
+			if (duration != null) //parse the count limit if exists
+			{
+				try
+				{
+					if (Integer.parseInt(duration) < 1)
+						throw new NumberFormatException();
+				}
+				catch (NumberFormatException e)
+				{
+					out.println("{success:false,error:\"Limit duration must be an integer above zero.\"}");
+					return;
+				}
+			}
+			if (sort != null) //parse the sort if exists
+			{
+				if (sort.equalsIgnoreCase("asc"))
+					sort = "ASC";
+				else if (sort.equalsIgnoreCase("desc"))
+					sort = "DESC";
+				else
+					sort = null; //invalid sort parameter, ignore
+			}
 			if (type.equalsIgnoreCase("playlists"))
 			{
 				//get list of playlists [name, list of songs]
 				//	can search by member or random
 				//	can sort by playlist name
 				//	can also specify by id to return that playlist
+				String queryStr = "SELECT * FROM playlist NATURAL JOIN member";
+				if (id != null) //return just one result
+				{
+					queryStr += " WHERE playlist_id = ?";
+				}
+				else if (search != null) //searching
+				{
+					queryStr += " WHERE `name` LIKE ?";
+				}
+				if (sort != null)
+				{
+					queryStr += " ORDER BY `name` " + sort;
+				}
+				else
+				{
+					queryStr += " ORDER BY playlist_id ASC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement(queryStr);
+					if (id != null)
+						query.setInt(1, Integer.parseInt(id));
+					else if (search != null)
+						query.setString(1, "%"+search+"%");
+					ResultSet rs = query.executeQuery();
+					ArrayList<Playlist> list = new ArrayList<Playlist>();
+					while (rs.next())
+					{
+						Playlist pl = new Playlist(rs.getInt("playlist_id"), rs.getInt("member_id"), rs.getString("name"), rs.getString("username"));
+						PreparedStatement query2 = db.preparedStatement("SELECT song.song_id, artist.artist_id, album.album_id, song.name AS song_name, artist.name AS artist_name, album.name AS album_name, playlistsong.track_number FROM playlistsong, song, artist, album WHERE playlistsong.playlist_id = ? AND playlistsong.song_id = song.song_id AND song.artist_id = artist.artist_id AND song.album_id = album.album_id ORDER BY track_number ASC");
+						query2.setInt(1, rs.getInt("playlist_id"));
+						ResultSet rs2 = query2.executeQuery();
+						while (rs2.next())
+						{
+							//Song(int id, String n, int t, int ali, String aln, int ari, String arn)
+							pl.addSong(new Song(rs2.getInt("song_id"), rs2.getString("song_name"), rs2.getInt("track_number"), rs2.getInt("album_id"), rs2.getString("album_name"), rs2.getInt("artist_id"), rs2.getString("artist_name")));
+						}
+						list.add(pl);
+					}
+					out.println("{success:true,results:"+gson.toJson(list)+"}");
+					return;
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in searching for playlists.\"}");
+					//out.println(e.getMessage());
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("artists"))
 			{
 				//get list of artists [name, list of albums]
-				//	can search by artist info
+				//	can search by artist name
 				//	can sort by artist name
 				//	can also specify by id to return that artist
+				String queryStr = "SELECT * FROM artist";
+				if (id != null) //return just one result
+				{
+					queryStr += " WHERE artist_id = ?";
+				}
+				else if (search != null) //searching
+				{
+					queryStr += " WHERE `name` LIKE ?";
+				}
+				if (sort != null)
+				{
+					queryStr += " ORDER BY `name` " + sort;
+				}
+				else
+				{
+					queryStr += " ORDER BY artist_id ASC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement(queryStr);
+					if (id != null)
+						query.setInt(1, Integer.parseInt(id));
+					else if (search != null)
+						query.setString(1, "%"+search+"%");
+					ResultSet rs = query.executeQuery();
+					ArrayList<Artist> list = new ArrayList<Artist>();
+					while (rs.next())
+					{
+						Artist ar = new Artist(rs.getInt("artist_id"), rs.getString("name"));
+						PreparedStatement query2 = db.preparedStatement("SELECT * FROM album WHERE artist_id = ? ORDER BY name ASC");
+						query2.setInt(1, rs.getInt("artist_id"));
+						ResultSet rs2 = query2.executeQuery();
+						while (rs2.next())
+						{
+							ar.addAlbum(new Album(rs2.getInt("album_id"), -1, "", rs2.getString("name")));
+						}
+						list.add(ar);
+					}
+					out.println("{success:true,results:"+gson.toJson(list)+"}");
+					return;
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in searching for artists.\"}");
+					//out.println(e.getMessage());
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("albums"))
 			{
@@ -327,6 +493,62 @@ public class CreeperServlet extends HttpServlet
 				//	can search by album name
 				//	can sort by album name, artist name 
 				//	can also specify an id to return that album
+				String queryStr = "SELECT album_id, artist.artist_id, artist.name AS artist_name, album.name AS album_name FROM album, artist WHERE artist.artist_id = album.artist_id";
+				if (id != null) //return just one result
+				{
+					queryStr += " AND album.album_id = ?";
+				}
+				else if (search != null) //searching
+				{
+					queryStr += " AND album.name LIKE ?";
+				}
+				if (sort != null)
+				{
+					queryStr += " ORDER BY album.name " + sort;
+				}
+				else
+				{
+					queryStr += " ORDER BY artist.artist_id ASC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement(queryStr);
+					if (id != null)
+						query.setInt(1, Integer.parseInt(id));
+					else if (search != null)
+						query.setString(1, "%"+search+"%");
+					ResultSet rs = query.executeQuery();
+					ArrayList<Album> list = new ArrayList<Album>();
+					while (rs.next())
+					{
+						Album al = new Album(rs.getInt("album_id"), rs.getInt("artist_id"), rs.getString("artist_name"), rs.getString("album_name"));
+						PreparedStatement query2 = db.preparedStatement("SELECT artist.artist_id, song_id, song.name AS song_name, track_number, artist.name AS artist_name FROM song, artist WHERE artist.artist_id = song.artist_id AND album_id = ? ORDER BY track_number ASC");
+						query2.setInt(1, rs.getInt("album_id"));
+						ResultSet rs2 = query2.executeQuery();
+						while (rs2.next())
+						{
+							al.addSong(new Song(rs2.getInt("song_id"), rs2.getString("song_name"), rs2.getInt("track_number"), -1, null, rs2.getInt("artist_id"), rs2.getString("artist_name")));
+						}
+						list.add(al);
+					}
+					out.println("{success:true,results:"+gson.toJson(list)+"}");
+					return;
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in searching for playlists.\"}");
+					//out.println(e.getMessage());
+					return;
+				}
 			}
 			else if (type.equalsIgnoreCase("members"))
 			{
@@ -334,6 +556,62 @@ public class CreeperServlet extends HttpServlet
 				//	can search by member name
 				//	can sort by member name
 				//	can also specify an id to return that member
+				String queryStr = "SELECT member_id, username FROM member";
+				if (id != null) //return just one result
+				{
+					queryStr += " WHERE member_id = ?";
+				}
+				else if (search != null) //searching
+				{
+					queryStr += " WHERE username LIKE ?";
+				}
+				if (sort != null)
+				{
+					queryStr += " ORDER BY username " + sort;
+				}
+				else
+				{
+					queryStr += " ORDER BY member_id ASC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement(queryStr);
+					if (id != null)
+						query.setInt(1, Integer.parseInt(id));
+					else if (search != null)
+						query.setString(1, "%"+search+"%");
+					ResultSet rs = query.executeQuery();
+					ArrayList<Member> list = new ArrayList<Member>();
+					while (rs.next())
+					{
+						Member m = new Member(rs.getInt("member_id"), rs.getString("username"));
+						PreparedStatement query2 = db.preparedStatement("SELECT * FROM playlist WHERE member_id = ? ORDER BY `name` ASC");
+						query2.setInt(1, rs.getInt("member_id"));
+						ResultSet rs2 = query2.executeQuery();
+						while (rs2.next())
+						{
+							m.addPlaylist(new Playlist(rs2.getInt("playlist_id"), -1, rs2.getString("name"), ""));
+						}
+						list.add(m);
+					}
+					out.println("{success:true,results:"+gson.toJson(list)+"}");
+					return;
+				}
+				catch (Exception e)
+				{
+					out.println("{success:false,error:\"There was an error in searching for artists.\"}");
+					//out.println(e.getMessage());
+					return;
+				}
 			}
 		}
 		else if (method.equalsIgnoreCase("update"))
@@ -500,7 +778,7 @@ public class CreeperServlet extends HttpServlet
 							query.setInt(2, rs.getInt(1));
 							query.executeUpdate();
 						}
-						out.println("{success:true}"+track_num);
+						out.println("{success:true}");
 						return;
 					}
 					catch (Exception e)

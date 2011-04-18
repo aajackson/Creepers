@@ -1,9 +1,9 @@
 @charset "utf-8";
-h1 {
-	font-size: 64px;
+h3 {
+	font-size: 1.1em;
 	font-weight: bold;
-	text-align:left;
-	padding-left:30px;
+	text-decoration:underline;
+	color:#081F4C;
 }
 hr {
 	width:80%;
@@ -51,6 +51,15 @@ div.body {
 	color:#333;
 	text-align:justify;
 }
+
+div.albums, div.playlists, div.members {
+	float:left;
+}
+div.artists, div.songs {
+	float:right;
+}
+
+
 div.footer {
 	height:25px;
 	background-image:url(./bot.png);

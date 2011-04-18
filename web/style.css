@@ -5,9 +5,11 @@ h1 {
 	text-align:left;
 	padding-left:30px;
 }
-p {
-	margin:0px;
-	padding:20px;
+hr {
+	width:80%;
+	margin:10px;
+	color:#333;
+	text-align:center;
 }
 div {
 	width: 800px;
@@ -23,23 +25,32 @@ div.header {
 	background-position:bottom;
 	height:135px;
 	margin-top:30px;
+	padding-bottom:50px;
 }
-
 .mainlogo {
 	margin-top:-25px;
+	margin-bottom:30px;
 }
 body {
 	background-color: #EEE;
 	background-image: url(./header.png);
 	background-repeat: repeat-x;
 	font-family: Verdana, Geneva, sans-serif;
+	font-size:18px;
 }
-div.body {	
+div.body {
 	background-image:url(./mid.png);
 	background-repeat:repeat-y;
+	margin:0px;
+	padding: 0px 15px;
+	width: 770px;
+	font-size:.85em;
+	color:#333;
 }
 div.footer {
-	
+	height:25px;
+	background-image:url(./bot.png);
+	background-position:bottom;
 }
 .topnav li {
 	list-style-type: none;
@@ -50,23 +61,29 @@ div.footer {
 	text-align:right;
 	display:inline;
 	float:right;
-	top:50px;
+	margin-top:20px;
 }
-.menu {
+div.menu {
 	text-align:center;
 }
 .searchbox {
 	width:60%;
 	margin-right:20px;
 }
-.mainnav, .mainnav li
-{
+div.menu form {
+	padding:10px;
+}
+.mainnav, .mainnav li {
 	margin:0px;
 	list-style-type: none;
 	display:inline;
-	padding:10px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-left:10px;
+	padding-right:10px;
+	color:#A62811;
 }
-a:link, a:visited, a:active, a:hover  {
+a:link, a:visited, a:active, a:hover {
 	text-decoration: none;
 	color:#039;
 }

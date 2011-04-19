@@ -296,6 +296,7 @@ public class CreeperServlet extends HttpServlet
 					uid = rs.getInt(1);
 					session.setAttribute("user_id", "" + uid);
 					out.println("{success:true}");
+					return;
 				}
 				catch (Exception e)
 				{

@@ -71,6 +71,12 @@ div.content .playlists {
 	width:770px;
 }
 
+div.content .loginlist {
+	margin:10px;
+	padding:5px;
+	list-style-type:none;
+}
+
 div.footer {
 	height:25px;
 	background-image:url(./bot.png);
@@ -121,11 +127,12 @@ div.searchbox #searchbox:hover{
 div.searchbox #searchbtn {
 	width:90px;
 	height:35px;
-	background:url(searchbtn.png) top left no-repeat;
+	background:url(searchbtn.png) no-repeat;
 	cursor:pointer;
 	text-indent:-9999px;
 	border:none;
 	margin-top:-7px;
+	padding-bottom:0px;
 }
 
 .mainnav, .mainnav li {

@@ -1,13 +1,34 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
 
-public class DesktopApp extends JFrame{
+public class DesktopApp extends JFrame implements ActionListener{
 
 	/**
 	 * @param args
 	 */
+	JButton login = new JButton("login");
+	JButton register = new JButton("register");
+	JButton about = new JButton("about");
+	JButton help = new JButton("help");
+	JTextField searchField = new JTextField("Search for playlists, songs, and more!");
+	JLabel user = new JLabel("Username:");
+	JTextField username = new JTextField(25);
+	JLabel pass = new JLabel("Password:");
+	JTextField password = new JTextField(25);
+	JLabel confirm = new JLabel("Confirm Password:");
+	JTextField confirmPassword = new JTextField(25);
+	JButton search = new JButton("Search!");
+	JCheckBox albums = new JCheckBox("albums");
+	JCheckBox artists = new JCheckBox("artists");
+	JCheckBox playlists = new JCheckBox("playlists");
+	JCheckBox songs = new JCheckBox("songs");
+	JCheckBox members = new JCheckBox("members");
+	JButton submit = new JButton("Submit");
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		DesktopApp desktop = new DesktopApp();
@@ -40,27 +61,24 @@ public class DesktopApp extends JFrame{
 	    JLabel logo = new JLabel();
 	    logo.setIcon(new ImageIcon(getClass().getResource("flat logo.png")));
 	    logo.setBounds(80,0,270,100);
-	    getContentPane().add(logo);
+	    getContentPane().add(logo);  
 	    
-	    
-	    
-	    JButton login = new JButton("login");
 	    login.setBounds(590,40,90,20);
 	    login.setFont(font);
 	    login.setForeground(color1);
 	    login.setBackground(getContentPane().getBackground());
 	    login.setBorderPainted(false);
+	    login.addActionListener(this);
 	    getContentPane().add(login);
 	    
-	    JButton register = new JButton("register");
 	    register.setBounds(660,40,100,20);
 	    register.setFont(font);
 	    register.setForeground(color1);
 	    register.setBackground(getContentPane().getBackground());
 	    register.setBorderPainted(false);
+	    register.addActionListener(this);
 	    getContentPane().add(register);
 	    
-	    JButton about = new JButton("about");
 	    about.setBounds(745,40,85,20);
 	    about.setFont(font);
 	    about.setForeground(color1);
@@ -68,7 +86,6 @@ public class DesktopApp extends JFrame{
 	    about.setBorderPainted(false);
 	    getContentPane().add(about);
 	    
-	    JButton help = new JButton("help");
 	    help.setBounds(810,40,90,20);
 	    help.setFont(font);
 	    help.setForeground(color1);
@@ -76,54 +93,86 @@ public class DesktopApp extends JFrame{
 	    help.setBorderPainted(false);
 	    getContentPane().add(help);
 	    
-	    JTextField searchField = new JTextField("Search for playlists, songs, and more!");
 	    searchField.setBorder(BorderFactory.createLineBorder(Color.black));
 	    searchField.setBounds(200,130,500,20);
 	    getContentPane().add(searchField);
 	    
-	    JButton search = new JButton("Search!");
 	    search.setBounds(720,130,80,20);
 	    getContentPane().add(search);
 	    
-	    JCheckBox albums = new JCheckBox("albums");
 	    albums.setBounds(250,160,90,20);
 	    albums.setFont(font);
 	    albums.setForeground(color);
 	    albums.setBackground(getContentPane().getBackground());
 	    getContentPane().add(albums);
 	    
-	    JCheckBox artists = new JCheckBox("artists");
 	    artists.setBounds(350,160,90,20);
 	    artists.setFont(font);
 	    artists.setForeground(color);
 	    artists.setBackground(getContentPane().getBackground());
 	    getContentPane().add(artists);
 	    
-	    JCheckBox playlists = new JCheckBox("playlists");
 	    playlists.setBounds(440,160,100,20);
 	    playlists.setFont(font);
 	    playlists.setForeground(color);
 	    playlists.setBackground(getContentPane().getBackground());
 	    getContentPane().add(playlists);
 	    
-	    JCheckBox songs = new JCheckBox("songs");
 	    songs.setBounds(550,160,80,20);
 	    songs.setFont(font);
 	    songs.setForeground(color);
 	    songs.setBackground(getContentPane().getBackground());
 	    getContentPane().add(songs);
 	    
-	    JCheckBox members = new JCheckBox("members");
 	    members.setBounds(630,160,110,20);
 	    members.setFont(font);
 	    members.setForeground(color);
 	    members.setBackground(getContentPane().getBackground());
 	    getContentPane().add(members);
 	    
-	    /*JTextField display = new JTextField();
+	    user.setBounds(350,300,90,20);
+	    username.setBounds(450,300,150,20);
+	    
+	    pass.setBounds(350,340,90,20);
+	    password.setBounds(450,340,150,20);
+	    
+	    confirm.setBounds(320,380,110,20);
+	    confirmPassword.setBounds(450,380,150,20);
+	    
+	    submit.setBounds(420,440,90,20);
+	    
+	    /*JLabel display = new JLabel();
 	    display.setText("Welcome to MyFaves, where you can create your own playlists from scratch and search for them!\n\n");
 	    getContentPane().add(display);*/
 	    
 	    repaint();
     }
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		JButton button = (JButton) arg0.getSource();
+		if(button == login)
+		{
+			getContentPane().add(user);
+			getContentPane().add(username);
+			getContentPane().add(pass);
+			getContentPane().add(password);
+			getContentPane().add(submit);
+			getContentPane().remove(confirm);
+			getContentPane().remove(confirmPassword);
+			repaint();
+		}
+		if(button == register)
+		{
+			getContentPane().add(user);
+			getContentPane().add(username);
+			getContentPane().add(pass);
+			getContentPane().add(password);
+			getContentPane().add(confirm);
+			getContentPane().add(confirmPassword);
+			getContentPane().add(submit);
+			repaint();
+		}
+	}
 }

@@ -56,7 +56,7 @@ public class CreeperServlet extends HttpServlet
 		if (method == null || type == null)
 		{ 
 			out.println("{success:false,error:\"Missing a method or type parameter. Request aborted.\"}");
-			return;
+			db.close(); return;
 		}
 		
 		if (method.equalsIgnoreCase("create"))
@@ -65,12 +65,12 @@ public class CreeperServlet extends HttpServlet
 			if (!type.equalsIgnoreCase("member") && uid == 0)
 			{
 				out.println("{success:false,error:\"You need to be logged in to do this action.\"}");
-				return;
+				db.close(); return;
 			}
 			else if (type.equalsIgnoreCase("member") && uid != 0)
 			{
 				out.println("{success:false,error:\"You need to be logged out to do this action.\"}");
-				return;
+				db.close(); return;
 			}
 			if (type.equalsIgnoreCase("song"))
 			{
@@ -83,7 +83,7 @@ public class CreeperServlet extends HttpServlet
 				if (name == null || album_id == null || track_number == null || artist_id == null) 
 				{
 					out.println("{success:false,error:\"Missing a parameter needed for song creation.\"}");
-					return;
+					db.close(); return;
 				}
 				try 
 				{
@@ -97,14 +97,18 @@ public class CreeperServlet extends HttpServlet
 					if (!rs.next())
 					{
 						out.println("{success:false,error:\"There is no album associated with the album id specified.\"}");
-						return;
+						rs.close();
+						db.close(); return;
 					}
+					rs.close();
 					rs = db.query("SELECT artist_id FROM artist WHERE artist_id = " + Integer.parseInt(artist_id));
 					if (!rs.next())
 					{
 						out.println("{success:false,error:\"There is no artist associated with the artist id specified.\"}");
-						return;
+						rs.close();
+						db.close(); return;
 					}
+					rs.close();
 					// Insertion time!
 					PreparedStatement query = db.preparedStatement("INSERT INTO song (`name`, album_id, artist_id, track_number) VALUES (?, ?, ?, ?)");
 					query.setString(1, name);
@@ -115,20 +119,21 @@ public class CreeperServlet extends HttpServlet
 					rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
 					out.println("{success:true;id:"+rs.getInt(1)+"}");
-					return;
+					rs.close();
+					db.close(); return;
 				}
 				// Invalid numbers!
 				catch (NumberFormatException e)
 				{
 					out.println("{success:false,error:\"One of the integer parameters was out of range or an invalid number.\"}");
-					return;
+					db.close(); return;
 				}
 				// Oh noes!
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
 					//out.println(e);
-					return;
+					db.close(); return;
 				}
 			}
 			else if (type.equalsIgnoreCase("album"))
@@ -140,7 +145,7 @@ public class CreeperServlet extends HttpServlet
 				if (name == null || artist_id == null) 
 				{
 					out.println("{success:false,error:\"Missing a parameter needed for album creation.\"}");
-					return;
+					db.close(); return;
 				}
 				try 
 				{
@@ -154,8 +159,10 @@ public class CreeperServlet extends HttpServlet
 					if (!rs.next())
 					{
 						out.println("{success:false,error:\"There is no artist associated with the artist id specified.\"}");
-						return;
+						rs.close();
+						db.close(); return;
 					}
+					rs.close();
 					// Insertion time!
 					PreparedStatement query = db.preparedStatement("INSERT INTO album (`name`, artist_id) VALUES (?, ?)");
 					query.setString(1, name);
@@ -164,20 +171,21 @@ public class CreeperServlet extends HttpServlet
 					rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
 					out.println("{success:true;id:"+rs.getInt(1)+"}");
-					return;
+					rs.close();
+					db.close(); return;
 				}
 				// Invalid numbers!
 				catch (NumberFormatException e)
 				{
 					out.println("{success:false,error:\"One of the integer parameters was out of range or an invalid number.\"}");
-					return;
+					db.close(); return;
 				}
 				// Oh noes!
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
 					//out.println(e);
-					return;
+					db.close(); return;
 				}
 			}
 			else if (type.equalsIgnoreCase("artist"))
@@ -188,7 +196,7 @@ public class CreeperServlet extends HttpServlet
 				if (name == null) 
 				{
 					out.println("{success:false,error:\"Missing a parameter needed for artist creation.\"}");
-					return;
+					db.close(); return;
 				}
 				try 
 				{
@@ -199,14 +207,15 @@ public class CreeperServlet extends HttpServlet
 					ResultSet rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
 					out.println("{success:true;id:"+rs.getInt(1)+"}");
-					return;
+					rs.close();
+					db.close(); return;
 				}
 				// Oh noes!
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in running the insertion.\"}");
 					//out.println(e);
-					return;
+					db.close(); return;
 				}
 			}
 			else if (type.equalsIgnoreCase("playlist"))
@@ -218,7 +227,7 @@ public class CreeperServlet extends HttpServlet
 				if (name == null || songs == null) 
 				{
 					out.println("{success:false,error:\"Missing a parameter needed for playlist creation.\"}");
-					return;
+					db.close(); return;
 				}
 				int[] song_ids;
 				try
@@ -238,8 +247,9 @@ public class CreeperServlet extends HttpServlet
 					if (rs.getInt(1) != song_ids.length) //check length of results
 					{
 						out.println("{success:false,error:\"At least one of the provided songs does not exist.\"}");
-						return;
+						db.close(); return;
 					}
+					rs.close();
 					//all good, insertion time!
 					PreparedStatement query = db.preparedStatement("INSERT INTO playlist (`name`, member_id) VALUES (?, ?)");
 					query.setString(1, name);
@@ -256,14 +266,15 @@ public class CreeperServlet extends HttpServlet
 						query.setInt(3, i);
 						query.executeUpdate();
 					}
+					rs.close();
 					out.println("{success:true;id:"+playlist_id+"}");
-					return;
+					db.close(); return;
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
 					//out.println(e.getMessage());
-					return;
+					db.close(); return;
 				}
 			}
 			else if (type.equalsIgnoreCase("member"))
@@ -275,7 +286,7 @@ public class CreeperServlet extends HttpServlet
 				if (username == null || password == null) 
 				{
 					out.println("{success:false,error:\"Missing a parameter needed for member creation.\"}");
-					return;
+					db.close(); return;
 				}
 				try 
 				{
@@ -285,8 +296,9 @@ public class CreeperServlet extends HttpServlet
 					if (rs.next())
 					{
 						out.println("{success:false,error:\"There is already a user with this username.\"}");
-						return;
+						db.close(); return;
 					}
+					rs.close();
 					query = db.preparedStatement("INSERT INTO member (username, password) VALUES (?, ?)");
 					query.setString(1, username);
 					query.setString(2, password);
@@ -294,14 +306,16 @@ public class CreeperServlet extends HttpServlet
 					rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
 					uid = rs.getInt(1);
+					rs.close();
 					session.setAttribute("user_id", "" + uid);
 					out.println("{success:true}");
+					db.close(); return;
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in creating a new member.\"}");
 					//out.println(e.getMessage());
-					return;
+					db.close(); return;
 				}
 			}
 		}
@@ -322,7 +336,7 @@ public class CreeperServlet extends HttpServlet
 				catch (NumberFormatException e)
 				{
 					out.println("{success:false,error:\"ID must be an integer above zero.\"}");
-					return;
+					db.close(); return;
 				}
 			}
 			if (start != null) //parse the start index if exists
@@ -335,7 +349,7 @@ public class CreeperServlet extends HttpServlet
 				catch (NumberFormatException e)
 				{
 					out.println("{success:false,error:\"Start index must be an integer at or above zero.\"}");
-					return;
+					db.close(); return;
 				}
 			}
 			if (duration != null) //parse the count limit if exists
@@ -348,7 +362,7 @@ public class CreeperServlet extends HttpServlet
 				catch (NumberFormatException e)
 				{
 					out.println("{success:false,error:\"Limit duration must be an integer above zero.\"}");
-					return;
+					db.close(); return;
 				}
 			}
 			if (sort != null) //parse the sort if exists
@@ -381,7 +395,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY playlist_id ASC";
+					queryStr += " ORDER BY playlist_id DESC";
 				}
 				if (duration != null) //limit
 				{
@@ -412,16 +426,18 @@ public class CreeperServlet extends HttpServlet
 							//Song(int id, String n, int t, int ali, String aln, int ari, String arn)
 							pl.addSong(new Song(rs2.getInt("song_id"), rs2.getString("song_name"), rs2.getInt("track_number"), rs2.getInt("album_id"), rs2.getString("album_name"), rs2.getInt("artist_id"), rs2.getString("artist_name")));
 						}
+						rs2.close();
 						list.add(pl);
 					}
+					rs.close();
 					out.println("{success:true,results:"+gson.toJson(list)+"}");
-					return;
+					db.close(); return;
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in searching for playlists.\"}");
 					//out.println(e.getMessage());
-					return;
+					db.close(); return;
 				}
 			}
 			else if (type.equalsIgnoreCase("artists"))
@@ -445,7 +461,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY artist_id ASC";
+					queryStr += " ORDER BY artist_id DESC";
 				}
 				if (duration != null) //limit
 				{
@@ -475,16 +491,18 @@ public class CreeperServlet extends HttpServlet
 						{
 							ar.addAlbum(new Album(rs2.getInt("album_id"), -1, "", rs2.getString("name")));
 						}
+						rs2.close();
 						list.add(ar);
 					}
+					rs.close();
 					out.println("{success:true,results:"+gson.toJson(list)+"}");
-					return;
+					db.close(); return;
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in searching for artists.\"}");
 					//out.println(e.getMessage());
-					return;
+					db.close(); return;
 				}
 			}
 			else if (type.equalsIgnoreCase("albums"))
@@ -508,7 +526,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY artist.artist_id ASC";
+					queryStr += " ORDER BY artist.artist_id DESC";
 				}
 				if (duration != null) //limit
 				{
@@ -538,16 +556,18 @@ public class CreeperServlet extends HttpServlet
 						{
 							al.addSong(new Song(rs2.getInt("song_id"), rs2.getString("song_name"), rs2.getInt("track_number"), -1, null, rs2.getInt("artist_id"), rs2.getString("artist_name")));
 						}
+						rs2.close();
 						list.add(al);
 					}
+					rs.close();
 					out.println("{success:true,results:"+gson.toJson(list)+"}");
-					return;
+					db.close(); return;
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in searching for playlists.\"}");
 					//out.println(e.getMessage());
-					return;
+					db.close(); return;
 				}
 			}
 			else if (type.equalsIgnoreCase("members"))
@@ -571,7 +591,7 @@ public class CreeperServlet extends HttpServlet
 				}
 				else
 				{
-					queryStr += " ORDER BY member_id ASC";
+					queryStr += " ORDER BY member_id DESC";
 				}
 				if (duration != null) //limit
 				{
@@ -601,16 +621,18 @@ public class CreeperServlet extends HttpServlet
 						{
 							m.addPlaylist(new Playlist(rs2.getInt("playlist_id"), -1, rs2.getString("name"), ""));
 						}
+						rs2.close();
 						list.add(m);
 					}
+					rs.close();
 					out.println("{success:true,results:"+gson.toJson(list)+"}");
-					return;
+					db.close(); return;
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in searching for artists.\"}");
 					//out.println(e.getMessage());
-					return;
+					db.close(); return;
 				}
 			}
 		}
@@ -622,13 +644,13 @@ public class CreeperServlet extends HttpServlet
 				if (uid == 0)
 				{
 					out.println("{success:false,error:\"You must be logged in to take this action.\"}");
-					return;
+					db.close(); return;
 				}
 				String playlist_id = req.getParameter("playlist_id");
 				if (playlist_id == null)
 				{
 					out.println("{success:false,error:\"No playlist was specified.\"}");
-					return;
+					db.close(); return;
 				}
 				try
 				{
@@ -639,14 +661,16 @@ public class CreeperServlet extends HttpServlet
 					if (!rs.next())
 					{
 						out.println("{success:false,error:\"The specified playlist could not be found.\"}");
-						return;
+						rs.close();
+						db.close(); return;
 					}
+					rs.close();
 				}
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in checking the playlist.\"}");
 					//out.println(e);
-					return;
+					db.close(); return;
 				}
 				if (action.equalsIgnoreCase("rename"))
 				{
@@ -656,7 +680,7 @@ public class CreeperServlet extends HttpServlet
 					if (name == null) 
 					{
 						out.println("{success:false,error:\"Missing a parameter needed for playlist update.\"}");
-						return;
+						db.close(); return;
 					}
 					try 
 					{
@@ -670,10 +694,10 @@ public class CreeperServlet extends HttpServlet
 					{
 						out.println("{success:false,error:\"There was an error in renaming the playlist.\"}");
 						//out.println(e);
-						return;
+						db.close(); return;
 					}
 					out.println("{success:true}");
-					return;
+					db.close(); return;
 				}
 				else if (action.equalsIgnoreCase("addsongs"))
 				{
@@ -683,7 +707,7 @@ public class CreeperServlet extends HttpServlet
 					if (songs == null) 
 					{
 						out.println("{success:false,error:\"Missing a parameter needed for playlist update.\"}");
-						return;
+						db.close(); return;
 					}
 					try 
 					{
@@ -701,8 +725,10 @@ public class CreeperServlet extends HttpServlet
 						if (rs.getInt(1) != song_ids.length) //check length of results
 						{
 							out.println("{success:false,error:\"At least one of the provided songs does not exist.\"}");
-							return;
+							rs.close();
+							db.close(); return;
 						}
+						rs.close();
 						//remove any songs already in the playlist
 						rs = db.query("SELECT song_id FROM playlistsong WHERE playlist_id = "+Integer.parseInt(playlist_id)+" AND song_id IN ("+song_id_list+")");
 						ArrayList<Integer> existing = new ArrayList<Integer>();
@@ -710,6 +736,7 @@ public class CreeperServlet extends HttpServlet
 						{
 							existing.add(new Integer(rs.getInt("song_id")));
 						}
+						rs.close();
 						ArrayList<Integer> adding = new ArrayList<Integer>();
 						for (int i = 0; i < song_ids.length; i++)
 						{
@@ -721,7 +748,7 @@ public class CreeperServlet extends HttpServlet
 						rs = db.query("SELECT MAX(track_number) FROM playlistsong WHERE playlist_id = "+Integer.parseInt(playlist_id));
 						rs.next();
 						int nextTrackNum = rs.getInt(1) + 1;
-						
+						rs.close();
 						//finally add the songs to the playlist
 						for (int i = 0; i < adding.size(); i++)
 						{
@@ -732,13 +759,13 @@ public class CreeperServlet extends HttpServlet
 							query.executeUpdate();
 						}
 						out.println("{success:true}");
-						return;
+						db.close(); return;
 					}
 					catch (Exception e)
 					{
 						out.println("{success:false,error:\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
 						//out.println(e);
-						return;
+						db.close(); return;
 					}
 				}
 				else if (action.equalsIgnoreCase("removesongs"))
@@ -749,7 +776,7 @@ public class CreeperServlet extends HttpServlet
 					if (songs == null) 
 					{
 						out.println("{success:false,error:\"Missing a parameter needed for playlist update.\"}");
-						return;
+						db.close(); return;
 					}
 					try 
 					{
@@ -778,14 +805,15 @@ public class CreeperServlet extends HttpServlet
 							query.setInt(2, rs.getInt(1));
 							query.executeUpdate();
 						}
+						rs.close();
 						out.println("{success:true}");
-						return;
+						db.close(); return;
 					}
 					catch (Exception e)
 					{
 						out.println("{success:false,error:\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
 						//out.println(e);
-						return;
+						db.close(); return;
 					}
 				}
 			}
@@ -794,12 +822,12 @@ public class CreeperServlet extends HttpServlet
 				if (action.equalsIgnoreCase("login") && uid != 0)
 				{
 					out.println("{success:false,error:\"You are already logged in.\"}");
-					return;
+					db.close(); return;
 				}
 				if (action.equalsIgnoreCase("logout") && uid == 0)
 				{
 					out.println("{success:false,error:\"You are not logged in.\"}");
-					return;
+					db.close(); return;
 				}
 				if (action.equalsIgnoreCase("login"))
 				{
@@ -810,7 +838,7 @@ public class CreeperServlet extends HttpServlet
 					if (username == null || password == null) 
 					{
 						out.println("{success:false,error:\"Missing a parameter needed for login.\"}");
-						return;
+						db.close(); return;
 					}
 					try
 					{
@@ -822,20 +850,22 @@ public class CreeperServlet extends HttpServlet
 						{
 							session.setAttribute("user_id", "" + rs.getInt("member_id"));
 							out.println("{success:true}");
-							return;
+							rs.close();
+							db.close(); return;
 						}
 						else
 						{
 							session.setAttribute("user_id", "" + 0);
 							out.println("{success:false,error:\"Invalid username/password combination.\"}");
-							return;
+							rs.close();
+							db.close(); return;
 						}
 					}
 					catch (Exception e)
 					{
 						out.println("{success:false,error:\"There was an error in logging in.\"}");
 						//out.println(e);
-						return;
+						db.close(); return;
 					}
 				}
 				else if (action.equalsIgnoreCase("logout"))
@@ -851,7 +881,7 @@ public class CreeperServlet extends HttpServlet
 			if (uid == 0)
 			{
 				out.println("{success:false,error:\"You need to be logged in to do this action.\"}");
-				return;
+				db.close(); return;
 			}
 			if (type.equalsIgnoreCase("playlist"))
 			{
@@ -861,7 +891,7 @@ public class CreeperServlet extends HttpServlet
 				if (playlist_id == null) 
 				{
 					out.println("{success:false,error:\"Missing a parameter needed for playlist deletion.\"}");
-					return;
+					db.close(); return;
 				}
 				try
 				{
@@ -869,8 +899,10 @@ public class CreeperServlet extends HttpServlet
 					if (!rs.next())
 					{
 						out.println("{success:false,error:\"The specified playlist does not exist.\"}");
-						return;
+						rs.close();
+						db.close(); return;
 					}
+					rs.close();
 					db.query("DELETE FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
 					db.query("DELETE FROM playlistsong WHERE playlist_id = " + Integer.parseInt(playlist_id));
 					out.println("{success:true}");
@@ -878,14 +910,14 @@ public class CreeperServlet extends HttpServlet
 				catch (NumberFormatException e)
 				{
 					out.println("{success:false,error:\"One of the integer parameters was out of range or an invalid number.\"}");
-					return;
+					db.close(); return;
 				}
 				// Oh noes!
 				catch (Exception e)
 				{
 					out.println("{success:false,error:\"There was an error in running the deletion.\"}");
 					//out.println(e);
-					return;
+					db.close(); return;
 				}
 			}
 		}

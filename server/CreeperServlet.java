@@ -37,8 +37,9 @@ public class CreeperServlet extends HttpServlet
 		res.sendRedirect("success.html");
 		*/
 		Gson gson = new Gson();
-		res.setContentType("text/html");
-		//res.setContentType("application/json");
+
+		//res.setContentType("text/html");
+		res.setContentType("application/json");
 		
 		PrintWriter out = res.getWriter();
 		DBAL db = DBAL.getInstance(out);

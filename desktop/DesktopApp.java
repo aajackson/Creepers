@@ -27,7 +27,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JCheckBox playlists = new JCheckBox("playlists");
 	JCheckBox songs = new JCheckBox("songs");
 	JCheckBox members = new JCheckBox("members");
-	JButton submit = new JButton("Submit");
+	JButton loginsubmit = new JButton("Login");
+	JButton registersubmit = new JButton("Register");
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -69,6 +70,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    login.setBackground(getContentPane().getBackground());
 	    login.setBorderPainted(false);
 	    login.addActionListener(this);
+	    login.setContentAreaFilled(false);
 	    getContentPane().add(login);
 	    
 	    register.setBounds(660,40,100,20);
@@ -77,6 +79,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    register.setBackground(getContentPane().getBackground());
 	    register.setBorderPainted(false);
 	    register.addActionListener(this);
+	    register.setContentAreaFilled(false);
 	    getContentPane().add(register);
 	    
 	    about.setBounds(745,40,85,20);
@@ -84,6 +87,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    about.setForeground(color1);
 	    about.setBackground(getContentPane().getBackground());
 	    about.setBorderPainted(false);
+	    about.setContentAreaFilled(false);
 	    getContentPane().add(about);
 	    
 	    help.setBounds(810,40,90,20);
@@ -91,6 +95,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    help.setForeground(color1);
 	    help.setBackground(getContentPane().getBackground());
 	    help.setBorderPainted(false);
+	    help.setContentAreaFilled(false);
 	    getContentPane().add(help);
 	    
 	    searchField.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -139,7 +144,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    confirm.setBounds(320,380,110,20);
 	    confirmPassword.setBounds(450,380,150,20);
 	    
-	    submit.setBounds(420,440,90,20);
+	    loginsubmit.setBounds(420,440,90,20);
+	    registersubmit.setBounds(420,440,90,20);
 	    
 	    /*JLabel display = new JLabel();
 	    display.setText("Welcome to MyFaves, where you can create your own playlists from scratch and search for them!\n\n");
@@ -158,9 +164,10 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(username);
 			getContentPane().add(pass);
 			getContentPane().add(password);
-			getContentPane().add(submit);
+			getContentPane().add(loginsubmit);
 			getContentPane().remove(confirm);
 			getContentPane().remove(confirmPassword);
+			getContentPane().remove(registersubmit);
 			repaint();
 		}
 		if(button == register)
@@ -171,7 +178,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(password);
 			getContentPane().add(confirm);
 			getContentPane().add(confirmPassword);
-			getContentPane().add(submit);
+			getContentPane().add(registersubmit);
+			getContentPane().remove(loginsubmit);
 			repaint();
 		}
 	}

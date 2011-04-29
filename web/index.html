@@ -5,25 +5,23 @@
 <link href="reset.css" rel="stylesheet" type="text/css" />
 <link href="style.css" rel="stylesheet" type="text/css" />
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-<script name="source">
-     $(document).ready(function(){});
-   </script>
+<script src="index.js"></script>
 </head>
 <body>
 <div class="main">
   <div class="header">
     <ul class="topnav">
-      <li class="login"><a href="#">login</a></li>
-      <li class="register"><a href="#">register</a></li>
-      <li><a href="#">about</a></li>
-      <li><a href="#">help</a></li>
+      <li><a href="#" class="login">login</a></li>
+      <li><a href="#" class="register">register</a></li>
+      <li><a href="#" class="about">about</a></li>
+      <li><a href="#" class="help">help</a></li>
     </ul>
     <a href="" ><img class="mainlogo" src="logo2.png" width="300" height="80" alt="logo" /></a> <br />
     <div class="menu">
       <form name="searchForm" >
         <div class="searchbox">
           <input type="text" id="searchbox" placeholder="Search for playlists, songs, and more!" name="search" />
-          <button title="Search!" type="submit" id="searchbtn">Search</button>
+          <button title="Search!" id="searchbtn">Search</button>
         </div>
         <ul class="mainnav">
           <li>
@@ -45,8 +43,8 @@
       </form>
     </div>
   </div>
-  <div class="body"> Welcome to MyFaves, where you can create your own playlists from scratch and search for them! <br /><br />
-    <div class="content">
+  <div class="body"> 
+    <div class="content">Welcome to MyFaves, where you can create your own playlists from scratch and search for them! <br /><br />
       <div class="playlists box">
         <h3>playlists</h3>
         <ul>

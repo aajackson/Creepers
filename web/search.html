@@ -1,64 +1,27 @@
-<!DOCTYPE html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>My Faves</title>
-<link href="reset.css" rel="stylesheet" type="text/css" />
-<link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-<div class="main">
-  <div class="header">
-    <ul class="topnav">
-      <li class="login"><a href="#">login</a></li>
-      <li class="register"><a href="#">register</a></li>
-      <li><a href="#">about</a></li>
-      <li><a href="#">help</a></li>
-    </ul>
-    <a href="" ><img class="mainlogo" src="logo2.png" width="300" height="80" alt="logo" /></a> <br />
-    <div class="menu">
-      <form name="searchForm" >
-        <div class="searchbox">
-          <input type="text" id="searchbox" placeholder="Search for playlists, songs, and more!" name="search" />
-          <button title="Search!" type="submit" id="searchbtn">Search</button>
-        </div>
-        <ul class="mainnav">
-          <li>
-            <input type="checkbox" name="albums" checked />
-            albums</li>
-          <li>
-            <input type="checkbox" name="artists" checked />
-            artists</li>
-          <li>
-            <input type="checkbox" name="playlists" checked />
-            playlists</li>
-          <li>
-            <input type="checkbox" name="songs" checked />
-            songs</li>
-          <li>
-            <input type="checkbox" name="members" checked />
-            members</li>
-        </ul>
-      </form>
-    </div>
-  </div>
-  <div class="body">
-    <div class="content">
+	<link href="search.css" rel="stylesheet" type="text/css">
       <h3> search results</h3>
-      <input type="submit" value="Add Selected to Playlist" />
+      <button title="Add selected songs to a playlist" type="submit" id="addbtn" value="add">Add Selected to Playlist</button>
       <table>
         <tr>
-          <td>#</td>
-          <td>Title</td>
-          <td>Album</td>
-          <td>Artist</td>
+          <th><input type="checkbox" /></th>
+          <th>#</th>
+          <th>Title</th>
+          <th>Album</th>
+          <th>Artist</th>
+        </tr>
+        <tr class="r1">
+        	<td><input type="checkbox" /></td>
+        	<td>1</td>
+            <td>Song_Title1</td>
+            <td>Song1_Album</td>
+            <td>Song1_artist</td>
+         </tr>
+        <tr class="r2">
+	        <td><input type="checkbox" /></td>
+            <td>2</td>
+            <td>Song2_Title</td>
+            <td>Song2_Album</td>
+            <td>Song2_artist</td>
         </tr>
       </table>
-      <br style="clear:both;"/>
-    </div>
-  </div>
-  <div class="footer"> </div>
-  <div class="copyright"> help | albums | artists | playlists | songs | members | about <br />
-    Copyright &copy; 2011 The Creepers | All rights reserved</div>
-</div>
-</body>
-</html>
+      <button title="Add selected songs to a playlist" type="submit" id="addbtn" value="add">Add Selected to Playlist</button>

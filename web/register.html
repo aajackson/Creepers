@@ -1,60 +1,10 @@
-<!DOCTYPE html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>My Faves</title>
-<link href="reset.css" rel="stylesheet" type="text/css" />
-<link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-<div class="main">
-  <div class="header">
-    <ul class="topnav">
-      <li class="login"><a href="#">login</a></li>
-      <li class="register"><a href="#">register</a></li>
-      <li><a href="#">about</a></li>
-      <li><a href="#">help</a></li>
-    </ul>
-    <a href="" ><img class="mainlogo" src="logo2.png" width="300" height="80" alt="logo" /></a> <br />
-    <div class="menu">
-      <form name="searchForm" >
-        <div class="searchbox">
-          <input type="text" id="searchbox" placeholder="Search for playlists, songs, and more!" name="search" />
-          <button title="Search!" type="submit" id="searchbtn"  />
-        </div>
-        <ul class="mainnav">
-          <li>
-            <input type="checkbox" name="albums" checked />
-            albums</li>
-          <li>
-            <input type="checkbox" name="artists" checked />
-            artists</li>
-          <li>
-            <input type="checkbox" name="playlists" checked />
-            playlists</li>
-          <li>
-            <input type="checkbox" name="songs" checked />
-            songs</li>
-          <li>
-            <input type="checkbox" name="members" checked />
-            members</li>
-        </ul>
-      </form>
-    </div>
-  </div>
-  <div class="body">
-    <div cass="content">
-    <h3> Register </h3>
+
+	<link href="register.css" rel="stylesheet" type="text/css" />
+
+    <h3> register </h3>
     <form name="registerForm">
-        Username: <input type="text" name="username" /> <br />
-        Password: <input type="password" name="password" /> <br />
-        Confirm Password: <input type="password" name="confirm" /><br />
-        <button title="Register" type="submit" id="registerbtn" />
+        Username:<br /> <input type="text" name="username" /> <br />
+        Password:<br /> <input type="password" name="password" /> <br />
+        Confirm Password:<br /> <input type="password" name="confirm" /><br />
+        <button title="Register" type="submit" id="registerbtn" > Register</button>
       </form>
-    </div>
-  </div>
-  <div class="footer"> </div>
-  <div class="copyright"> help | albums | artists | playlists | songs | members | about <br />
-    Copyright &copy; 2011 The Creepers | All rights reserved</div>
-</div>
-</body>
-</html>

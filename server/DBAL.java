@@ -28,7 +28,7 @@ public class DBAL
 		try 
 		{
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:8889/creepers?user=root&password=root");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/creepers?user=user&password=password");
 			stmt = conn.createStatement();
 			isConnected = true;
 		} 

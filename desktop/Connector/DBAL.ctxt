@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=out
+comment0.target=DBAL\ getInstance(java.io.PrintWriter)
+comment1.params=pw
+comment1.target=DBAL(java.io.PrintWriter)
+comment2.params=
+comment2.target=void\ close()
+comment3.params=query
+comment3.target=java.sql.ResultSet\ query(java.lang.String)
+comment4.params=query
+comment4.target=java.sql.PreparedStatement\ preparedStatement(java.lang.String)
+numComments=5

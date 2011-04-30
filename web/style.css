@@ -29,7 +29,6 @@ div.header {
 }
 .mainlogo {
 	margin-top:-25px;
-	margin-bottom:30px;
 }
 body {
 	background-color: #EEE;
@@ -68,7 +67,7 @@ div.content .box {
 
 div.content .playlists {
 	float:none;
-	width:770px;
+	width:755px;
 }
 
 div.content .loginlist {
@@ -99,6 +98,8 @@ div.copyright {
 	display:inline;
 	float:right;
 	margin-top:20px;
+	margin-bottom:40px;
+	margin-left:30px;
 }
 div.menu {
 	text-align:center;

@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=req\ res
+comment0.target=void\ doPost(javax.servlet.http.HttpServletRequest,\ javax.servlet.http.HttpServletResponse)
+comment1.params=req\ res
+comment1.target=void\ doGet(javax.servlet.http.HttpServletRequest,\ javax.servlet.http.HttpServletResponse)
+comment2.params=req\ res
+comment2.target=void\ doStuff(javax.servlet.http.HttpServletRequest,\ javax.servlet.http.HttpServletResponse)
+numComments=3

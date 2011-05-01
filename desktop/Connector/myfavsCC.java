@@ -39,15 +39,19 @@ public class myfavsCC
         System.out.println(temp.login("tj","tj"));
         
         //System.out.println(temp.logout());
-        ArrayList<Playlist> test = temp.readPlaylists();
-        for (int c=0;c<test.size();c++)
-            System.out.println(test.get(c).toString());
+        //ArrayList<Playlist> test = temp.readPlaylists();
+        //for (int c=0;c<test.size();c++)
+            //System.out.println(test.get(c).toString());
             
         ArrayList<Song> test2 = temp.readSongs();
         for (int c=0;c<test2.size();c++)
             System.out.println(test2.get(c).toString());
-        
-        //System.out.println(temp.createPlaylist("Pony time", new String[]{"1","2","3"}));
+        int yes[] = new int[] {1,2,3};
+        //System.out.println(temp.createPlaylist("Ponytime", yes));
+        for(int i=4;i<10;i++)
+        {
+            System.out.println(temp.deletePlaylist(i));
+        }
         System.out.println(temp.readPlaylists());
     }
     
@@ -219,14 +223,16 @@ public class myfavsCC
      **/
     public boolean createPlaylist(String name, int[] song_id_array) throws Exception
     {
-        String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&song=[";
+        String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&name=" + name + "&songs=[";
+
         for(int i = 0; i < song_id_array.length; i++)
         {
-            temp += song_id_array;
+            temp += song_id_array[i];
             if (i != song_id_array.length-1)
                 temp += ",";
         }
         temp += "]";
+        System.out.println(temp);
         HttpPost httpost = new HttpPost(temp);
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
@@ -501,12 +507,12 @@ public class myfavsCC
     /**
      * Removes songs indicated by the song_is's in the song_id_array from the playlist indicated by the playlist_id
      **/
-    public boolean removeSongs(String[] song_id_array, int playlist_id) throws Exception
+    public boolean removeSongs(int[] song_id_array, int playlist_id) throws Exception
     {
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=removesongs&song=[";
         for(int i = 0; i < song_id_array.length; i++)
         {
-            temp += song_id_array;
+            temp += song_id_array[i];
             if (i != song_id_array.length-1)
                 temp += ",";
         }

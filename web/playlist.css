@@ -1,0 +1,41 @@
+h4 {
+	margin-top:5px;
+	margin-bottom:5px;
+	font-size: .9em;
+	font-weight: bold;
+	padding:3px;
+}
+table {
+	width:770px;
+	padding:4px;
+}
+
+table th {
+	background-color:#666;
+    color:#EEE;
+	size:1.2em;
+	padding-top:6px;
+	padding-bottom:6px;
+	padding-left:6px;
+	font-weight:bold;
+	cursor:pointer;
+}
+
+th.sorting_asc {
+	background-color:#A31;
+}
+
+th.sorting_desc {
+	background-color:#039;
+}
+table td {
+	padding:3px;
+}
+
+table .even {
+	background-color:#CCC;
+}
+
+table .odd {
+	background-color:#AAA;
+}

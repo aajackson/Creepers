@@ -46,8 +46,8 @@ public class DBAL
 		if (!isConnected) return;
 		try 
 		{
-			stmt.close();
-			conn.close();
+			//stmt.close();
+			//conn.close();
 		} 
 		catch (Exception e) 
 		{

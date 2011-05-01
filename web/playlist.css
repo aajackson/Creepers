@@ -31,11 +31,3 @@ th.sorting_desc {
 table td {
 	padding:3px;
 }
-
-table .even {
-	background-color:#CCC;
-}
-
-table .odd {
-	background-color:#AAA;
-}

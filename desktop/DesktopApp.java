@@ -5,9 +5,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -21,14 +24,12 @@ public class DesktopApp extends JFrame implements ActionListener{
 	 * @param args
 	 */
 	
-    /*((DefaultTableModel)carTable.getModel()).setRowCount(0);
-    ((DefaultTableModel)carTable.getModel()).addRow(new Object[]{aCar.getID(),aDescrip.getDealer(), aDescrip.getMake(),
-    aDescrip.getModel(),aDescrip.getYear(),"$" + aDescrip.getPrice()});*/
-	
 	JButton login = new JButton("login");
 	JButton register = new JButton("register");
 	JButton about = new JButton("about");
 	JButton help = new JButton("help");
+	JButton addsongbottom = new JButton("Add Selected to Playlist");
+    JButton addsongtop = new JButton("Add Selected to Playlist");
 	JTextField searchField = new JTextField("Search for playlists, songs, and more!");
 	JLabel user = new JLabel("Username:");
 	JTextField username = new JTextField(25);
@@ -46,6 +47,9 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JButton registersubmit = new JButton("Register");
 	JTable table = new JTable(new MyTableModel());
 	JScrollPane scrollPane = new JScrollPane(table);
+	ArrayList<Song> songlist = new ArrayList<Song>();
+	Song firstSong = new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album");
+	myfavsCC myfavs;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -55,12 +59,19 @@ public class DesktopApp extends JFrame implements ActionListener{
 	public DesktopApp()
     {	
 		super("Music App");
-		setSize(1000,1000);
+		setSize(1000,700);
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 		
+		try
+		{
+		myfavs = new myfavsCC();
+		}catch(Exception e)
+		{
+			System.out.println("Failed to make myfavsCC.");
+		}
 		// Get the size of the screen
 	    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	    // Determine the new location of the window
@@ -74,11 +85,12 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 	    table.setFillsViewportHeight(true);
 	    
-	    scrollPane.setBounds(350,300,500,500);
+	    scrollPane.setBounds(200,220,600,300); //200 from top, 600 long, 300 tall  
 	    
-	    Font font = new Font("Trebuchet MS", Font.BOLD, 18);
+	    Font font = new Font("Trebuchet MS", Font.BOLD, 14);
 	    Color color = new Color(0xA6,0x28,0x11);//red
 	    Color color1 = new Color(0x00,0x33,0x99);//blue
+	    Color color2 = new Color(0x95, 0x29, 0x0d);//orange
 	    
 	    JLabel logo = new JLabel();
 	    logo.setIcon(new ImageIcon(getClass().getResource("flat logo.png")));
@@ -120,10 +132,12 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    getContentPane().add(help);
 	    
 	    searchField.setBorder(BorderFactory.createLineBorder(Color.black));
-	    searchField.setBounds(200,130,500,20);
+	    searchField.setBounds(200,130,480,20);
 	    getContentPane().add(searchField);
 	    
-	    search.setBounds(720,130,80,20);
+	    search.setForeground(Color.white);
+        search.setBackground(color2);
+	    search.setBounds(700,130,100,20);
 	    search.addActionListener(this);
 	    getContentPane().add(search);
 	    
@@ -172,6 +186,15 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    registersubmit.setBounds(420,440,90,20);
 	    registersubmit.addActionListener(this);
 	    
+	    addsongbottom.setBounds(200,530,220,20);
+        addsongbottom.addActionListener(this);
+        getContentPane().add(addsongbottom);
+        
+        addsongtop.setBounds(200,190,220,20);
+        addsongtop.addActionListener(this);
+        getContentPane().add(addsongtop);
+	    
+	    songlist.add(firstSong);
 	    //Put home screen info in display, call when home button (myfaves) is pushed
 	    /*JLabel display = new JLabel();
 	    display.setText("Welcome to MyFaves, where you can create your own playlists from scratch and search for them!\n\n");
@@ -211,14 +234,45 @@ public class DesktopApp extends JFrame implements ActionListener{
 		    table.getColumnModel().getColumn(4).setPreferredWidth(100);
 		    table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
 			getContentPane().add(scrollPane);
+			((MyTableModel)table.getModel()).removeAllRows();
+			songlist.add(new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album"));
+			//((DefaultTableModel)table.getModel()).addRow(new Object[]{Boolean.FALSE,#,Song,Artist,Album})
 		}
 		if(button == loginsubmit)
 		{
 			//put code here to login to server
+			try {
+				myfavs.login(username.getText(), password.getText());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		if(button == registersubmit)
 		{
 			//put code here to register to server
+			if(password.getText()==confirmPassword.getText())
+			{
+				try {
+					myfavs.createUser(username.getText(), password.getText());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				JOptionPane.showMessageDialog(null,"Welcome "+username.getText()+", you will shortly be redirected to the home page.");
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null,"Passwords need to match.");
+				getContentPane().add(user);
+				getContentPane().add(username);
+				getContentPane().add(pass);
+				getContentPane().add(password);
+				getContentPane().add(confirm);
+				getContentPane().add(confirmPassword);
+				getContentPane().add(registersubmit);
+			}
 		}
 		repaint();
 	}
@@ -232,6 +286,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 		getContentPane().remove(confirm);
 		getContentPane().remove(confirmPassword);
 		getContentPane().remove(registersubmit);
+		getContentPane().remove(scrollPane);
 	}
 	class MyItemListener implements ItemListener  
 	{  
@@ -248,14 +303,13 @@ public class DesktopApp extends JFrame implements ActionListener{
 	}
 	class MyTableModel extends AbstractTableModel {
 		Object [] columnNames = {"","#","Song","Artist","Album"};
-		Object [][] data = {{Boolean.FALSE,new Integer(1),"first song","first artist","first album"},{Boolean.FALSE,new Integer(2),"second song","second artist","second album"}};
 
         public int getColumnCount() {
             return columnNames.length;
         }
 
-        public int getRowCount() {
-            return data.length;
+		public int getRowCount() {
+            return songlist.size();
         }
 
         public String getColumnName(int col) {
@@ -263,7 +317,20 @@ public class DesktopApp extends JFrame implements ActionListener{
         }
 
         public Object getValueAt(int row, int col) {
-            return data[row][col];
+        	switch(col){
+    		case 0:
+    			return (Object) songlist.get(row).getBool();
+    		case 1:
+    			return (Object) songlist.get(row).getAlbumNumber();
+    		case 2:
+    			return (Object) songlist.get(row).getSongName();
+    		case 3:
+    			return (Object) songlist.get(row).getArtistName();
+    		case 4:
+    			return (Object) songlist.get(row).getAlbumName();
+    		default:
+    			return null;
+        	}
         }
 
         /*
@@ -295,10 +362,98 @@ public class DesktopApp extends JFrame implements ActionListener{
          * data can change.
          */
         public void setValueAt(Object value, int row, int col) {
-            data[row][col] = value;
+        	switch(col){
+        		case 0:
+        			songlist.get(row).setBool((Boolean) value);
+        			break;
+        		case 1:
+        			songlist.get(row).setAlbumNumber((Integer) value);
+        			break;
+        		case 2:
+        			songlist.get(row).setSongName((String) value);
+        			break;
+        		case 3:
+        			songlist.get(row).setArtistName((String) value);
+        			break;
+        		case 4:
+        			songlist.get(row).setAlbumName((String) value);
+        			break;
+        	}
             fireTableCellUpdated(row, col);
         }
+        
+        public void removeAllRows()
+        {
+          for(int i=getRowCount();i>0;i--)
+            removeRow(i-1);
+        }
+
+        public void removeRow(int row)
+        {
+            songlist.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
     }
+	
+	class Song {
+		private String songName;
+
+		private String artistName;
+
+		private String albumName;
+
+		private Boolean bool;
+		
+		private Integer albumNumber;
+
+		public Song(Boolean bool, Integer albumNumber, String songName, String artistName, String albumName) {
+		    this.bool = bool;
+		    this.albumNumber = albumNumber;
+		    this.songName = songName;
+		    this.artistName = artistName;
+		    this.albumName = albumName;
+		    }
+
+		  public String getSongName() {
+			return this.songName;
+		  }
+
+		  public void setSongName(String songName) {
+		    this.songName = songName;
+		  }
+
+		  public String getArtistName() {
+		    return this.artistName;
+		  }
+
+		  public void setArtistName(String artistName) {
+		    this.artistName = artistName;
+		  }
+
+		  public String getAlbumName() {
+		    return this.albumName;
+		  }
+
+		  public void setAlbumName(String albumName) {
+		    this.albumName = albumName;
+		  }
+		  
+		  public Boolean getBool() {
+			return this.bool;
+		  }
+		  
+		  public void setBool(Boolean bool) {
+			this.bool = bool;
+		  }
+		  
+		  public Integer getAlbumNumber() {
+			return this.albumNumber;
+		  }
+		  
+		  public void setAlbumNumber(Integer albumNumber) {
+			this.albumNumber = albumNumber;
+		  }
+	}
 	
 	class CheckBoxHeader extends JCheckBox  implements TableCellRenderer, MouseListener { 
 		protected CheckBoxHeader rendererComponent;  

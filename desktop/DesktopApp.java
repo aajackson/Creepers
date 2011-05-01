@@ -28,6 +28,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JButton register = new JButton("register");
 	JButton about = new JButton("about");
 	JButton help = new JButton("help");
+        JButton addsongbottom = new JButton("Add Selected to Playlist");
+        JButton addsongtop = new JButton("Add Selected to Playlist");
 	JTextField searchField = new JTextField("Search for playlists, songs, and more!");
 	JLabel user = new JLabel("Username:");
 	JTextField username = new JTextField(25);
@@ -75,11 +77,12 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 	    table.setFillsViewportHeight(true);
 	    
-	    scrollPane.setBounds(350,300,500,500);
-	    
-	    Font font = new Font("Trebuchet MS", Font.BOLD, 18);
+	    scrollPane.setBounds(200,220,600,300); //200 from top, 600 long, 300 tall     
+            
+	    Font font = new Font("Trebuchet MS", Font.BOLD, 14);
 	    Color color = new Color(0xA6,0x28,0x11);//red
 	    Color color1 = new Color(0x00,0x33,0x99);//blue
+	    Color color2 = new Color(0x95, 0x29, 0x0d);//orange
 	    
 	    JLabel logo = new JLabel();
 	    logo.setIcon(new ImageIcon(getClass().getResource("flat logo.png")));
@@ -121,14 +124,16 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    getContentPane().add(help);
 	    
 	    searchField.setBorder(BorderFactory.createLineBorder(Color.black));
-	    searchField.setBounds(200,130,500,20);
+	    searchField.setBounds(200,130,480,20);
 	    getContentPane().add(searchField);
 	    
-	    search.setBounds(720,130,80,20);
+	    search.setForeground(Color.white);
+        search.setBackground(color2);
+	    search.setBounds(700,130,100,20);
 	    search.addActionListener(this);
 	    getContentPane().add(search);
 	    
-	    albums.setBounds(250,160,90,20);
+	    albums.setBounds(240,160,100,20);
 	    albums.setFont(font);
 	    albums.setForeground(color);
 	    albums.setBackground(getContentPane().getBackground());
@@ -173,6 +178,14 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    registersubmit.setBounds(420,440,90,20);
 	    registersubmit.addActionListener(this);
 	    
+	    addsongbottom.setBounds(200,530,220,20);
+        addsongbottom.addActionListener(this);
+            getContentPane().add(addsongbottom);
+        
+            addsongtop.setBounds(200,190,220,20);
+            addsongtop.addActionListener(this);
+            getContentPane().add(addsongtop);
+
 	    //Put home screen info in display, call when home button (myfaves) is pushed
 	    /*JLabel display = new JLabel();
 	    display.setText("Welcome to MyFaves, where you can create your own playlists from scratch and search for them!\n\n");

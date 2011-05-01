@@ -37,9 +37,17 @@ public class myfavsCC
     {
         myfavsCC temp = new myfavsCC();
         System.out.println(temp.login("tj","tj"));
-        temp.readPlaylists();
-        System.out.println();
-        temp.readSongs();
+        
+        //System.out.println(temp.logout());
+        ArrayList<Playlist> test = temp.readPlaylists();
+        for (int c=0;c<test.size();c++)
+            System.out.println(test.get(c).toString());
+            
+        ArrayList<Song> test2 = temp.readSongs();
+        for (int c=0;c<test2.size();c++)
+            System.out.println(test2.get(c).toString());
+        
+        System.out.println(temp.createArtist("DrewJackson"));
     }
     
     /**
@@ -156,47 +164,59 @@ public class myfavsCC
     /**
      * creates a new member with the given parameters
      **/
-    public void createUser(String username, String password) throws Exception
+    public boolean createUser(String username, String password) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=member&username=" + username + "&password=" + password);
         response = httpclient.execute(httpost);
-        response.getEntity().getContent().close();
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); loggedIn = Boolean.parseBoolean(st.nextToken());
+        return loggedIn;
     }
     
     /**
      * creates a song with the given parameters
      **/
-    public void createSong(String name, String album_id, String artist_id, String track_number) throws Exception
+    public boolean createSong(String name, String album_id, String artist_id, String track_number) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number);
         response = httpclient.execute(httpost);  
-        response.getEntity().getContent().close();
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
     
     /**
      * creates an album with the given parameters
      **/
-    public void createAlbum(String name, String artist_id) throws Exception
+    public boolean createAlbum(String name, String artist_id) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id);
         response = httpclient.execute(httpost);  
-        response.getEntity().getContent().close();
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
     
     /**
      * creates an artist with the given parameters
      **/
-    public void createArtist(String name) throws Exception
+    public boolean createArtist(String name) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=artist&name=" + name);
         response = httpclient.execute(httpost);
-        response.getEntity().getContent().close();
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
     
     /**
      * creates a playlist with the given parameters
      **/
-    public void createPlaylist(String name, String[] song_id_array) throws Exception
+    public boolean createPlaylist(String name, String[] song_id_array) throws Exception
     {
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&song=[";
         for(int i = 0; i < song_id_array.length; i++)
@@ -208,7 +228,10 @@ public class myfavsCC
         temp += "]";
         HttpPost httpost = new HttpPost(temp);
         response = httpclient.execute(httpost);
-        response.getEntity().getContent().close();
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
     
     /**
@@ -222,7 +245,7 @@ public class myfavsCC
         int playlists = 0;
         
         String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
         st.nextToken(); //success:
         if (st.nextToken().equalsIgnoreCase("true")) //true or false
         {
@@ -270,7 +293,7 @@ public class myfavsCC
         int artists = 0, songs=0;
         
         String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
         st.nextToken(); //success:
         if (st.nextToken().equalsIgnoreCase("true")) //true or false
         {
@@ -327,7 +350,7 @@ public class myfavsCC
         int songs=0;
         
         String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
         st.nextToken(); //success:
         if (st.nextToken().equalsIgnoreCase("true")) //true or false
         {
@@ -365,7 +388,7 @@ public class myfavsCC
         int playlists = 0;
         
         String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
         st.nextToken(); //success:
         if (st.nextToken().equalsIgnoreCase("true")) //true or false
         {
@@ -402,6 +425,9 @@ public class myfavsCC
         return myPlaylists;
     }
     
+    /**
+     * returns an ArrayList<Song> containing all songs in the database
+     **/
     public ArrayList<Song> readSongs() throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs");
@@ -410,7 +436,7 @@ public class myfavsCC
         int songs = 0;
         
         String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
         st.nextToken(); //success:
         if (st.nextToken().equalsIgnoreCase("true")) //true or false
         {
@@ -430,7 +456,7 @@ public class myfavsCC
                     String artist_name = st.nextToken(); st.nextToken();
                     int track_number = Integer.parseInt(st.nextToken());
                     mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
-                    System.out.println("adding song " + song_name); 
+                    //System.out.println("adding song " + song_name); 
                 }
             }
         }
@@ -440,17 +466,20 @@ public class myfavsCC
     /**
      * renames a playlist indicated by the playlist_id to the name given by the new_name
      **/
-    public void renamePlaylist(String new_name, int playlist_id) throws Exception
+    public boolean renamePlaylist(String new_name, int playlist_id) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&action=rename&type=playlist&name=" + new_name + "&playlist_id=" + playlist_id);
         response = httpclient.execute(httpost);
-        response.getEntity().getContent().close();
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
     
     /**
      * adds songs indicated by the song_id's in the song_id_array to the playlist indicated by the playlist_id
      **/
-    public void addSongs(String[] song_id_array, int playlist_id) throws Exception
+    public boolean addSongs(String[] song_id_array, int playlist_id) throws Exception
     {
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=addsongs&song=[";
         for(int i = 0; i < song_id_array.length; i++)
@@ -462,13 +491,16 @@ public class myfavsCC
         temp += "]";
         HttpPost httpost = new HttpPost(temp);
         response = httpclient.execute(httpost);
-        response.getEntity().getContent().close();
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
     
     /**
      * Removes songs indicated by the song_is's in the song_id_array from the playlist indicated by the playlist_id
      **/
-    public void removeSongs(String[] song_id_array, int playlist_id) throws Exception
+    public boolean removeSongs(String[] song_id_array, int playlist_id) throws Exception
     {
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=removesongs&song=[";
         for(int i = 0; i < song_id_array.length; i++)
@@ -480,7 +512,10 @@ public class myfavsCC
         temp += "]";
         HttpPost httpost = new HttpPost(temp);
         response = httpclient.execute(httpost);
-        response.getEntity().getContent().close();
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
     
     /**
@@ -491,7 +526,7 @@ public class myfavsCC
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username=" + username + "&password=" + password);
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
         st.nextToken(); loggedIn = Boolean.parseBoolean(st.nextToken());
         return loggedIn;
     }
@@ -499,20 +534,26 @@ public class myfavsCC
     /**
      * logs the current user out of their session 
      **/
-    public void logout() throws Exception
+    public boolean logout() throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout");
         response = httpclient.execute(httpost);   
-        response.getEntity().getContent().close();
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); loggedIn = !Boolean.parseBoolean(st.nextToken());
+        return !loggedIn;
     }
      
     /**
      * deletes a playlist with thie given playlist_id 
      **/
-    public void deletePlaylist(int playlist_id) throws Exception
+    public boolean deletePlaylist(int playlist_id) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=delete&type=playlist&playlist_id=" + playlist_id);
         response = httpclient.execute(httpost);
-        response.getEntity().getContent().close();
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
     }
 }

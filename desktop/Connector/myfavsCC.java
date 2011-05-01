@@ -201,7 +201,9 @@ public class myfavsCC
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&song=[";
         for(int i = 0; i < song_id_array.length; i++)
         {
-            temp += song_id_array;
+            temp += "\"" + song_id_array + "\"";
+            if (i != song_id_array.length-1)
+                temp += ",";
         }
         temp += "]";
         HttpPost httpost = new HttpPost(temp);

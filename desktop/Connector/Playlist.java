@@ -19,4 +19,11 @@ public class Playlist
 	{
 		songs.add(s);
 	}
+	public String toString()
+    {
+        String temp = "playlist id:" + playlist_id + " playlist name:" + name + " username:" + username + " member id " + member_id + " songs:";
+        for (int x=0;x<songs.size();x++)
+            temp += songs.get(x).toString() + " ";
+         return temp;
+    }
 }

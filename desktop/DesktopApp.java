@@ -19,10 +19,6 @@ import javax.swing.table.TableModel;
 
 
 public class DesktopApp extends JFrame implements ActionListener{
-
-	/**
-	 * @param args
-	 */
 	
 	JButton login = new JButton("login");
 	JButton register = new JButton("register");
@@ -34,9 +30,9 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JLabel user = new JLabel("Username:");
 	JTextField username = new JTextField(25);
 	JLabel pass = new JLabel("Password:");
-	JTextField password = new JTextField(25);
+	JPasswordField password = new JPasswordField(25);
 	JLabel confirm = new JLabel("Confirm Password:");
-	JTextField confirmPassword = new JTextField(25);
+	JPasswordField confirmPassword = new JPasswordField(25);
 	JButton search = new JButton("Search!");
 	JCheckBox albums = new JCheckBox("albums");
 	JCheckBox artists = new JCheckBox("artists");
@@ -48,8 +44,9 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JTable table = new JTable(new MyTableModel());
 	JScrollPane scrollPane = new JScrollPane(table);
 	ArrayList<Song> songlist = new ArrayList<Song>();
-	Song firstSong = new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album");
 	myfavsCC myfavs;
+	ArrayList<JCheckBox> booleanValues = new ArrayList<JCheckBox>();
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -188,17 +185,10 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    
 	    addsongbottom.setBounds(200,530,220,20);
         addsongbottom.addActionListener(this);
-        getContentPane().add(addsongbottom);
         
         addsongtop.setBounds(200,190,220,20);
         addsongtop.addActionListener(this);
-        getContentPane().add(addsongtop);
-	    
-	    songlist.add(firstSong);
-	    //Put home screen info in display, call when home button (myfaves) is pushed
-	    /*JLabel display = new JLabel();
-	    display.setText("Welcome to MyFaves, where you can create your own playlists from scratch and search for them!\n\n");
-	    getContentPane().add(display);*/
+        
 	    repaint();
     }
 
@@ -228,21 +218,42 @@ public class DesktopApp extends JFrame implements ActionListener{
 		if(button == search)
 		{
 			table.getColumnModel().getColumn(0).setPreferredWidth(10);
-		    table.getColumnModel().getColumn(1).setPreferredWidth(10);
-		    table.getColumnModel().getColumn(2).setPreferredWidth(100);
-		    table.getColumnModel().getColumn(3).setPreferredWidth(100);
-		    table.getColumnModel().getColumn(4).setPreferredWidth(100);
+		    table.getColumnModel().getColumn(1).setPreferredWidth(30);
+		    table.getColumnModel().getColumn(2).setPreferredWidth(1000);
+		    table.getColumnModel().getColumn(3).setPreferredWidth(1000);
+		    table.getColumnModel().getColumn(4).setPreferredWidth(1000);
 		    table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
 			getContentPane().add(scrollPane);
+			getContentPane().add(addsongtop);
+			getContentPane().add(addsongbottom);
 			((MyTableModel)table.getModel()).removeAllRows();
-			songlist.add(new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album"));
-			//((DefaultTableModel)table.getModel()).addRow(new Object[]{Boolean.FALSE,#,Song,Artist,Album})
+			try {
+				songlist = myfavs.readSongs();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			for(int i = 0;i<songlist.size();i++)
+			{
+				booleanValues.add(new JCheckBox());
+			}
 		}
 		if(button == loginsubmit)
 		{
 			//put code here to login to server
 			try {
-				myfavs.login(username.getText(), password.getText());
+				if(myfavs.login(username.getText(), password.getText()))
+					JOptionPane.showMessageDialog(null,"Welcome back, "+username.getText());
+				else
+				{
+					JOptionPane.showMessageDialog(null,"Invalid username/password");
+					getContentPane().add(user);
+					getContentPane().add(username);
+					getContentPane().add(pass);
+					getContentPane().add(password);
+					getContentPane().add(loginsubmit);
+					password.setText("");
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -252,7 +263,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 		if(button == registersubmit)
 		{
 			//put code here to register to server
-			if(password.getText()==confirmPassword.getText())
+			if(password.equals(confirmPassword))
 			{
 				try {
 					myfavs.createUser(username.getText(), password.getText());
@@ -272,6 +283,29 @@ public class DesktopApp extends JFrame implements ActionListener{
 				getContentPane().add(confirm);
 				getContentPane().add(confirmPassword);
 				getContentPane().add(registersubmit);
+				password.setText("");
+				confirmPassword.setText("");
+			}
+		}
+		if(button == addsongtop || button == addsongbottom)
+		{
+			ArrayList<Integer> temp = new ArrayList<Integer>();
+			for(int i = 0;i<songlist.size();i++)
+			{
+				if(booleanValues.get(i).isSelected())
+				{
+					temp.add(songlist.get(i).song_id);
+				}
+			}
+			String [] strArray = new String[temp.size()];
+			for(int i = 0;i<temp.size();i++)
+				strArray[i] = temp.get(i).toString();
+			String playlist_name = JOptionPane.showInputDialog(null,"Enter the name of this playlist.");
+			try {
+				myfavs.createPlaylist(playlist_name, strArray);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		repaint();
@@ -287,6 +321,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 		getContentPane().remove(confirmPassword);
 		getContentPane().remove(registersubmit);
 		getContentPane().remove(scrollPane);
+		getContentPane().remove(addsongtop);
+		getContentPane().remove(addsongbottom);
 	}
 	class MyItemListener implements ItemListener  
 	{  
@@ -319,20 +355,20 @@ public class DesktopApp extends JFrame implements ActionListener{
         public Object getValueAt(int row, int col) {
         	switch(col){
     		case 0:
-    			return (Object) songlist.get(row).getBool();
+    			return (Object) booleanValues.get(row).isSelected();
     		case 1:
-    			return (Object) songlist.get(row).getAlbumNumber();
+    			return (Object) songlist.get(row).track_number;
     		case 2:
-    			return (Object) songlist.get(row).getSongName();
+    			return (Object) songlist.get(row).name;
     		case 3:
-    			return (Object) songlist.get(row).getArtistName();
+    			return (Object) songlist.get(row).artist_name;
     		case 4:
-    			return (Object) songlist.get(row).getAlbumName();
+    			return (Object) songlist.get(row).album_name;
     		default:
     			return null;
         	}
         }
-
+        
         /*
          * JTable uses this method to determine the default renderer/
          * editor for each cell.  If we didn't implement this method,
@@ -364,19 +400,19 @@ public class DesktopApp extends JFrame implements ActionListener{
         public void setValueAt(Object value, int row, int col) {
         	switch(col){
         		case 0:
-        			songlist.get(row).setBool((Boolean) value);
+        			booleanValues.get(row).setSelected((Boolean) value);
         			break;
         		case 1:
-        			songlist.get(row).setAlbumNumber((Integer) value);
+        			songlist.get(row).track_number = (Integer) value;
         			break;
         		case 2:
-        			songlist.get(row).setSongName((String) value);
+        			songlist.get(row).name = (String) value;
         			break;
         		case 3:
-        			songlist.get(row).setArtistName((String) value);
+        			songlist.get(row).artist_name = (String) value;
         			break;
         		case 4:
-        			songlist.get(row).setAlbumName((String) value);
+        			songlist.get(row).album_name = (String) value;
         			break;
         	}
             fireTableCellUpdated(row, col);
@@ -394,66 +430,7 @@ public class DesktopApp extends JFrame implements ActionListener{
             fireTableRowsDeleted(row, row);
         }
     }
-	
-	class Song {
-		private String songName;
 
-		private String artistName;
-
-		private String albumName;
-
-		private Boolean bool;
-		
-		private Integer albumNumber;
-
-		public Song(Boolean bool, Integer albumNumber, String songName, String artistName, String albumName) {
-		    this.bool = bool;
-		    this.albumNumber = albumNumber;
-		    this.songName = songName;
-		    this.artistName = artistName;
-		    this.albumName = albumName;
-		    }
-
-		  public String getSongName() {
-			return this.songName;
-		  }
-
-		  public void setSongName(String songName) {
-		    this.songName = songName;
-		  }
-
-		  public String getArtistName() {
-		    return this.artistName;
-		  }
-
-		  public void setArtistName(String artistName) {
-		    this.artistName = artistName;
-		  }
-
-		  public String getAlbumName() {
-		    return this.albumName;
-		  }
-
-		  public void setAlbumName(String albumName) {
-		    this.albumName = albumName;
-		  }
-		  
-		  public Boolean getBool() {
-			return this.bool;
-		  }
-		  
-		  public void setBool(Boolean bool) {
-			this.bool = bool;
-		  }
-		  
-		  public Integer getAlbumNumber() {
-			return this.albumNumber;
-		  }
-		  
-		  public void setAlbumNumber(Integer albumNumber) {
-			this.albumNumber = albumNumber;
-		  }
-	}
 	
 	class CheckBoxHeader extends JCheckBox  implements TableCellRenderer, MouseListener { 
 		protected CheckBoxHeader rendererComponent;  

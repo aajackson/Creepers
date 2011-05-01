@@ -904,9 +904,12 @@ public class CreeperServlet extends HttpServlet
 						out.close(); db.close(); return;
 					}
 					rs.close();
-					db.query("DELETE FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
-					db.query("DELETE FROM playlistsong WHERE playlist_id = " + Integer.parseInt(playlist_id));
+					PreparedStatement query = "DELETE FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid;
+					query.executeUpdate();
+					query = "DELETE FROM playlistsong WHERE playlist_id = " + Integer.parseInt(playlist_id);
+					query.executeUpdate();
 					out.println("{\"success\":true}");
+					out.close(); db.close(); return;
 				}
 				catch (NumberFormatException e)
 				{

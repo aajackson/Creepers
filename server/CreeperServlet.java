@@ -874,6 +874,7 @@ public class CreeperServlet extends HttpServlet
 					//logout user
 					session.setAttribute("user_id", "" + 0);
 					out.println("{\"success\":true}");
+					out.close(); db.close(); return;
 				}
 			}
 		}

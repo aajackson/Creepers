@@ -136,6 +136,10 @@ div.searchbox #searchbtn {
 	padding-bottom:0px;
 }
 
+div.searchbox #searchbtn:hover{
+	background-image:url(searchbtnhover.png);
+}
+
 .mainnav, .mainnav li {
 	margin:0px;
 	list-style-type: none;

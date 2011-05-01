@@ -5,9 +5,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -20,10 +23,6 @@ public class DesktopApp extends JFrame implements ActionListener{
 	/**
 	 * @param args
 	 */
-	
-    /*((DefaultTableModel)carTable.getModel()).setRowCount(0);
-    ((DefaultTableModel)carTable.getModel()).addRow(new Object[]{aCar.getID(),aDescrip.getDealer(), aDescrip.getMake(),
-    aDescrip.getModel(),aDescrip.getYear(),"$" + aDescrip.getPrice()});*/
 	
 	JButton login = new JButton("login");
 	JButton register = new JButton("register");
@@ -46,6 +45,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JButton registersubmit = new JButton("Register");
 	JTable table = new JTable(new MyTableModel());
 	JScrollPane scrollPane = new JScrollPane(table);
+	ArrayList<Song> songlist = new ArrayList<Song>();
+	Song firstSong = new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album");
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -211,6 +212,9 @@ public class DesktopApp extends JFrame implements ActionListener{
 		    table.getColumnModel().getColumn(4).setPreferredWidth(100);
 		    table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
 			getContentPane().add(scrollPane);
+			((MyTableModel)table.getModel()).removeAllRows();
+			//songlist.addSong(firstSong);
+			//((DefaultTableModel)table.getModel()).addRow(new Object[]{Boolean.FALSE,#,Song,Artist,Album})
 		}
 		if(button == loginsubmit)
 		{
@@ -232,6 +236,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 		getContentPane().remove(confirm);
 		getContentPane().remove(confirmPassword);
 		getContentPane().remove(registersubmit);
+		getContentPane().remove(scrollPane);
 	}
 	class MyItemListener implements ItemListener  
 	{  
@@ -248,14 +253,17 @@ public class DesktopApp extends JFrame implements ActionListener{
 	}
 	class MyTableModel extends AbstractTableModel {
 		Object [] columnNames = {"","#","Song","Artist","Album"};
-		Object [][] data = {{Boolean.FALSE,new Integer(1),"first song","first artist","first album"},{Boolean.FALSE,new Integer(2),"second song","second artist","second album"}};
+		
+		Song secondSong = firstSong;
+		
+		//Object [][] data = {{Boolean.FALSE,new Integer(1),"first song","first artist","first album"},{Boolean.FALSE,new Integer(2),"second song","second artist","second album"}};
 
         public int getColumnCount() {
             return columnNames.length;
         }
 
-        public int getRowCount() {
-            return data.length;
+		public int getRowCount() {
+            return songlist.size();
         }
 
         public String getColumnName(int col) {
@@ -263,7 +271,20 @@ public class DesktopApp extends JFrame implements ActionListener{
         }
 
         public Object getValueAt(int row, int col) {
-            return data[row][col];
+        	switch(col){
+    		case 0:
+    			return (Object) songlist.get(row).getBool();
+    		case 1:
+    			return (Object) songlist.get(row).getAlbumNumber();
+    		case 2:
+    			return (Object) songlist.get(row).getSongName();
+    		case 3:
+    			return (Object) songlist.get(row).getArtistName();
+    		case 4:
+    			return (Object) songlist.get(row).getAlbumName();
+    		default:
+    			return null;
+        	}
         }
 
         /*
@@ -295,10 +316,103 @@ public class DesktopApp extends JFrame implements ActionListener{
          * data can change.
          */
         public void setValueAt(Object value, int row, int col) {
-            data[row][col] = value;
+        	switch(col){
+        		case 0:
+        			songlist.get(row).setBool((Boolean) value);
+        			break;
+        		case 1:
+        			songlist.get(row).setAlbumNumber((Integer) value);
+        			break;
+        		case 2:
+        			songlist.get(row).setSongName((String) value);
+        			break;
+        		case 3:
+        			songlist.get(row).setArtistName((String) value);
+        			break;
+        		case 4:
+        			songlist.get(row).setAlbumName((String) value);
+        			break;
+        	}
             fireTableCellUpdated(row, col);
         }
+        
+        public void removeAllRows()
+        {
+          for(int i=getRowCount();i>0;i--)
+            removeRow(i-1);
+        }
+
+        public void removeRow(int row)
+        {
+            songlist.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
+        
+        public void addSong(Song mySong)
+        {
+        	songlist.add(mySong);
+        }
     }
+	
+	class Song {
+		private String songName;
+
+		private String artistName;
+
+		private String albumName;
+
+		private Boolean bool;
+		
+		private Integer albumNumber;
+
+		public Song(Boolean bool, Integer albumNumber, String songName, String artistName, String albumName) {
+		    this.bool = bool;
+		    this.albumNumber = albumNumber;
+		    this.songName = songName;
+		    this.artistName = artistName;
+		    this.albumName = albumName;
+		    }
+
+		  public String getSongName() {
+			return this.songName;
+		  }
+
+		  public void setSongName(String songName) {
+		    this.songName = songName;
+		  }
+
+		  public String getArtistName() {
+		    return this.artistName;
+		  }
+
+		  public void setArtistName(String artistName) {
+		    this.artistName = artistName;
+		  }
+
+		  public String getAlbumName() {
+		    return this.albumName;
+		  }
+
+		  public void setAlbumName(String albumName) {
+		    this.albumName = albumName;
+		  }
+		  
+		  public Boolean getBool() {
+			return this.bool;
+		  }
+		  
+		  public void setBool(Boolean bool) {
+			this.bool = bool;
+		  }
+		  
+		  public Integer getAlbumNumber() {
+			return this.albumNumber;
+		  }
+		  
+		  public void setAlbumNumber(Integer albumNumber) {
+			this.albumNumber = albumNumber;
+		  }
+	}
 	
 	class CheckBoxHeader extends JCheckBox  implements TableCellRenderer, MouseListener { 
 		protected CheckBoxHeader rendererComponent;  

@@ -28,8 +28,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JButton register = new JButton("register");
 	JButton about = new JButton("about");
 	JButton help = new JButton("help");
-        JButton addsongbottom = new JButton("Add Selected to Playlist");
-        JButton addsongtop = new JButton("Add Selected to Playlist");
+	JButton addsongbottom = new JButton("Add Selected to Playlist");
+    JButton addsongtop = new JButton("Add Selected to Playlist");
 	JTextField searchField = new JTextField("Search for playlists, songs, and more!");
 	JLabel user = new JLabel("Username:");
 	JTextField username = new JTextField(25);
@@ -49,6 +49,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JScrollPane scrollPane = new JScrollPane(table);
 	ArrayList<Song> songlist = new ArrayList<Song>();
 	Song firstSong = new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album");
+	myfavsCC myfavs;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -58,12 +59,19 @@ public class DesktopApp extends JFrame implements ActionListener{
 	public DesktopApp()
     {	
 		super("Music App");
-		setSize(1000,1000);
+		setSize(1000,700);
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 		
+		try
+		{
+		myfavs = new myfavsCC();
+		}catch(Exception e)
+		{
+			System.out.println("Failed to make myfavsCC.");
+		}
 		// Get the size of the screen
 	    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	    // Determine the new location of the window
@@ -77,8 +85,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 	    table.setFillsViewportHeight(true);
 	    
-	    scrollPane.setBounds(200,220,600,300); //200 from top, 600 long, 300 tall     
-            
+	    scrollPane.setBounds(200,220,600,300); //200 from top, 600 long, 300 tall  
+	    
 	    Font font = new Font("Trebuchet MS", Font.BOLD, 14);
 	    Color color = new Color(0xA6,0x28,0x11);//red
 	    Color color1 = new Color(0x00,0x33,0x99);//blue
@@ -133,7 +141,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    search.addActionListener(this);
 	    getContentPane().add(search);
 	    
-	    albums.setBounds(240,160,100,20);
+	    albums.setBounds(250,160,90,20);
 	    albums.setFont(font);
 	    albums.setForeground(color);
 	    albums.setBackground(getContentPane().getBackground());
@@ -180,12 +188,13 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    
 	    addsongbottom.setBounds(200,530,220,20);
         addsongbottom.addActionListener(this);
-            getContentPane().add(addsongbottom);
+        getContentPane().add(addsongbottom);
         
-            addsongtop.setBounds(200,190,220,20);
-            addsongtop.addActionListener(this);
-            getContentPane().add(addsongtop);
-
+        addsongtop.setBounds(200,190,220,20);
+        addsongtop.addActionListener(this);
+        getContentPane().add(addsongtop);
+	    
+	    songlist.add(firstSong);
 	    //Put home screen info in display, call when home button (myfaves) is pushed
 	    /*JLabel display = new JLabel();
 	    display.setText("Welcome to MyFaves, where you can create your own playlists from scratch and search for them!\n\n");
@@ -226,16 +235,44 @@ public class DesktopApp extends JFrame implements ActionListener{
 		    table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
 			getContentPane().add(scrollPane);
 			((MyTableModel)table.getModel()).removeAllRows();
-			//songlist.addSong(firstSong);
+			songlist.add(new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album"));
 			//((DefaultTableModel)table.getModel()).addRow(new Object[]{Boolean.FALSE,#,Song,Artist,Album})
 		}
 		if(button == loginsubmit)
 		{
 			//put code here to login to server
+			try {
+				myfavs.login(username.getText(), password.getText());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		if(button == registersubmit)
 		{
 			//put code here to register to server
+			if(password.getText()==confirmPassword.getText())
+			{
+				try {
+					myfavs.createUser(username.getText(), password.getText());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				JOptionPane.showMessageDialog(null,"Welcome "+username.getText()+", you will shortly be redirected to the home page.");
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null,"Passwords need to match.");
+				getContentPane().add(user);
+				getContentPane().add(username);
+				getContentPane().add(pass);
+				getContentPane().add(password);
+				getContentPane().add(confirm);
+				getContentPane().add(confirmPassword);
+				getContentPane().add(registersubmit);
+			}
 		}
 		repaint();
 	}
@@ -266,10 +303,6 @@ public class DesktopApp extends JFrame implements ActionListener{
 	}
 	class MyTableModel extends AbstractTableModel {
 		Object [] columnNames = {"","#","Song","Artist","Album"};
-		
-		Song secondSong = firstSong;
-		
-		//Object [][] data = {{Boolean.FALSE,new Integer(1),"first song","first artist","first album"},{Boolean.FALSE,new Integer(2),"second song","second artist","second album"}};
 
         public int getColumnCount() {
             return columnNames.length;
@@ -359,11 +392,6 @@ public class DesktopApp extends JFrame implements ActionListener{
         {
             songlist.remove(row);
             fireTableRowsDeleted(row, row);
-        }
-        
-        public void addSong(Song mySong)
-        {
-        	songlist.add(mySong);
         }
     }
 	

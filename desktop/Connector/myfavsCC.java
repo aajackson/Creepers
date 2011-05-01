@@ -455,7 +455,9 @@ public class myfavsCC
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=addsongs&song=[";
         for(int i = 0; i < song_id_array.length; i++)
         {
-            temp += song_id_array;
+            temp += "\"" + song_id_array + "\"";
+            if (i != song_id_array.length-1)
+                temp += ",";
         }
         temp += "]";
         HttpPost httpost = new HttpPost(temp);
@@ -471,7 +473,9 @@ public class myfavsCC
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=removesongs&song=[";
         for(int i = 0; i < song_id_array.length; i++)
         {
-            temp += song_id_array;
+            temp += "\"" + song_id_array + "\"";
+            if (i != song_id_array.length-1)
+                temp += ",";
         }
         temp += "]";
         HttpPost httpost = new HttpPost(temp);

@@ -39,6 +39,7 @@ public class myfavsCC
         System.out.println(temp.login("tj","tj"));
         temp.readPlaylists();
         System.out.println();
+        temp.readSongs();
     }
     
     /**
@@ -399,6 +400,41 @@ public class myfavsCC
         return myPlaylists;
     }
     
+    public ArrayList<Song> readSongs() throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs");
+        response = httpclient.execute(httpost);
+        ArrayList<Song> mySongs = new ArrayList<Song>();
+        int songs = 0;
+        
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        st.nextToken(); //success:
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                String tempstr = st.nextToken();
+                if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
+                {
+                    if (tempstr.equalsIgnoreCase("songs"))
+                        st.nextToken(); 
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name); 
+                }
+            }
+        }
+        return mySongs;
+    }
+    
     /**
      * renames a playlist indicated by the playlist_id to the name given by the new_name
      **/
@@ -462,7 +498,6 @@ public class myfavsCC
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout");
         response = httpclient.execute(httpost);   
         response.getEntity().getContent().close();
-		loggedIn = false;
     }
      
     /**

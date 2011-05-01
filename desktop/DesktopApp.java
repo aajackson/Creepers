@@ -1,8 +1,21 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 
 public class DesktopApp extends JFrame implements ActionListener{
@@ -10,10 +23,13 @@ public class DesktopApp extends JFrame implements ActionListener{
 	/**
 	 * @param args
 	 */
+	
 	JButton login = new JButton("login");
 	JButton register = new JButton("register");
 	JButton about = new JButton("about");
 	JButton help = new JButton("help");
+	JButton addsongbottom = new JButton("Add Selected to Playlist");
+    JButton addsongtop = new JButton("Add Selected to Playlist");
 	JTextField searchField = new JTextField("Search for playlists, songs, and more!");
 	JLabel user = new JLabel("Username:");
 	JTextField username = new JTextField(25);
@@ -29,6 +45,11 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JCheckBox members = new JCheckBox("members");
 	JButton loginsubmit = new JButton("Login");
 	JButton registersubmit = new JButton("Register");
+	JTable table = new JTable(new MyTableModel());
+	JScrollPane scrollPane = new JScrollPane(table);
+	ArrayList<Song> songlist = new ArrayList<Song>();
+	Song firstSong = new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album");
+	myfavsCC myfavs;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -36,14 +57,21 @@ public class DesktopApp extends JFrame implements ActionListener{
 	}
 
 	public DesktopApp()
-    {
+    {	
 		super("Music App");
-		setSize(1000,1000);
+		setSize(1000,700);
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 		
+		try
+		{
+		myfavs = new myfavsCC();
+		}catch(Exception e)
+		{
+			System.out.println("Failed to make myfavsCC.");
+		}
 		// Get the size of the screen
 	    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	    // Determine the new location of the window
@@ -54,10 +82,15 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    // Move the window
 	    setLocation(x, y);
 	    
-	    getContentPane().setBackground(Color.gray);
-	    Font font = new Font("Trebuchet MS", Font.BOLD, 18);
+	    table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+	    table.setFillsViewportHeight(true);
+	    
+	    scrollPane.setBounds(200,220,600,300); //200 from top, 600 long, 300 tall  
+	    
+	    Font font = new Font("Trebuchet MS", Font.BOLD, 14);
 	    Color color = new Color(0xA6,0x28,0x11);//red
 	    Color color1 = new Color(0x00,0x33,0x99);//blue
+	    Color color2 = new Color(0x95, 0x29, 0x0d);//orange
 	    
 	    JLabel logo = new JLabel();
 	    logo.setIcon(new ImageIcon(getClass().getResource("flat logo.png")));
@@ -99,10 +132,13 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    getContentPane().add(help);
 	    
 	    searchField.setBorder(BorderFactory.createLineBorder(Color.black));
-	    searchField.setBounds(200,130,500,20);
+	    searchField.setBounds(200,130,480,20);
 	    getContentPane().add(searchField);
 	    
-	    search.setBounds(720,130,80,20);
+	    search.setForeground(Color.white);
+        search.setBackground(color2);
+	    search.setBounds(700,130,100,20);
+	    search.addActionListener(this);
 	    getContentPane().add(search);
 	    
 	    albums.setBounds(250,160,90,20);
@@ -145,12 +181,24 @@ public class DesktopApp extends JFrame implements ActionListener{
 	    confirmPassword.setBounds(450,380,150,20);
 	    
 	    loginsubmit.setBounds(420,440,90,20);
-	    registersubmit.setBounds(420,440,90,20);
+	    loginsubmit.addActionListener(this);
 	    
+	    registersubmit.setBounds(420,440,90,20);
+	    registersubmit.addActionListener(this);
+	    
+	    addsongbottom.setBounds(200,530,220,20);
+        addsongbottom.addActionListener(this);
+        getContentPane().add(addsongbottom);
+        
+        addsongtop.setBounds(200,190,220,20);
+        addsongtop.addActionListener(this);
+        getContentPane().add(addsongtop);
+	    
+	    songlist.add(firstSong);
+	    //Put home screen info in display, call when home button (myfaves) is pushed
 	    /*JLabel display = new JLabel();
 	    display.setText("Welcome to MyFaves, where you can create your own playlists from scratch and search for them!\n\n");
 	    getContentPane().add(display);*/
-	    
 	    repaint();
     }
 
@@ -158,6 +206,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		JButton button = (JButton) arg0.getSource();
+		clearDisplay();
 		if(button == login)
 		{
 			getContentPane().add(user);
@@ -165,10 +214,6 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(pass);
 			getContentPane().add(password);
 			getContentPane().add(loginsubmit);
-			getContentPane().remove(confirm);
-			getContentPane().remove(confirmPassword);
-			getContentPane().remove(registersubmit);
-			repaint();
 		}
 		if(button == register)
 		{
@@ -179,8 +224,298 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(confirm);
 			getContentPane().add(confirmPassword);
 			getContentPane().add(registersubmit);
-			getContentPane().remove(loginsubmit);
-			repaint();
 		}
+		if(button == search)
+		{
+			table.getColumnModel().getColumn(0).setPreferredWidth(10);
+		    table.getColumnModel().getColumn(1).setPreferredWidth(10);
+		    table.getColumnModel().getColumn(2).setPreferredWidth(100);
+		    table.getColumnModel().getColumn(3).setPreferredWidth(100);
+		    table.getColumnModel().getColumn(4).setPreferredWidth(100);
+		    table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+			getContentPane().add(scrollPane);
+			((MyTableModel)table.getModel()).removeAllRows();
+			songlist.add(new Song(Boolean.FALSE,new Integer(1),"first song","first artist","first album"));
+			//((DefaultTableModel)table.getModel()).addRow(new Object[]{Boolean.FALSE,#,Song,Artist,Album})
+		}
+		if(button == loginsubmit)
+		{
+			//put code here to login to server
+			try {
+				myfavs.login(username.getText(), password.getText());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		if(button == registersubmit)
+		{
+			//put code here to register to server
+			if(password.getText()==confirmPassword.getText())
+			{
+				try {
+					myfavs.createUser(username.getText(), password.getText());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				JOptionPane.showMessageDialog(null,"Welcome "+username.getText()+", you will shortly be redirected to the home page.");
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null,"Passwords need to match.");
+				getContentPane().add(user);
+				getContentPane().add(username);
+				getContentPane().add(pass);
+				getContentPane().add(password);
+				getContentPane().add(confirm);
+				getContentPane().add(confirmPassword);
+				getContentPane().add(registersubmit);
+			}
+		}
+		repaint();
 	}
+	public void clearDisplay()
+	{
+		getContentPane().remove(user);
+		getContentPane().remove(username);
+		getContentPane().remove(pass);
+		getContentPane().remove(password);
+		getContentPane().remove(loginsubmit);
+		getContentPane().remove(confirm);
+		getContentPane().remove(confirmPassword);
+		getContentPane().remove(registersubmit);
+		getContentPane().remove(scrollPane);
+	}
+	class MyItemListener implements ItemListener  
+	{  
+		@Override
+		public void itemStateChanged(ItemEvent e) {  
+			Object source = e.getSource();  
+			if (source instanceof AbstractButton == false) return;  
+			boolean checked = e.getStateChange() == ItemEvent.SELECTED;  
+			for(int x = 0, y = table.getRowCount(); x < y; x++)  
+			{  
+				table.setValueAt(new Boolean(checked),x,0);  
+			}  
+	    }
+	}
+	class MyTableModel extends AbstractTableModel {
+		Object [] columnNames = {"","#","Song","Artist","Album"};
+
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+		public int getRowCount() {
+            return songlist.size();
+        }
+
+        public String getColumnName(int col) {
+            return (String) columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+        	switch(col){
+    		case 0:
+    			return (Object) songlist.get(row).getBool();
+    		case 1:
+    			return (Object) songlist.get(row).getAlbumNumber();
+    		case 2:
+    			return (Object) songlist.get(row).getSongName();
+    		case 3:
+    			return (Object) songlist.get(row).getArtistName();
+    		case 4:
+    			return (Object) songlist.get(row).getAlbumName();
+    		default:
+    			return null;
+        	}
+        }
+
+        /*
+         * JTable uses this method to determine the default renderer/
+         * editor for each cell.  If we didn't implement this method,
+         * then the last column would contain text ("true"/"false"),
+         * rather than a check box.
+         */
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        /*
+         * Don't need to implement this method unless your table's
+         * editable.
+         */
+        public boolean isCellEditable(int row, int col) {
+            //Note that the data/cell address is constant,
+            //no matter where the cell appears onscreen.
+            if (col == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /*
+         * Don't need to implement this method unless your table's
+         * data can change.
+         */
+        public void setValueAt(Object value, int row, int col) {
+        	switch(col){
+        		case 0:
+        			songlist.get(row).setBool((Boolean) value);
+        			break;
+        		case 1:
+        			songlist.get(row).setAlbumNumber((Integer) value);
+        			break;
+        		case 2:
+        			songlist.get(row).setSongName((String) value);
+        			break;
+        		case 3:
+        			songlist.get(row).setArtistName((String) value);
+        			break;
+        		case 4:
+        			songlist.get(row).setAlbumName((String) value);
+        			break;
+        	}
+            fireTableCellUpdated(row, col);
+        }
+        
+        public void removeAllRows()
+        {
+          for(int i=getRowCount();i>0;i--)
+            removeRow(i-1);
+        }
+
+        public void removeRow(int row)
+        {
+            songlist.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
+    }
+	
+	class Song {
+		private String songName;
+
+		private String artistName;
+
+		private String albumName;
+
+		private Boolean bool;
+		
+		private Integer albumNumber;
+
+		public Song(Boolean bool, Integer albumNumber, String songName, String artistName, String albumName) {
+		    this.bool = bool;
+		    this.albumNumber = albumNumber;
+		    this.songName = songName;
+		    this.artistName = artistName;
+		    this.albumName = albumName;
+		    }
+
+		  public String getSongName() {
+			return this.songName;
+		  }
+
+		  public void setSongName(String songName) {
+		    this.songName = songName;
+		  }
+
+		  public String getArtistName() {
+		    return this.artistName;
+		  }
+
+		  public void setArtistName(String artistName) {
+		    this.artistName = artistName;
+		  }
+
+		  public String getAlbumName() {
+		    return this.albumName;
+		  }
+
+		  public void setAlbumName(String albumName) {
+		    this.albumName = albumName;
+		  }
+		  
+		  public Boolean getBool() {
+			return this.bool;
+		  }
+		  
+		  public void setBool(Boolean bool) {
+			this.bool = bool;
+		  }
+		  
+		  public Integer getAlbumNumber() {
+			return this.albumNumber;
+		  }
+		  
+		  public void setAlbumNumber(Integer albumNumber) {
+			this.albumNumber = albumNumber;
+		  }
+	}
+	
+	class CheckBoxHeader extends JCheckBox  implements TableCellRenderer, MouseListener { 
+		protected CheckBoxHeader rendererComponent;  
+		protected int column;  
+		protected boolean mousePressed = false;  
+		public CheckBoxHeader(ItemListener itemListener) {  
+			rendererComponent = this;  
+			rendererComponent.addItemListener(itemListener);  
+		}  
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+		{  
+			if (table != null)
+			{  
+				JTableHeader header = table.getTableHeader();  
+				if (header != null)
+				{  
+					rendererComponent.setForeground(header.getForeground());  
+					rendererComponent.setBackground(header.getBackground());  
+					rendererComponent.setFont(header.getFont());  
+					header.addMouseListener(rendererComponent);  
+				}  
+			}  
+			setColumn(column);
+			setBorder(UIManager.getBorder("TableHeader.cellBorder"));  
+			return rendererComponent;  
+		}  
+		protected void setColumn(int column) {  
+			this.column = column;  
+		}  
+		public int getColumn() {  
+			return column;  
+		}  
+		protected void handleClickEvent(MouseEvent e) {  
+			if (mousePressed) {  
+				mousePressed=false;  
+				JTableHeader header = (JTableHeader)(e.getSource());  
+				JTable tableView = header.getTable();  
+				TableColumnModel columnModel = tableView.getColumnModel();  
+				int viewColumn = columnModel.getColumnIndexAtX(e.getX());  
+				int column = tableView.convertColumnIndexToModel(viewColumn);  
+				if (viewColumn == this.column && e.getClickCount() == 1 && column != -1) {  
+					doClick();  
+				}  
+			}  
+		}  
+		@Override
+		public void mouseClicked(MouseEvent e) {  
+			handleClickEvent(e);  
+			((JTableHeader)e.getSource()).repaint();  
+		}  
+		@Override
+		public void mousePressed(MouseEvent e) {  
+			mousePressed = true;  
+		}  
+		@Override
+		public void mouseReleased(MouseEvent e) {  
+		} 
+		@Override
+		public void mouseEntered(MouseEvent e) {  
+		}  
+		@Override
+		public void mouseExited(MouseEvent e) {  
+		}
+	} 
 }

@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.params=id\ u
+comment0.target=Member(int,\ java.lang.String)
+comment1.params=p
+comment1.target=void\ addPlaylist(Playlist)
+numComments=2

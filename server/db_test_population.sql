@@ -27,7 +27,8 @@ CREATE TABLE playlist (
   playlist_id int(11) NOT NULL AUTO_INCREMENT,
   member_id int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY (playlist_id)
+  PRIMARY KEY (playlist_id),
+  FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
 
 DROP TABLE IF EXISTS song;

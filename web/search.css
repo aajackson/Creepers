@@ -1,5 +1,5 @@
 table {
-	width:100%;
+	width:770px;
 	padding:4px;
 }
 
@@ -7,18 +7,28 @@ table th {
 	background-color:#666;
     color:#EEE;
 	size:1.2em;
-	padding:6px;
+	padding-top:6px;
+	padding-bottom:6px;
+	padding-left:6px;
 	font-weight:bold;
+	cursor:pointer;
 }
 
+th.sorting_asc {
+	background-color:#A31;
+}
+
+th.sorting_desc {
+	background-color:#039;
+}
 table td {
 	padding:3px;
 }
 
-table .r1 {
+table .even {
 	background-color:#CCC;
 }
 
-table .r2 {
+table .odd {
 	background-color:#AAA;
 }

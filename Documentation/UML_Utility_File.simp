@@ -1,0 +1,910 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<sim-project version="4.88">
+  <meta>
+    <name>dbproject</name>
+    <authors />
+    <description />
+  </meta>
+  <management>
+    <persons />
+    <tasks />
+    <requirements />
+    <issues />
+    <to-dos />
+  </management>
+  <types>
+    <type-sets>
+      <type-set file="UmlTypes.xml" />
+      <type-set file="UmlTypes.xml" />
+    </type-sets>
+    <custom-types />
+  </types>
+  <items>
+    <item id="di406563548467551933" cid="AC001" type="actor" name="Member" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di359346637550017810" cid="SYS001" type="system-boundary" name="myFaves" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di483937199868304022" cid="UC001" type="use-case" name="View Playlists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di107938919970063502" cid="AC002" type="actor" name="Site Visitor" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di364153851654383247" cid="UC001" type="use-case" name="View Playlists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di324211018716713858" cid="UC001" type="use-case" name="Create Playlists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di694240444949523385" cid="UC001" type="use-case" name="Edit Playlists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di917011612643484250" cid="UC001" type="use-case" name="Search Songs, Playlists, Albums, Members" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di641191991525837590" cid="UC001" type="use-case" name="View Playlists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di498878258150633686" cid="REL001" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di107938919970063502" to="di483937199868304022">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di850633521913876670" cid="REL002" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di107938919970063502" to="di917011612643484250">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di292607218141225532" cid="REL003" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di641191991525837590" to="di107938919970063502">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di810996885638181419" cid="REL004" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di406563548467551933" to="di364153851654383247">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di732068691453763579" cid="REL005" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di406563548467551933" to="di324211018716713858">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di528094596249665741" cid="COBJ001" type="container-ui-object" name="UIObject1" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <container-ui-object type="window" />
+    </item>
+    <item id="di416811148931000413" cid="COBJ001" type="container-ui-object" name="myFaves Desktop Client" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style background-type="vertical-linear" background-color="#FFD3D3D3" background-color2="#FFFFFFFF" border-color="#FF000000" border-width="1" shadow-type="smooth" shadow-offset="-2,-2" shadow-size="6,6" shadow-visible="true" shadow-color="#50000000" shadow-radius="6" gloss-effect="true" threed-gloss-effect="false" wrap-name-text="true" wrap-other-text="true" name-color="#FF000000" name-font="Arial;10;B" name-horizontal-alignment="center" name-vertical-alignment="center" part-header-color="#FF1E1E1E" part-header-font="Arial;9;I" part-header-horizontal-alignment="center" part-header-vertical-alignment="center" text-color="#FF000000" text-font="Arial;10;" text-horizontal-alignment="left" text-vertical-alignment="center" tagged-value-color="#FF1E1E1E" tagged-value-font="Arial;9;I" tagged-value-horizontal-alignment="center" tagged-value-vertical-alignment="center" stereotype-color="#FF1E1E1E" stereotype-font="Arial;9;I" stereotype-horizontal-alignment="center" stereotype-vertical-alignment="center" />
+      <container-ui-object type="window" />
+    </item>
+    <item id="di605583034603396251" cid="OBJ001" type="simple-ui-object" name="albums" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="check-box" />
+    </item>
+    <item id="di971417642955788615" cid="OBJ003" type="simple-ui-object" name="artists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="check-box" />
+    </item>
+    <item id="di597972931593673450" cid="OBJ004" type="simple-ui-object" name="playlist" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="check-box" />
+    </item>
+    <item id="di652662634461651053" cid="OBJ005" type="simple-ui-object" name="songs" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="check-box" />
+    </item>
+    <item id="di560981097133286909" cid="OBJ006" type="simple-ui-object" name="members" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="check-box" />
+    </item>
+    <item id="di754560197810048182" cid="ELEM050" type="group" name="Group" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di835186518631499958" cid="OBJ009" type="simple-ui-object" name="Results go here" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="list-box" />
+    </item>
+    <item id="di482018548762427840" cid="OBJ008" type="simple-ui-object" name="login  register  about  help" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di902812955482799152" cid="OBJ007" type="simple-ui-object" name="Search!" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di946114195357032051" cid="OBJ002" type="simple-ui-object" name="Search for Playlists, Songs, and More!" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="text-box" />
+    </item>
+    <item id="di593030461465986188" cid="OBJ001" type="simple-ui-object" name="UIObject2" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di812468217912284243" cid="ENT001" type="erd-entity" name="member" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <attributes>
+        <attribute name="member_id" type="int" type-size="11" foreign-key="false" primary-key="true" nullable="false" description="" default-value="" />
+        <attribute name="username" type="varchar" type-size="255" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="password" type="varchar" type-size="255" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+      </attributes>
+    </item>
+    <item id="di456410652577228705" cid="ENT002" type="erd-entity" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <attributes />
+    </item>
+    <item id="di715618137700369964" cid="ENT001" type="erd-entity" name="playlist" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <attributes>
+        <attribute name="playlist_id" type="int" type-size="11" foreign-key="false" primary-key="true" nullable="false" description="" default-value="" />
+        <attribute name="member_id" type="int" type-size="11" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="name" type="varchar" type-size="255" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+      </attributes>
+    </item>
+    <item id="di847461999967751576" cid="ENT001" type="erd-entity" name="song" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <attributes>
+        <attribute name="song_id" type="int" type-size="11" foreign-key="false" primary-key="true" nullable="false" description="" default-value="" />
+        <attribute name="name" type="varchar" type-size="255" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="album_id" type="int" type-size="11" foreign-key="true" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="artist_id" type="int" type-size="11" foreign-key="true" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="track_number" type="int" type-size="11" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+      </attributes>
+    </item>
+    <item id="di586656089441389443" cid="ENT001" type="erd-entity" name="playlistsong" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <attributes>
+        <attribute name="playlistsong_id" type="int(11)" type-size="" foreign-key="false" primary-key="true" nullable="false" description="" default-value="" />
+        <attribute name="playlist_id" type="int(11)" type-size="" foreign-key="true" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="song_id" type="int(11)" type-size="" foreign-key="true" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="track_number" type="int(11)" type-size="" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+      </attributes>
+    </item>
+    <item id="di873096946977808909" cid="ENT001" type="erd-entity" name="artist" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <attributes>
+        <attribute name="artist_id" type="int" type-size="11" foreign-key="false" primary-key="true" nullable="false" description="" default-value="" />
+        <attribute name="name" type="varchar" type-size="255" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+      </attributes>
+    </item>
+    <item id="di128806015751657793" cid="ENT001" type="erd-entity" name="album" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <attributes>
+        <attribute name="album_id" type="int" type-size="11" foreign-key="false" primary-key="true" nullable="false" description="" default-value="" />
+        <attribute name="artist_id" type="int" type-size="11" foreign-key="true" primary-key="false" nullable="false" description="" default-value="" />
+        <attribute name="name" type="varchar" type-size="255" foreign-key="false" primary-key="false" nullable="false" description="" default-value="" />
+      </attributes>
+    </item>
+    <item id="di275770032859320587" cid="REL001" type="erd-relationship" name="▼ Creates" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <erd-relation type="Association" multiplicity-from="1..*" multiplicity-to="1" />
+    </item>
+    <item id="di406416154503663849" cid="REL005" type="erd-relationship" name="is a list of ►" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <erd-relation type="Association" multiplicity-from="1..*" multiplicity-to="1..*" />
+    </item>
+    <item id="di459021099306096187" cid="REL006" type="erd-relationship" name="is a reference to ►" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <erd-relation type="Association" multiplicity-from="1..*" multiplicity-to="1" />
+    </item>
+    <item id="di498872700864582220" cid="REL007" type="erd-relationship" name="◄ publishes" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <erd-relation type="Association" multiplicity-from="1..*" multiplicity-to="1..*" />
+    </item>
+    <item id="di985576387843981021" cid="REL008" type="erd-relationship" name="▼ is composed of" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs17\par
+}
+</documentation>
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <erd-relation type="Association" multiplicity-from="1..*" multiplicity-to="1..*" />
+    </item>
+    <item id="di949419526212342496" cid="OBJ002" type="simple-ui-object" name="Search for Songs, Playlists and More!" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="text-box" />
+    </item>
+    <item id="di424724979920097548" cid="OBJ003" type="simple-ui-object" name="myFaves Logo" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di988470816988947670" cid="OBJ004" type="simple-ui-object" name="Add Selection to Playlist" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di476881889382719131" cid="OBJ004" type="simple-ui-object" name="Add Selection to Playlist" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di976498755671644456" cid="OBJ004" type="simple-ui-object" name="Add Selection to Playlist" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di566062210749142749" cid="OBJ005" type="simple-ui-object" name="UIObject6" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="scroll-bar" />
+    </item>
+    <item id="di866762546875061849" cid="CMT001" type="comment" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <comment>scrollbar only appears when needed.</comment>
+    </item>
+    <item id="di190504660929129954" cid="REL001" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di406563548467551933" to="di694240444949523385">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di880150808449257327" cid="REL002" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di406563548467551933" to="di483937199868304022">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di633824926192227097" cid="REL003" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di406563548467551933" to="di917011612643484250">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di523425717673042953" cid="UC001" type="use-case" name="Register as a Member" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di565805586118327710" cid="UC002" type="use-case" name="UseCase2" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di929447952713779417" cid="UC003" type="use-case" name="UseCase3" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di426886360741660108" cid="REL005" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di523425717673042953" to="di107938919970063502">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di739585808109740621" cid="EX001" type="extend" name="" style-class="" is-abstract="false">
+      <stereotypes>
+        <stereotype name="extend" />
+      </stereotypes>
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <extend extension-point="" />
+    </item>
+    <item id="di346536408214298540" cid="UC004" type="use-case" name="View Help and About Information" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di188588788466279505" cid="REL006" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di406563548467551933" to="di346536408214298540">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+    <item id="di760052212236247819" cid="REL007" type="relationship" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <relation from="di346536408214298540" to="di107938919970063502">
+        <start-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+        <end-role id="" name="" multiplicity="" navigability="" association-type="association" visibility="private" />
+      </relation>
+    </item>
+  </items>
+  <models>
+    <model id="p815914361976967978" name="Model 1" type="model" namespace="">
+      <documentation />
+      <sub-models />
+      <diagram type="uml-usecase" id="p194273839496625149" name="UseCaseDiagram1">
+        <meta>
+          <authors />
+          <description />
+          <creation-date>04/29/2011 22:27:12</creation-date>
+          <change-date>04/30/2011 22:25:22</change-date>
+          <revision-count>0</revision-count>
+          <version />
+        </meta>
+        <documentation />
+        <layer name="Default" visible="true" enabled="true" locked="false">
+          <item id="di406563548467551933" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="142" ay="244" awidth="60" aheight="120" x="142" y="244" width="0" height="0" />
+          </item>
+          <item id="di359346637550017810" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="268" ay="108" awidth="427" aheight="438" x="268" y="108" width="427" height="438" />
+          </item>
+          <item id="di483937199868304022" container="di359346637550017810" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="430" ay="141" awidth="101" aheight="63" x="430" y="141" width="101" height="86" />
+            <use-case />
+          </item>
+          <item id="di107938919970063502" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="775" ay="234" awidth="60" aheight="120" x="775" y="234" width="0" height="0" />
+          </item>
+          <item id="di324211018716713858" container="di359346637550017810" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="303" ay="373" awidth="101" aheight="63" x="303" y="373" width="101" height="86" />
+            <use-case />
+          </item>
+          <item id="di694240444949523385" container="di359346637550017810" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="305" ay="454" awidth="101" aheight="63" x="305" y="454" width="101" height="86" />
+            <use-case />
+          </item>
+          <item id="di917011612643484250" container="di359346637550017810" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="415" ay="212" awidth="134" aheight="84" x="415" y="212" width="134" height="59" />
+            <use-case />
+          </item>
+          <item id="di498878258150633686" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="775" y1="283" x2="528" y2="183">
+              <points>
+                <point x="775" y="283" />
+                <point x="528" y="183" />
+              </points>
+            </layout>
+            <relation from="di107938919970063502" to="di483937199868304022" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di850633521913876670" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="775" y1="290" x2="549" y2="259">
+              <points>
+                <point x="775" y="290" />
+                <point x="549" y="259" />
+              </points>
+            </layout>
+            <relation from="di107938919970063502" to="di917011612643484250" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di732068691453763579" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="202" y1="320" x2="310" y2="389">
+              <points>
+                <point x="202" y="320" />
+                <point x="310" y="389" />
+              </points>
+            </layout>
+            <relation from="di406563548467551933" to="di324211018716713858" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di190504660929129954" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="202" y1="334" x2="320" y2="463">
+              <points>
+                <point x="202" y="334" />
+                <point x="320" y="463" />
+              </points>
+            </layout>
+            <relation from="di406563548467551933" to="di694240444949523385" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di880150808449257327" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="202" y1="291" x2="434" y2="184">
+              <points>
+                <point x="202" y="291" />
+                <point x="434" y="184" />
+              </points>
+            </layout>
+            <relation from="di406563548467551933" to="di483937199868304022" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di633824926192227097" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="202" y1="299" x2="416" y2="261">
+              <points>
+                <point x="202" y="299" />
+                <point x="416" y="261" />
+              </points>
+            </layout>
+            <relation from="di406563548467551933" to="di917011612643484250" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di523425717673042953" container="di359346637550017810" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="554" ay="378" awidth="105" aheight="66" x="554" y="378" width="105" height="65" />
+            <use-case />
+          </item>
+          <item id="di426886360741660108" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="652" y1="394" x2="775" y2="312">
+              <points>
+                <point x="652" y="394" />
+                <point x="775" y="312" />
+              </points>
+            </layout>
+            <relation from="di523425717673042953" to="di107938919970063502" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di346536408214298540" container="di359346637550017810" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="421" ay="307" awidth="123" aheight="77" x="421" y="307" width="123" height="57" />
+            <use-case />
+          </item>
+          <item id="di188588788466279505" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="202" y1="308" x2="421" y2="341">
+              <points>
+                <point x="202" y="308" />
+                <point x="421" y="341" />
+              </points>
+            </layout>
+            <relation from="di406563548467551933" to="di346536408214298540" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+          <item id="di760052212236247819" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="543" y1="340" x2="775" y2="299">
+              <points>
+                <point x="543" y="340" />
+                <point x="775" y="299" />
+              </points>
+            </layout>
+            <relation from="di346536408214298540" to="di107938919970063502" />
+            <role-positions start-role="25,15" end-role="25,15" start-multiplicity="25,-15" end-multiplicity="25,-15" />
+          </item>
+        </layer>
+      </diagram>
+      <diagram type="user-interface" id="p345722542699586902" name="UserInterfaceDiagram1">
+        <meta>
+          <authors />
+          <description />
+          <creation-date>04/29/2011 22:46:44</creation-date>
+          <change-date>04/30/2011 22:07:50</change-date>
+          <revision-count>0</revision-count>
+          <version />
+        </meta>
+        <documentation />
+        <layer name="Default" visible="true" enabled="true" locked="false">
+          <item id="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="container-ui-object">
+            <layout ax="40" ay="63" awidth="680" aheight="495" x="40" y="63" width="680" height="495" />
+          </item>
+          <item id="di754560197810048182" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="group">
+            <layout ax="123" ay="243" awidth="420" aheight="22" x="123" y="243" width="150" height="170" />
+            <group-items>
+              <item id="di605583034603396251" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="123" ay="245" awidth="71" aheight="20" x="123" y="245" width="71" height="0" />
+              </item>
+              <item id="di971417642955788615" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="208" ay="245" awidth="64" aheight="20" x="208" y="245" width="64" height="0" />
+              </item>
+              <item id="di597972931593673450" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="289" ay="245" awidth="73" aheight="20" x="289" y="245" width="73" height="0" />
+              </item>
+              <item id="di652662634461651053" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="372" ay="243" awidth="75" aheight="20" x="372" y="243" width="75" height="20" />
+              </item>
+              <item id="di560981097133286909" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="448" ay="244" awidth="95" aheight="20" x="448" y="244" width="95" height="0" />
+              </item>
+            </group-items>
+          </item>
+          <item id="di835186518631499958" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="118" ay="310" awidth="517" aheight="174" x="118" y="310" width="517" height="174" />
+          </item>
+          <item id="di482018548762427840" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="537" ay="90" awidth="183" aheight="42" x="538" y="75" width="183" height="42" />
+          </item>
+          <item id="di902812955482799152" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="540" ay="209" awidth="100" aheight="30" x="541" y="193" width="0" height="0" />
+          </item>
+          <item id="di938311958131245297" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="drawing-shape">
+            <layout ax="58" ay="104" awidth="189" aheight="76" x="59" y="88" width="189" height="76" />
+            <drawing-shape type="Rectangle" />
+            <style class="default" />
+          </item>
+          <item id="di949419526212342496" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="120" ay="214" awidth="404" aheight="20" x="121" y="198" width="404" height="0" />
+          </item>
+          <item id="di424724979920097548" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="97" ay="133" awidth="150" aheight="20" x="98" y="117" width="0" height="0" />
+          </item>
+          <item id="di988470816988947670" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="118" ay="279" awidth="176" aheight="20" x="118" y="279" width="176" height="20" />
+          </item>
+          <item id="di976498755671644456" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="116" ay="492" awidth="176" aheight="20" x="116" y="492" width="176" height="20" />
+          </item>
+          <item id="di566062210749142749" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="615" ay="310" awidth="20" aheight="174" x="615" y="310" width="0" height="174" />
+          </item>
+          <item id="di866762546875061849" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="503" ay="362" awidth="105" aheight="63" x="503" y="362" width="105" height="63" />
+          </item>
+        </layer>
+      </diagram>
+      <diagram type="entity-relationship" id="p855581797145163624" name="EntityRelationshipDiagram1">
+        <meta>
+          <authors />
+          <description />
+          <creation-date>04/29/2011 22:48:28</creation-date>
+          <change-date>04/29/2011 22:58:31</change-date>
+          <revision-count>0</revision-count>
+          <version />
+        </meta>
+        <documentation />
+        <layer name="Default" visible="true" enabled="true" locked="false">
+          <item id="di812468217912284243" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="10" ay="89" awidth="128" aheight="132" x="10" y="89" width="128" height="132" />
+            <erd-entity />
+          </item>
+          <item id="di715618137700369964" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="10.5" ay="328" awidth="127" aheight="155" x="10.5" y="328" width="127" height="155" />
+            <erd-entity />
+          </item>
+          <item id="di847461999967751576" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="548.5" ay="309" awidth="128" aheight="195" x="548.5" y="309" width="128" height="195" />
+            <erd-entity />
+          </item>
+          <item id="di586656089441389443" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="272.5" ay="323" awidth="128" aheight="165" x="272.5" y="323" width="128" height="165" />
+            <erd-entity />
+          </item>
+          <item id="di873096946977808909" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="824.5" ay="358.5" awidth="128" aheight="96" x="824.5" y="358.5" width="128" height="96" />
+            <erd-entity />
+          </item>
+          <item id="di128806015751657793" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
+            <layout ax="546.5" ay="81" awidth="128" aheight="148" x="546.5" y="81" width="128" height="148" />
+            <erd-entity />
+          </item>
+          <item id="di275770032859320587" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="33,2" x1="74" y1="328" x2="74" y2="221">
+              <points>
+                <point x="74" y="328" />
+                <point x="74" y="221" />
+              </points>
+            </layout>
+            <relation from="di715618137700369964" to="di812468217912284243" />
+          </item>
+          <item id="di406416154503663849" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="138" y1="406" x2="272" y2="406">
+              <points>
+                <point x="138" y="406" />
+                <point x="205" y="406" />
+                <point x="272" y="406" />
+              </points>
+            </layout>
+            <relation from="di715618137700369964" to="di586656089441389443" />
+          </item>
+          <item id="di459021099306096187" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="4,-13" x1="400" y1="406" x2="548" y2="406">
+              <points>
+                <point x="400" y="406" />
+                <point x="548" y="406" />
+              </points>
+            </layout>
+            <relation from="di586656089441389443" to="di847461999967751576" />
+          </item>
+          <item id="di498872700864582220" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="10,-10" x1="676" y1="406" x2="824" y2="406">
+              <points>
+                <point x="676" y="406" />
+                <point x="824" y="406" />
+              </points>
+            </layout>
+            <relation from="di847461999967751576" to="di873096946977808909" />
+          </item>
+          <item id="di985576387843981021" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="relation">
+            <layout line-style="oblique" lock-start-point="false" lock-end-point="false" name-position="60,2" x1="611" y1="309" x2="611" y2="229">
+              <points>
+                <point x="611" y="309" />
+                <point x="611" y="229" />
+              </points>
+            </layout>
+            <relation from="di847461999967751576" to="di128806015751657793" />
+          </item>
+        </layer>
+      </diagram>
+    </model>
+  </models>
+</sim-project>

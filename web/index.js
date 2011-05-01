@@ -1,5 +1,8 @@
 // JavaScript Document
 var currentPage = "./home.html";
+var currentPlaylistID = 0;
+
+
 $(document).ready(function()
 {
 	$("a.login").click(function(event)
@@ -44,7 +47,7 @@ var s = $.getJSON(url, 'method=create&type=member', function(data) {d = data;});
 
 function loadPage(page)
 {
-	if(currentPage != page)
+	if(currentPage != page || page == "./search.html")
 	{
 		$(".content").hide("slow", function()
 		{

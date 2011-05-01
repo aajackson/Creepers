@@ -149,6 +149,11 @@ div.searchbox #searchbtn:hover{
 	padding-right:10px;
 	color:#A31;
 }
+a {
+	color:#039;
+	cursor:pointer;
+}
+
 a:link, a:visited, a:active, a:hover {
 	text-decoration: none;
 	color:#039;

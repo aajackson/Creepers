@@ -1,8 +1,15 @@
+h4 {
+	margin-top:5px;
+	margin-bottom:0px;
+	font-size: 1.1em;
+	font-weight: bold;
+	padding:3px;
+}
 table {
 	width:770px;
 	padding:4px;
+	clear:both;
 }
-
 table th {
 	background-color:#666;
     color:#EEE;
@@ -26,9 +33,48 @@ table td {
 }
 
 table .even {
-	background-color:#CCC;
+	background-color:#AAA;
 }
 
 table .odd {
-	background-color:#AAA;
+	background-color:#CCC;
 }
+
+.dataTables_length {
+	width:40%;
+	float:left;
+}
+.dataTables_filter {
+	width:50%;
+	float:right;
+	text-align:right;
+	margin-right:28px;
+}
+
+.dataTables_info {
+	float:left;
+	width:40%;
+}
+
+.dataTables_paginate {
+	float:right;
+	text-align:right;
+	margin-right:28px;
+	width:40%;
+}
+
+.paging_full_numbers span.paginate_button {
+    background-color: #DDDDDD;
+}
+.paging_full_numbers span.paginate_button, .paging_full_numbers span.paginate_active {
+    border: 1px solid #AAAAAA;
+    border-radius: 5px 5px 5px 5px;
+    cursor: pointer;
+    margin: 0 3px;
+    padding: 2px 5px;
+}
+
+.dataTables_info, .paging_full_numbers {
+	margin-top:6px;
+}
+

@@ -19,4 +19,11 @@ public class Album
     {
         songs.add(s);
     }
+    public String toString()
+    {
+        String temp = "album id:" + artist_id + " album name:" + name + " songs:";
+        for (int x=0;x<songs.size();x++)
+            temp += songs.get(x).toString() + " ";
+         return temp;
+    }
 }

@@ -15,4 +15,11 @@ public class Member
 	{
 		playlists.add(p);	
 	}
+	public String toString()
+    {
+        String temp = "member id:" + member_id + " member name:" + username + " playlists:";
+        for (int x=0;x<playlists.size();x++)
+            temp += playlists.get(x).toString() + " ";
+         return temp;
+    }
 }

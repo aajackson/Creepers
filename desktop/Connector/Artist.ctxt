@@ -3,4 +3,6 @@ comment0.params=id\ n
 comment0.target=Artist(int,\ java.lang.String)
 comment1.params=a
 comment1.target=void\ addAlbum(Album)
-numComments=2
+comment2.params=
+comment2.target=java.lang.String\ toString()
+numComments=3

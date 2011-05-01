@@ -207,7 +207,7 @@ public class CreeperServlet extends HttpServlet
 					query.executeUpdate();
 					ResultSet rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
-					out.println("{\"success\":true;\"id\":"+rs.getInt(1)+"}");
+					out.println("{\"success\":true,\"id\":"+rs.getInt(1)+"}");
 					rs.close();
 					out.close(); db.close(); return;
 				}
@@ -268,7 +268,7 @@ public class CreeperServlet extends HttpServlet
 						query.executeUpdate();
 					}
 					rs.close();
-					out.println("{\"success\":true;\"id\":"+playlist_id+"}");
+					out.println("{\"success\":true,\"id\":"+playlist_id+"}");
 					out.close(); db.close(); return;
 				}
 				catch (Exception e)

@@ -28,14 +28,15 @@ public class myfavsCC
     private DefaultHttpClient httpclient;
     private HttpGet httpget;
     private HttpResponse response;
- 
+    private boolean loggedIn;
+    
     /**
      * Main Method - Mainly for debugging.
      */
     public static void main(String[] args) throws Exception
     {
         myfavsCC temp = new myfavsCC();
-        temp.login("tj","tj");
+        System.out.println(temp.login("tj","tj"));
         temp.readPlaylists();
         System.out.println();
     }
@@ -49,6 +50,7 @@ public class myfavsCC
         httpget = new HttpGet("http://khadajmcs.dyndns-free.com/creepers/Servlet");
         response = httpclient.execute(httpget);
         response.getEntity().getContent().close();
+        loggedIn = false;
     }
     
     /**
@@ -442,12 +444,14 @@ public class myfavsCC
     /**
      * logs in a user with thie given username and password 
      **/
-    public void login(String username, String password) throws Exception
+    public boolean login(String username, String password) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username=" + username + "&password=" + password);
         response = httpclient.execute(httpost);
-        printData();
-        //response.getEntity().getContent().close();
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],}");
+        st.nextToken(); loggedIn = Boolean.parseBoolean(st.nextToken());
+        return loggedIn;
     }
     
     /**
@@ -458,6 +462,7 @@ public class myfavsCC
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout");
         response = httpclient.execute(httpost);   
         response.getEntity().getContent().close();
+		loggedIn = false;
     }
      
     /**

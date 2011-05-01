@@ -636,6 +636,56 @@ public class CreeperServlet extends HttpServlet
 					out.close(); db.close(); return;
 				}
 			}
+			else if (type.equalsIgnoreCase("songs"))
+			{
+				//get list of songs [info]
+				//	can search by song name
+				//	can sort by song name
+				String queryStr = "SELECT song_id, song.name AS song_name, song.track_number, album.album_id, album.name AS album_name, artist.artist_id, artist.name AS artist_name FROM song, artist, album WHERE song.artist_id = artist.artist_id AND song.album_id = album.album_id";
+				if (search != null) //searching
+				{
+					queryStr += " AND song.name LIKE ?";
+				}
+				if (sort != null)
+				{
+					queryStr += " ORDER BY song.name " + sort;
+				}
+				else
+				{
+					queryStr += " ORDER BY song_id DESC";
+				}
+				if (duration != null) //limit
+				{
+					queryStr += " LIMIT ";
+					if (start != null)
+					{
+						queryStr += start + ", ";
+					}
+					queryStr += duration;
+				}
+				try
+				{
+					PreparedStatement query = db.preparedStatement(queryStr);
+					if (search != null)
+						query.setString(1, "%"+search+"%");
+					ResultSet rs = query.executeQuery();
+					ArrayList<Song> list = new ArrayList<Song>();
+					while (rs.next())
+					{
+						Song s = new Song(rs.getInt("song_id"), rs.getString("song_name"), rs.getInt("track_number"), rs.getInt("album_id"), rs.getString("album_name"), rs.getInt("artist_id"), rs.getString("artist_name"));
+						list.add(s);
+					}
+					rs.close();
+					out.println("{\"success\":true,\"results\":"+gson.toJson(list)+"}");
+					out.close(); db.close(); return;
+				}
+				catch (Exception e)
+				{
+					out.println("{\"success\":false,\"error\":\"There was an error in searching for artists.\"}");
+					//out.println(e.getMessage());
+					out.close(); db.close(); return;
+				}
+			}
 		}
 		else if (method.equalsIgnoreCase("update"))
 		{

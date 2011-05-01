@@ -47,7 +47,8 @@ public class myfavsCC
         for (int c=0;c<test2.size();c++)
             System.out.println(test2.get(c).toString());
         
-        System.out.println(temp.createArtist("DrewJackson"));
+        //System.out.println(temp.createPlaylist("Pony time", new String[]{"1","2","3"}));
+        System.out.println(temp.readPlaylists());
     }
     
     /**
@@ -177,7 +178,7 @@ public class myfavsCC
     /**
      * creates a song with the given parameters
      **/
-    public boolean createSong(String name, String album_id, String artist_id, String track_number) throws Exception
+    public boolean createSong(String name, int album_id, int artist_id, int track_number) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number);
         response = httpclient.execute(httpost);  
@@ -190,7 +191,7 @@ public class myfavsCC
     /**
      * creates an album with the given parameters
      **/
-    public boolean createAlbum(String name, String artist_id) throws Exception
+    public boolean createAlbum(String name, int artist_id) throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id);
         response = httpclient.execute(httpost);  
@@ -216,7 +217,7 @@ public class myfavsCC
     /**
      * creates a playlist with the given parameters
      **/
-    public boolean createPlaylist(String name, String[] song_id_array) throws Exception
+    public boolean createPlaylist(String name, int[] song_id_array) throws Exception
     {
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&song=[";
         for(int i = 0; i < song_id_array.length; i++)

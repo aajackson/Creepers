@@ -1,6 +1,9 @@
 // JavaScript Document
 var currentPage = "./home.html";
 var currentPlaylistID = 0;
+var currentAlbumID = 0;
+var currentArtistID = 0;
+var currentMemberID = 0;
 
 
 $(document).ready(function()
@@ -30,7 +33,7 @@ $(document).ready(function()
 		loadPage("./search.html");
 		event.preventDefault();
 	});
-	$("img.mainlogo").click(function(event)
+	$(".mainlogo").click(function(event)
 	{
 		loadPage("./home.html");
 		event.preventDefault();

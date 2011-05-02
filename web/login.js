@@ -17,7 +17,7 @@ $("document").ready(function()
  		{
 			if(data.success)
 			{
-				$("li#first").html('Welcome, <a href="#" class="login">'+user+'</a>!');
+				$("li#first").html('<a class="login">'+user+'\'s profile</a> ');
 				$("a.login").click(function(event)
 				{
 					loadPage("./user.html");
@@ -51,7 +51,7 @@ $("document").ready(function()
 			}
 			else
 			{
-				alert('Username and password do not match');
+				alert('Error: '+data.error);
 				return;
 			}
 		});

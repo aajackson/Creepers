@@ -36,9 +36,11 @@ public class myfavsCC
     public static void main(String[] args) throws Exception
     {
         myfavsCC temp = new myfavsCC();
-		System.out.println(temp.createSong("happy go lucky",6,5,4));
     }
     
+	/**
+	 * Constructor - must be called
+	 */
     public myfavsCC() throws Exception
     {
         httpclient = new DefaultHttpClient();
@@ -147,6 +149,9 @@ public class myfavsCC
         }
     }
     
+	/**
+	 * takes a string and prepares it for uri delivery
+	 */
 	public String webFriendly(String in)
 	{
 		return in.replace( " " , "%20" );
@@ -265,7 +270,7 @@ public class myfavsCC
         }
     }
     
-        /**
+    /**
      * renames a playlist indicated by the playlist_id to the name given by the new_name
      **/
     public boolean renamePlaylist(String new_name, int playlist_id) throws Exception
@@ -359,6 +364,9 @@ public class myfavsCC
         return suceeded;
     }
     
+	/**
+     * returns an ArrayList<Member> containing all members
+     **/
     public ArrayList<Member> getMember() throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members"));
@@ -412,7 +420,10 @@ public class myfavsCC
         }
         return myMembers;
     }
-    
+
+	/**
+     * returns an ArrayList<Member> containing all members with the given name
+     **/
     public ArrayList<Member> getMember(String user_name)throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&search=" + user_name));
@@ -465,8 +476,11 @@ public class myfavsCC
             }
         }
         return myMembers;
-    }
-    
+    }	
+
+	/**
+     * returns an Member from the user_id given
+     **/
     public Member getMember(int user_id)throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&id=" + user_id));
@@ -523,7 +537,10 @@ public class myfavsCC
 		else
 			return null;
     }
-    
+
+	/**
+     * returns an ArrayList<Artist> of all artists
+     **/
     public ArrayList<Artist> getArtist() throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists"));
@@ -577,7 +594,10 @@ public class myfavsCC
         }
         return myArtists;
     }
-    
+
+	/**
+     * returns an ArrayList<Artist> of all artists with the given name
+     **/
     public ArrayList<Artist> getArtist(String art_name) throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&search=" + art_name));
@@ -631,7 +651,10 @@ public class myfavsCC
         }
         return myArtists;
     }
-    
+
+	/**
+     * returns an Artist with the given artist_id
+     **/
     public Artist getArtist(int art_id) throws Exception    
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&id=" + art_id));
@@ -685,7 +708,10 @@ public class myfavsCC
         }
         return myArtists;
     }
-    
+
+	/**
+     * returns an ArrayList<Song> of all songs in the database
+     **/
     public ArrayList<Song> getSong() throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs"));
@@ -717,7 +743,10 @@ public class myfavsCC
         }
         return mySongs;
     }
-    
+
+	/**
+     * returns an ArrayList<Song> contining all songs with the given name
+     **/
     public ArrayList<Song> getSong(String s_name) throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs&search="+ s_name));
@@ -749,7 +778,10 @@ public class myfavsCC
         }
         return mySongs;
     }
-    
+
+	/**
+     * returns a Song with the given song_id
+     **/
     public Song getSong(int s_id) throws Exception
     {
         ArrayList<Song> mySongs = getSong();
@@ -760,7 +792,10 @@ public class myfavsCC
         }
         return null;
     }
-    
+
+	/**
+     * returns an ArrayList<Playlist> contining playlists
+     **/
     public ArrayList<Playlist> getPlaylist() throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists"));
@@ -808,7 +843,10 @@ public class myfavsCC
         }
         return myPlaylists;
     }
-    
+
+	/**
+     * returns an ArrayList<Playlist> contining playlists with the given name
+     **/
     public ArrayList<Playlist> getPlaylist(String playlist_n) throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&search=" + playlist_n));
@@ -856,7 +894,10 @@ public class myfavsCC
         }
         return myPlaylists;
     }
-    
+
+	/**
+     * returns a Playlist withthe given playlist_id
+     **/
     public Playlist getPlaylist(int pl_id) throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&id=" + pl_id));
@@ -907,7 +948,10 @@ public class myfavsCC
 		else
 			return null;
     }
-    
+
+	/**
+     * returns an ArrayList<Playlist> contaning all playlists by a given member (member id)
+     **/
     public ArrayList<Playlist> getMemberPlaylist(int member_id) throws Exception
     {
         ArrayList<Playlist> myPlaylists = getPlaylist();
@@ -922,7 +966,10 @@ public class myfavsCC
 		else
 			return null;
     }
-    
+
+	/**
+     * returns an ArrayList<Playlist> contaning all playlists by a given member (member name)
+     **/
     public ArrayList<Playlist> getMemberPlaylist(String member_name) throws Exception
     {
         ArrayList<Playlist> myPlaylists = getPlaylist();
@@ -937,7 +984,10 @@ public class myfavsCC
 		else
 			return null;
     }
-    
+
+	/**
+     * returns an ArrayList<Album> contaning all albums
+     **/
     public ArrayList<Album> getAlbum() throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums"));
@@ -983,7 +1033,10 @@ public class myfavsCC
         }
         return myAlbums;
     }
-    
+
+	/**
+     * returns an ArrayList<Album> contaning all albums of a given name
+     **/
     public ArrayList<Album> getAlbum(String album_n) throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&search=" + album_n));
@@ -1029,7 +1082,10 @@ public class myfavsCC
         }
         return myAlbums;
     }
-    
+
+	/**
+     * returns an Album of the given album_id 
+     **/
     public Album getAlbum(int alb_id) throws Exception
     {
         HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&id=" + alb_id));

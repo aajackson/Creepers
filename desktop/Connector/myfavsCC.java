@@ -37,22 +37,7 @@ public class myfavsCC
     {
         myfavsCC temp = new myfavsCC();
         System.out.println(temp.login("tj","tj"));
-        
-        //System.out.println(temp.logout());
-        //ArrayList<Playlist> test = temp.readPlaylists();
-        //for (int c=0;c<test.size();c++)
-            //System.out.println(test.get(c).toString());
-            
-        ArrayList<Song> test2 = temp.readSongs();
-        for (int c=0;c<test2.size();c++)
-            System.out.println(test2.get(c).toString());
-        int yes[] = new int[] {1,2,3};
-        //System.out.println(temp.createPlaylist("Ponytime", yes));
-        for(int i=4;i<10;i++)
-        {
-            System.out.println(temp.deletePlaylist(i));
-        }
-        System.out.println(temp.readPlaylists());
+        ArrayList<Album> test = temp.readAlbums();
     }
     
     /**
@@ -448,10 +433,12 @@ public class myfavsCC
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums");
         response = httpclient.execute(httpost);
         ArrayList<Album> myAlbums = new ArrayList<Album>();
-        int albums = 0, songs=0;
+        int albums = 0;
+        String album_name="";
         
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        //while(st.hasMoreTokens())
         st.nextToken(); //success:
         if (st.nextToken().equalsIgnoreCase("true")) //true or false
         {
@@ -459,29 +446,31 @@ public class myfavsCC
             while(st.hasMoreTokens())
             {
                 String tempstr = st.nextToken();
-                if(tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("album_id"))
+                if(st.hasMoreTokens())
                 {
-                    if (tempstr.equalsIgnoreCase("albums"))
-                        st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String artist_name = st.nextToken();  st.nextToken(); 
-                    String album_name = st.nextToken();
-                    myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
-                    //System.out.println("adding album " + album_name); 
-                }
-                else if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("songs"))
-                        st.nextToken(); 
-                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String song_name = st.nextToken();  st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                    String artist_name = st.nextToken(); st.nextToken();
-                    int track_number = Integer.parseInt(st.nextToken());
-                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, getAlbum(album_id).name, artist_id, artist_name));
-                    //System.out.println("adding song " + song_name); 
+                    if(tempstr.equalsIgnoreCase("album_id"))
+                    {
+                        int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                        int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                        String artist_name = st.nextToken();  st.nextToken(); 
+                        album_name = st.nextToken();
+                        myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
+                        //System.out.println("adding album " + album_name); 
+                        albums++;
+                    }
+                    else if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
+                    {
+                        if (tempstr.equalsIgnoreCase("songs"))
+                            st.nextToken(); 
+                        int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                        String song_name = st.nextToken();  st.nextToken(); 
+                        int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                        int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                        String artist_name = st.nextToken(); st.nextToken();
+                        int track_number = Integer.parseInt(st.nextToken());
+                        myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number,album_id,album_name,artist_id,artist_name));
+                        //System.out.println("adding song " + song_name);
+                    }
                 }
             }
         }

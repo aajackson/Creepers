@@ -1,8 +1,12 @@
+<script src="user.js"></script>
+<script src="DataTables-1.7.6/media/js/jquery.dataTables.min.js"></script>
+<link href="search.css" rel="stylesheet" type="text/css" />
 
-<link href="user.css" rel="stylesheet" type="text/css" />
       <div class="playlist box">
-        <h3>Playlist Title</h3>
-        <table>
+        <h3>playlist: <span id="playlist_title"></span></h3>
+        <div class="playlist_table">
+        <table id="selected_playlist">
+        <thead>
           <tr>
             <th><input type="checkbox" /></th>
             <th>#</th>
@@ -10,15 +14,19 @@
             <th>Album</th>
             <th>Artist</th>
           </tr>
+          </thead>
+          <tbody>
+          </tbody>
         </table>
-        <button type="button" value="remove">Remove Selected From Current Playlist</button><button type="button" value="add">Add Selected to playlist</button>
+        </div><!--
+        <button type="button" id="remove_selected" value="remove">Remove Selected From Current Playlist</button><br />
+        <button type="button" id="add_selected" value="add">Add Selected to playlist</button>-->
       </div>
       <div class="box">
+       <button type="button" id="new_song">Add a song to the library</button>
        <h3>my playlists</h3>
-       <ul>
-       <li>Playlist1</li>
-       <li>Playlist2</li>
+       <ul id="user_playlists">
        </ul>
-       Add new Playlist
+       <button type="button" id="new_playlist">Add new Playlist</button>
     </div>
     <br style="clear:both"/>

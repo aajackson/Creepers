@@ -900,14 +900,14 @@ public class CreeperServlet extends HttpServlet
 					}
 					try
 					{
-						PreparedStatement query = db.preparedStatement("SELECT member_id FROM member WHERE username = ? AND password = ?");
+						PreparedStatement query = db.preparedStatement("SELECT member_id,username FROM member WHERE username = ? AND password = ?");
 						query.setString(1, username);
 						query.setString(2, password);
 						ResultSet rs = query.executeQuery();
 						if (rs.next())
 						{
 							session.setAttribute("user_id", "" + rs.getInt("member_id"));
-							out.println("{\"success\":true}");
+							out.println("{\"success\":true,\"user_id\":"+rs.getInt("member_id")+",\"username\":\""+rs.getString("username")+"\"}");
 							rs.close();
 							out.close(); db.close(); return;
 						}

@@ -1,9 +1,20 @@
-	  <link type="text/css" href="add.css" rel="stylesheet">
+	  <link type="text/css" href="search.css" rel="stylesheet">
+      <script src="DataTables-1.7.6/media/js/jquery.dataTables.min.js"></script>
+    <script src="add.js"></script>
       <h3> add songs to playlists</h3>
       <button title="Add selected songs to a playlist" type="submit" id="addbtn" value="add">Add Selected to Playlist</button>
-      <table>
-        <tr>
-          <th><input type="checkbox" /></th>
-          <th>Playlist Name</th>
-        </tr>
+      <table id="add_table">
+        <thead>
+            <tr>
+              <th><input id="select_all" type="checkbox" /></th>
+              <th>Playlist Name</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr>
+          	<td><input id="new" type="checkbox" /></td>
+            <td>New Playlist:<input id="newname" type="text" value="Playlist Title"/></td>
+          </tr>
+        </tbody>
       </table>
+      <br style="clear:both" />

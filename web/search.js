@@ -40,19 +40,18 @@ $("document").ready(function()
 						var id = data.results[i].playlist_id;
 						$("div#playlists_results tbody").append(
 							'<tr>'+
-							  '<td><a id="'+id+'">'+data.results[i].name+'</a></td>'+
+							  '<td><a class="playlist_link" id="'+id+'">'+data.results[i].name+'</a></td>'+
 							  '<td>'+data.results[i].username+'</td>'+
 							  '<td>'+data.results[i].songs.length+'</td>'+
 							'</tr>'
 						);
-						
-						$("a#"+id).click(function(event)
-						{
-							currentPlaylistID = $(this).attr('id');
-							loadPage("./playlist.html");
-							event.preventDefault();
-						});
 					}
+					$("a.playlist_link").click(function(event)
+					{
+						currentPlaylistID = $(this).attr('id');
+						loadPage("./playlist.html");
+						event.preventDefault();
+					});
 					$("#playlists_table").dataTable(
 						{"sPaginationType": "full_numbers"}
 					);
@@ -84,16 +83,22 @@ $("document").ready(function()
 						'</table>'+
 						'<br style="clear:both" />');
 					
-					var s = "";
-						for(var i = 0; i < data.results.length; i++) //Add Each Playlist
-						{
-							s = s +
-								'<tr>'+
-								  '<td>'+data.results[i].name+'</td>'+
-								  '<td>'+data.results[i].albums.length+'</td>'+
-								'</tr>';
-						}
-					$("div#artists_results tbody").append(s);
+					for(var i = 0; i < data.results.length; i++) //Add Each Playlist
+					{
+						var id = data.results[i].artist_id;
+						$("div#artists_results tbody").append(
+							'<tr>'+
+							  '<td><a class="artist_link" id="'+id+'">'+data.results[i].name+'</a></td>'+
+							  '<td>'+data.results[i].albums.length+'</td>'+
+							'</tr>'
+						);
+					}
+					$("a.artist_link").click(function(event)
+					{
+						currentArtistID = $(this).attr('id');
+						loadPage("./artist.html");
+						event.preventDefault();
+					});
 					$("#artists_table").dataTable(
 						{"sPaginationType": "full_numbers"}
 					);
@@ -105,9 +110,11 @@ $("document").ready(function()
 		{
 			$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs&search="+$("input#searchbox").val(), function(data)
 			{
+				console.log(0);
 				$("div#songs_results").append('<br /><h4>songs</h4>');
 				if(data.results.length < 1)
 				{
+					console.log('a');
 					$("div#songs_results").append('No songs to display!<br />');
 				}
 				else
@@ -132,20 +139,52 @@ $("document").ready(function()
 				
 					for(var i = 0; i < data.results.length; i++) //Add Each Playlist
 					{
+						var id = data.results[i].song_id;
 						$("div#songs_results tbody").append(
 							'<tr>'+
-							  '<td><input type="checkbox" value="'+i.song_id+'"></td>'+
+							  '<td><input type="checkbox" class="song" value="'+id+'"></td>'+
 							  '<td>'+data.results[i].name+'</td>'+
 							  '<td>'+data.results[i].album_name+'</td>'+
 							  '<td>'+data.results[i].track_number+'</td>'+
 							  '<td>'+data.results[i].artist_name+'</td>'+
 							'</tr>');
 					}
-					
 					$("#songs_table").dataTable(
 					{
 						"aoColumnDefs": [{ "bSortable": false, "aTargets": [ 0 ] }],
 						"sPaginationType":"full_numbers"
+					});
+					
+					$("input#select_all").click(function(event)
+					{
+						var c = this.checked;
+						$("input.song").each(function()
+						{
+							this.checked = c;
+						});
+					});
+					
+					$("button#addbtn").click(function(event)
+					{
+						if(login == true)
+						{
+							event.preventDefault();
+							var ss = $("input.song:checked");
+							var addSongs = [];
+							
+							for(var i = 0; i < ss.length; i++)
+							{
+								addSongs = addSongs.concat(ss[i].value);
+							}
+							
+							selectSongs = addSongs;
+							
+							loadPage("./add.html");
+						}
+						else
+						{
+							alert("Please log in first!");
+						}
 					});
 				}
 			});
@@ -175,15 +214,23 @@ $("document").ready(function()
 						'</table>'+
 						'<br style="clear:both" />');
 					
+					
 					for(var i = 0; i < data.results.length; i++) //Add Each album
 					{
+						var id = data.results[i].album_id;
 						$("div#albums_results tbody").append(
 							'<tr>'+
-							  '<td>'+data.results[i].name+'</td>'+
+							  '<td><a class="album_link" id="'+id+'">'+data.results[i].name+'</a></td>'+
 							  '<td>'+data.results[i].artist+'</td>'+
 							  '<td>'+data.results[i].songs.length+'</td>'+
 							'</tr>');
 					}
+					$("a.album_link").click(function(event)
+					{
+						currentAlbumID = $(this).attr('id');
+						loadPage("./album.html");
+						event.preventDefault();
+					});
 					
 					$("#albums_table").dataTable(
 						{"sPaginationType": "full_numbers"}
@@ -218,12 +265,21 @@ $("document").ready(function()
 					
 					for(var i = 0; i < data.results.length; i++) //Add Each members playlists results
 					{
+						var id = data.results[i].member_id;
 						$("div#members_results tbody").append(
 							'<tr>'+
-							  '<td>'+data.results[i].username+'</td>'+
+							  '<td><a class="member_link" id="'+id+'">'+data.results[i].username+'</a></td>'+
 							  '<td>'+data.results[i].playlists.length+'</td>'+
 							'</tr>');
+						
+						
 					}
+					$("a.member_link").click(function(event)
+					{
+						currentMemberID = $(this).attr('id');
+						loadPage("./member.html");
+						event.preventDefault();
+					});
 					
 					$("#members_table").dataTable(
 						{"sPaginationType": "full_numbers"}

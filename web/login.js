@@ -17,7 +17,10 @@ $("document").ready(function()
  		{
 			if(data.success)
 			{
-				$("li#first").html('Welcome, <a href="#" class="login">'+user+'</a>!');
+				login=true;
+				loginUser=data.username;
+				loginID=data.user_id;
+				$("li#first").html('<a class="login">'+data.username+'\'s profile</a> ');
 				$("a.login").click(function(event)
 				{
 					loadPage("./user.html");
@@ -28,6 +31,9 @@ $("document").ready(function()
 				{
 					$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout",function(data)
 					{
+						login=false;
+						loginUser="";
+						loginID=-1;
 						loadPage("./home.html");
 						$("li#first").html('<a href="#" class="login">login</a>');
 						$("a.login").click(function(event)
@@ -51,7 +57,7 @@ $("document").ready(function()
 			}
 			else
 			{
-				alert('Username and password do not match');
+				alert('Error: '+data.error);
 				return;
 			}
 		});

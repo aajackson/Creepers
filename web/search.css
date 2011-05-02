@@ -30,6 +30,7 @@ th.sorting_desc {
 }
 table td {
 	padding:3px;
+	text-align:left;
 }
 
 table .even {
@@ -78,3 +79,6 @@ table .odd {
 	margin-top:6px;
 }
 
+table#selected_playlist {
+	width:47%;
+}

@@ -81,6 +81,19 @@ div.footer {
 	background-image:url(./bot.png);
 	background-position:bottom;
 }
+a {
+	color:#039;
+	cursor:pointer;
+}
+
+a:link, a:visited, a:active, a:hover {
+	text-decoration: none;
+	color:#039;
+}
+a:hover {
+	text-decoration: underline;
+}
+
 div.copyright {
 	font-size:.7em;
 	color:#999;
@@ -88,6 +101,11 @@ div.copyright {
 	margin-top:5px;
 	margin-bottom:15px;
 }
+
+div.copyright a{
+	
+}
+
 .topnav li {
 	list-style-type: none;
 	display:inline;
@@ -148,16 +166,4 @@ div.searchbox #searchbtn:hover{
 	padding-left:10px;
 	padding-right:10px;
 	color:#A31;
-}
-a {
-	color:#039;
-	cursor:pointer;
-}
-
-a:link, a:visited, a:active, a:hover {
-	text-decoration: none;
-	color:#039;
-}
-a:hover {
-	text-decoration: underline;
 }

@@ -18,8 +18,7 @@ $("document").ready(function()
 						'<table id="artist_albums_table">'+
 						  '<thead>'+
 							'<tr>'+
-							  '<th>Name</th>'+
-							  '<th>Song Count</th>'+
+							  '<th>Album Name</th>'+
 							'</tr>'+
 						  '</thead>'+
 						  '<tbody>'+
@@ -33,7 +32,6 @@ $("document").ready(function()
 				$("div#artist_albums tbody").append(
 					'<tr>'+
 					  '<td><a class="album_link" id="'+id+'">'+albums[i].name+'</a></td>'+
-					  '<td>'+albums[i].songs.length+'</td>'+
 					'</tr>');
 				
 			}

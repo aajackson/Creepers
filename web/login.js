@@ -8,58 +8,61 @@ $("document").ready(function()
     });
 	$("button#loginbtn").click(function(event)
 	{
-		event.preventDefault();
-		var user = $("input#username").val();
-		var pass = $("input#password").val();
-		
-		var checkuser;
-		$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username="+user+"&password="+pass,function(data)
- 		{
-			if(data.success)
+		$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout",function(data)
+		{
+			event.preventDefault();
+			var user = $("input#username").val();
+			var pass = $("input#password").val();
+			
+			var checkuser;
+			$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username="+user+"&password="+pass,function(data)
 			{
-				login=true;
-				loginUser=data.username;
-				loginID=data.user_id;
-				$("li#first").html('<a class="login">'+data.username+'\'s profile</a> ');
-				$("a.login").click(function(event)
+				if(data.success)
 				{
-					loadPage("./user.html");
-					event.preventDefault();
-				});
-				$("li#second").html('<a href="#" class="logout">logout</a>');
-				$("a.logout").click(function(event)
-				{
-					$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout",function(data)
+					login=true;
+					loginUser=data.username;
+					loginID=data.user_id;
+					$("li#first").html('<a class="login">'+data.username+'\'s profile</a> ');
+					$("a.login").click(function(event)
 					{
-						login=false;
-						loginUser="";
-						loginID=-1;
-						loadPage("./home.html");
-						$("li#first").html('<a href="#" class="login">login</a>');
-						$("a.login").click(function(event)
-						{
-							loadPage("./login.html");
-							event.preventDefault();
-						});
-						
-						$("li#second").html('<a href="#" class="register">register</a>');
-						$("a.register").click(function(event)
-						{
-							loadPage("./register.html");
-							event.preventDefault();
-						});
-						
+						loadPage("./user.html");
+						event.preventDefault();
 					});
-				});
-				
-				loadPage("./user.html");
-				return;
-			}
-			else
-			{
-				alert('Error: '+data.error);
-				return;
-			}
+					$("li#second").html('<a href="#" class="logout">logout</a>');
+					$("a.logout").click(function(event)
+					{
+						$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout",function(data)
+						{
+							login=false;
+							loginUser="";
+							loginID=-1;
+							loadPage("./home.html");
+							$("li#first").html('<a href="#" class="login">login</a>');
+							$("a.login").click(function(event)
+							{
+								loadPage("./login.html");
+								event.preventDefault();
+							});
+							
+							$("li#second").html('<a href="#" class="register">register</a>');
+							$("a.register").click(function(event)
+							{
+								loadPage("./register.html");
+								event.preventDefault();
+							});
+							
+						});
+					});
+					
+					loadPage("./user.html");
+					return;
+				}
+				else
+				{
+					alert('Error: '+data.error);
+					return;
+				}
+			});
 		});
 	});
 });

@@ -72,9 +72,9 @@ public class myfavsCC
      */
     public void printData() throws Exception
     {
-            printResponse(response);
-            printCookie(httpclient);
-            System.out.println();
+        printResponse(response);
+        printCookie(httpclient);
+        System.out.println();
     }
     
     /**
@@ -237,16 +237,22 @@ public class myfavsCC
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
         st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
-        if (suceeded)st.nextToken();
-        int id = Integer.parseInt(st.nextToken());
-        Artist temp2 = new Artist(id,name);
-        return temp2;
+        if (suceeded)
+        {
+            st.nextToken();
+            int id = Integer.parseInt(st.nextToken());
+            return new Artist(id,name);
+        }
+        else
+        {
+            return null;
+        }
     }
     
     /**
      * creates a playlist with the given parameters
      **/
-    public boolean createPlaylist(String name, int[] song_id_array) throws Exception
+    public Playlist createPlaylist(String name, int[] song_id_array) throws Exception
     {
         String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&name=" + name + "&songs=[";
 
@@ -262,10 +268,20 @@ public class myfavsCC
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
-        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
-        return suceeded;
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());st.nextToken();
+        if (suceeded)
+        {
+            return getPlaylist(Integer.parseInt(st.nextToken()));
+        }
+        else
+        {
+            return null;
+        }
     }
     
+    /**
+     * returns an ArrayList<Artist> contianing all artists in the database
+     */
     public ArrayList<Artist> readArtists() throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists");
@@ -320,6 +336,9 @@ public class myfavsCC
         return myArtists;
     }
     
+    /**
+     * returns an artist indicated by artist id
+     */
     public Artist getArtist(int artist_id) throws Exception
     {
         ArrayList<Artist> myArtists = readArtists();
@@ -331,6 +350,9 @@ public class myfavsCC
         return null;
     }
     
+    /**
+     * returns a song indicated by song_id
+     */
     public Song getSong(int song_id) throws Exception
     {
         ArrayList<Song> mySongs = readSongs();
@@ -342,6 +364,9 @@ public class myfavsCC
         return null;
     }
     
+    /**
+     * returns a playlist selected by playlist_id
+     */
     public Playlist getPlaylist(int playlist_id) throws Exception
     {
         ArrayList<Playlist> myPlaylists = readPlaylists();
@@ -353,6 +378,9 @@ public class myfavsCC
         return null;
     }
 
+    /**
+     * returns an album selected by the album_id
+     */
     public Album getAlbum(int album_id) throws Exception
     {
         ArrayList<Album> myAlbums = readAlbums();
@@ -412,6 +440,9 @@ public class myfavsCC
         return myPlaylists;
     }
     
+    /**
+     * returns a list of all albums in the database
+     */
     public ArrayList<Album> readAlbums() throws Exception
     {
         HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums");

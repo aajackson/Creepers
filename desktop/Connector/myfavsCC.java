@@ -477,11 +477,10 @@ public class myfavsCC
                     int song_id = Integer.parseInt(st.nextToken());st.nextToken();
                     String song_name = st.nextToken();  st.nextToken(); 
                     int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String album_name = st.nextToken(); st.nextToken();
                     int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
                     String artist_name = st.nextToken(); st.nextToken();
                     int track_number = Integer.parseInt(st.nextToken());
-                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, getAlbum(album_id).name, artist_id, artist_name));
                     //System.out.println("adding song " + song_name); 
                 }
             }

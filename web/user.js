@@ -16,7 +16,7 @@ $("document").ready(function()
 			$("span#playlist_title").html($(this).attr('id'));
 			$("div.playlist_table").html("");
 			$("div.playlist_table").append(
-				'<table id="selected_playlist">'+
+				'<table id="selected_playlist" value='+playlistID+'>'+
 				'<thead>'+
 				  '<tr>'+
 					'<th><input id="select_all" type="checkbox" /></th>'+
@@ -100,7 +100,7 @@ $("document").ready(function()
 						removeSongs = removeSongs.concat(ss[i].value);
 					}
 					
-					$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=removesongs&songs=["+removeSongs+"]",function(data)
+					$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=removesongs&songs=["+removeSongs+"]&playlist_id="+$(" table#selected_playlist").attr("value"),function(data)
 					{
 						alert("Songs removed!");
 						loadPage("./home.html");
@@ -123,5 +123,8 @@ $("document").ready(function()
 		alert("Created a new playlist!");
 		loadPage("./search.html");
 	});
-									
+	$("button#new_song").click(function(event)
+	{
+		loadPage("./create.html");
+	});						
 });

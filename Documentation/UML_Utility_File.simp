@@ -16,6 +16,7 @@
     <type-sets>
       <type-set file="UmlTypes.xml" />
       <type-set file="UmlTypes.xml" />
+      <type-set file="UmlTypes.xml" />
     </type-sets>
     <custom-types />
   </types>
@@ -161,7 +162,7 @@
       <style class="default" />
       <container-ui-object type="window" />
     </item>
-    <item id="di416811148931000413" cid="COBJ001" type="container-ui-object" name="myFaves Desktop Client" style-class="" is-abstract="false">
+    <item id="di416811148931000413" cid="COBJ001" type="container-ui-object" name="My Faves - Google Chrome" style-class="" is-abstract="false">
       <stereotypes />
       <tagged-values />
       <documentation />
@@ -870,6 +871,297 @@
       <style class="default" />
       <sequence-action type="send" message="register as a new user" is-asynchronous="false" />
     </item>
+    <item id="di965190573863874006" cid="OBJ001" type="simple-ui-object" name="albums" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di975747150632322357" cid="OBJ002" type="simple-ui-object" name="artists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di702012286580220962" cid="OBJ009" type="simple-ui-object" name="Results go here" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="list-box" />
+    </item>
+    <item id="di583141259458133734" cid="OBJ009" type="simple-ui-object" name="Results go here" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="list-box" />
+    </item>
+    <item id="di476600843789508686" cid="OBJ009" type="simple-ui-object" name="Results go here" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="list-box" />
+    </item>
+    <item id="di806687436184648825" cid="OBJ009" type="simple-ui-object" name="Results go here" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="list-box" />
+    </item>
+    <item id="di565198596399867961" cid="OBJ003" type="simple-ui-object" name="playlists" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di282548406923610024" cid="OBJ004" type="simple-ui-object" name="songs" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di102157106674933916" cid="OBJ005" type="simple-ui-object" name="members" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
+    <item id="di269993777750242466" cid="OBJ006" type="simple-ui-object" name="►" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di388309287841123548" cid="OBJ006" type="simple-ui-object" name="◄" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di924111403214465694" cid="OBJ007" type="simple-ui-object" name="1" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="text-box" />
+    </item>
+    <item id="di829325304937327345" cid="CMT001" type="comment" name="Comment" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <comment />
+    </item>
+    <item id="di618251909773307820" cid="CN001" type="comment-connector" name="" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di163871567153544244" cid="OBJ006" type="simple-ui-object" name="►" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di715762051844488678" cid="OBJ006" type="simple-ui-object" name="◄" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di414221456499332889" cid="OBJ007" type="simple-ui-object" name="1" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="text-box" />
+    </item>
+    <item id="di535563020761414913" cid="ELEM041" type="group" name="Group" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di440466198303745130" cid="ELEM044" type="group" name="Group" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di460904760327485974" cid="OBJ007" type="simple-ui-object" name="1" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="text-box" />
+    </item>
+    <item id="di388322942629932682" cid="OBJ006" type="simple-ui-object" name="◄" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di672484193633163305" cid="OBJ006" type="simple-ui-object" name="►" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di829079759292521963" cid="OBJ006" type="simple-ui-object" name="◄" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di499346194333582598" cid="OBJ006" type="simple-ui-object" name="►" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di657635396254069555" cid="ELEM044" type="group" name="Group" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di108833168464428195" cid="OBJ007" type="simple-ui-object" name="1" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="text-box" />
+    </item>
+    <item id="di631622425409519767" cid="ELEM044" type="group" name="Group" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di894368343884617254" cid="OBJ006" type="simple-ui-object" name="►" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di431892692285857768" cid="OBJ006" type="simple-ui-object" name="◄" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="button" />
+    </item>
+    <item id="di986954101588754350" cid="OBJ007" type="simple-ui-object" name="1" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="text-box" />
+    </item>
+    <item id="di796555057159655511" cid="ELEM044" type="group" name="Group" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+    </item>
+    <item id="di180591187739445035" cid="OBJ008" type="simple-ui-object" name="UIObject11" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="scroll-bar" />
+    </item>
+    <item id="di891172550756659696" cid="OBJ009" type="simple-ui-object" name="help | albums | artists | playlists | songs | members | about      Copyright © 2011 The Creepers | All rights reserved" style-class="" is-abstract="false">
+      <stereotypes />
+      <tagged-values />
+      <documentation />
+      <associated-diagrams />
+      <owned-items />
+      <style class="default" />
+      <ui-object type="label" />
+    </item>
   </items>
   <models>
     <model id="p815914361976967978" name="Model 1" type="model" namespace="">
@@ -1016,14 +1308,14 @@
           <authors />
           <description />
           <creation-date>04/29/2011 22:46:44</creation-date>
-          <change-date>04/30/2011 22:07:50</change-date>
+          <change-date>05/02/2011 13:26:37</change-date>
           <revision-count>0</revision-count>
           <version />
         </meta>
         <documentation />
         <layer name="Default" visible="true" enabled="true" locked="false">
           <item id="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="container-ui-object">
-            <layout ax="40" ay="63" awidth="680" aheight="495" x="40" y="63" width="680" height="495" />
+            <layout ax="40" ay="63" awidth="680" aheight="822" x="40" y="63" width="680" height="822" />
           </item>
           <item id="di754560197810048182" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="group">
             <layout ax="123" ay="243" awidth="420" aheight="22" x="123" y="243" width="150" height="170" />
@@ -1046,10 +1338,10 @@
             </group-items>
           </item>
           <item id="di835186518631499958" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
-            <layout ax="118" ay="310" awidth="517" aheight="174" x="118" y="310" width="517" height="174" />
+            <layout ax="118" ay="310" awidth="517" aheight="73" x="118" y="310" width="517" height="73" />
           </item>
           <item id="di482018548762427840" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
-            <layout ax="537" ay="90" awidth="183" aheight="42" x="538" y="75" width="183" height="42" />
+            <layout ax="514" ay="89" awidth="183" aheight="42" x="514" y="89" width="183" height="42" />
           </item>
           <item id="di902812955482799152" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
             <layout ax="540" ay="209" awidth="100" aheight="30" x="541" y="193" width="0" height="0" />
@@ -1065,17 +1357,108 @@
           <item id="di424724979920097548" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
             <layout ax="97" ay="133" awidth="150" aheight="20" x="98" y="117" width="0" height="0" />
           </item>
-          <item id="di988470816988947670" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
-            <layout ax="118" ay="279" awidth="176" aheight="20" x="118" y="279" width="176" height="20" />
+          <item id="di965190573863874006" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="119" ay="291" awidth="150" aheight="20" x="119" y="291" width="0" height="0" />
           </item>
-          <item id="di976498755671644456" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
-            <layout ax="116" ay="492" awidth="176" aheight="20" x="116" y="492" width="176" height="20" />
+          <item id="di975747150632322357" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="119" ay="389" awidth="150" aheight="20" x="119" y="389" width="0" height="0" />
           </item>
-          <item id="di566062210749142749" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
-            <layout ax="615" ay="310" awidth="20" aheight="174" x="615" y="310" width="0" height="174" />
+          <item id="di702012286580220962" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="119" ay="413" awidth="517" aheight="73" x="119" y="413" width="517" height="73" />
           </item>
-          <item id="di866762546875061849" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
-            <layout ax="503" ay="362" awidth="105" aheight="63" x="503" y="362" width="105" height="63" />
+          <item id="di583141259458133734" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="120" ay="522" awidth="517" aheight="73" x="120" y="522" width="517" height="73" />
+          </item>
+          <item id="di476600843789508686" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="120" ay="631" awidth="517" aheight="73" x="120" y="631" width="517" height="73" />
+          </item>
+          <item id="di806687436184648825" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="121" ay="738" awidth="517" aheight="73" x="121" y="738" width="517" height="73" />
+          </item>
+          <item id="di565198596399867961" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="121" ay="493" awidth="150" aheight="20" x="121" y="493" width="0" height="0" />
+          </item>
+          <item id="di282548406923610024" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="121" ay="605" awidth="150" aheight="20" x="121" y="605" width="0" height="0" />
+          </item>
+          <item id="di102157106674933916" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="118" ay="716" awidth="150" aheight="20" x="118" y="716" width="0" height="0" />
+          </item>
+          <item id="di535563020761414913" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="group">
+            <layout ax="565" ay="385" awidth="65" aheight="20" x="565" y="385" width="150" height="170" />
+            <group-items>
+              <item id="di163871567153544244" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="610" ay="385" awidth="20" aheight="19.04762" x="590" y="365.9524" width="20" height="19.04762" />
+              </item>
+              <item id="di715762051844488678" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="565" ay="385" awidth="20" aheight="19.04762" x="545" y="365.9524" width="20" height="19.04762" />
+              </item>
+              <item id="di414221456499332889" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="587" ay="385.9524" awidth="21" aheight="19.04762" x="567" y="366.9048" width="21" height="0" />
+              </item>
+            </group-items>
+          </item>
+          <item id="di440466198303745130" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="group">
+            <layout ax="571" ay="489" awidth="65" aheight="21" x="571" y="489" width="150" height="170" />
+            <group-items>
+              <item id="di269993777750242466" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="616" ay="489" awidth="20" aheight="20" x="616" y="489" width="20" height="20" />
+              </item>
+              <item id="di388309287841123548" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="571" ay="489" awidth="20" aheight="20" x="571" y="489" width="20" height="20" />
+              </item>
+              <item id="di924111403214465694" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="593" ay="490" awidth="21" aheight="20" x="593" y="490" width="21" height="0" />
+              </item>
+            </group-items>
+          </item>
+          <item id="di657635396254069555" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="group">
+            <layout ax="567" ay="603" awidth="65" aheight="21" x="567" y="603" width="150" height="170" />
+            <group-items>
+              <item id="di672484193633163305" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="612" ay="603" awidth="20" aheight="20" x="612" y="603" width="20" height="20" />
+              </item>
+              <item id="di388322942629932682" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="567" ay="603" awidth="20" aheight="20" x="567" y="603" width="20" height="20" />
+              </item>
+              <item id="di460904760327485974" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="589" ay="604" awidth="21" aheight="20" x="589" y="604" width="21" height="0" />
+              </item>
+            </group-items>
+          </item>
+          <item id="di631622425409519767" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="group">
+            <layout ax="569" ay="709" awidth="65" aheight="21" x="569" y="709" width="150" height="170" />
+            <group-items>
+              <item id="di499346194333582598" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="614" ay="709" awidth="20" aheight="20" x="614" y="709" width="20" height="20" />
+              </item>
+              <item id="di829079759292521963" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="569" ay="709" awidth="20" aheight="20" x="569" y="709" width="20" height="20" />
+              </item>
+              <item id="di108833168464428195" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="591" ay="710" awidth="21" aheight="20" x="591" y="710" width="21" height="0" />
+              </item>
+            </group-items>
+          </item>
+          <item id="di796555057159655511" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="group">
+            <layout ax="569" ay="817" awidth="65" aheight="21" x="569" y="817" width="150" height="170" />
+            <group-items>
+              <item id="di894368343884617254" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="614" ay="817" awidth="20" aheight="20" x="614" y="817" width="20" height="20" />
+              </item>
+              <item id="di431892692285857768" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="569" ay="817" awidth="20" aheight="20" x="569" y="817" width="20" height="20" />
+              </item>
+              <item id="di986954101588754350" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+                <layout ax="591" ay="818" awidth="21" aheight="20" x="591" y="818" width="21" height="0" />
+              </item>
+            </group-items>
+          </item>
+          <item id="di180591187739445035" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="699" ay="88" awidth="20" aheight="797" x="699" y="88" width="0" height="797" />
+          </item>
+          <item id="di891172550756659696" container="di416811148931000413" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="simple-ui-object">
+            <layout ax="211" ay="841" awidth="357" aheight="40" x="211" y="841" width="357" height="40" />
           </item>
         </layer>
       </diagram>
@@ -1183,7 +1566,7 @@
             <layout ax="563" ay="50" awidth="150" aheight="276" x="563" y="71" width="150" height="276" />
           </item>
           <item id="di960550334907777992" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="sequence-action">
-            <layout x1="628" y1="156" x2="458" y2="156" ax="458" ay="141" awidth="170" aheight="20" x="0" y="0" width="0" height="0" />
+            <layout x1="628" y1="156" x2="458" y2="156" ax="458" ay="141" awidth="170" aheight="20" x="458" y="141" width="170" height="20" />
             <sequence-action from="di224329498261948700" to="di174252820246315086" />
           </item>
           <item id="di224329498261948700" container="di570273995549809347" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
@@ -1193,32 +1576,32 @@
             <layout ax="438" ay="156" awidth="20" aheight="55" x="438" y="156" width="20" height="40" />
           </item>
           <item id="di125261874543767132" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="sequence-action">
-            <layout x1="448" y1="156" x2="268" y2="156" ax="268" ay="141" awidth="180" aheight="20" x="269" y="141" width="0" height="0" />
-            <sequence-action from="di405715298544527114" to="di500221207523381310" />
+            <layout x1="448" y1="156" x2="268" y2="156" ax="268" ay="141" awidth="180" aheight="20" x="268" y="141" width="180" height="20" />
+            <sequence-action to="di500221207523381310" />
           </item>
           <item id="di500221207523381310" container="di323397122880130267" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
             <layout ax="248" ay="156" awidth="20" aheight="55" x="248" y="156" width="20" height="40" />
           </item>
           <item id="di714112443340795073" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="sequence-action">
-            <layout x1="268" y1="211" x2="438" y2="211" ax="268" ay="196" awidth="170" aheight="20" x="0" y="0" width="0" height="0" />
+            <layout x1="268" y1="211" x2="438" y2="211" ax="268" ay="196" awidth="170" aheight="20" x="268" y="196" width="170" height="20" />
             <sequence-action from="di500221207523381310" to="di174252820246315086" />
           </item>
           <item id="di248297892178387594" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="sequence-action">
-            <layout x1="458" y1="210" x2="628" y2="210" ax="458" ay="195" awidth="170" aheight="20" x="0" y="0" width="0" height="0" />
-            <sequence-action from="di174252820246315086" to="di289459243769864666" />
+            <layout x1="458" y1="210" x2="628" y2="210" ax="458" ay="195" awidth="170" aheight="20" x="458" y="195" width="170" height="20" />
+            <sequence-action from="di174252820246315086" />
           </item>
           <item id="di490092930525142594" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="lifeline">
             <layout ax="808" ay="50" awidth="50" aheight="302" x="808" y="13" width="50" height="302" />
           </item>
           <item id="di873422165595989976" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="sequence-action">
-            <layout x1="648" y1="208" x2="823" y2="208" ax="648" ay="193" awidth="175" aheight="20" x="0" y="0" width="0" height="0" />
+            <layout x1="648" y1="208" x2="823" y2="208" ax="648" ay="193" awidth="175" aheight="20" x="648" y="193" width="175" height="20" />
             <sequence-action from="di224329498261948700" to="di497005679725822630" />
           </item>
           <item id="di497005679725822630" container="di490092930525142594" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
             <layout ax="823" ay="155" awidth="20" aheight="58" x="823" y="155" width="20" height="58" />
           </item>
           <item id="di917219266665661163" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="sequence-action">
-            <layout x1="823" y1="157" x2="648" y2="157" ax="648" ay="142" awidth="175" aheight="20" x="643" y="142" width="0" height="0" />
+            <layout x1="823" y1="157" x2="648" y2="157" ax="648" ay="142" awidth="175" aheight="20" x="648" y="142" width="175" height="20" />
             <sequence-action from="di497005679725822630" to="di224329498261948700" />
           </item>
           <item id="di674731400228420695" container="di490092930525142594" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="entity">
@@ -1228,7 +1611,7 @@
             <layout ax="628" ay="257" awidth="20" aheight="42" x="628" y="257" width="20" height="42" />
           </item>
           <item id="di288288552871684513" show-cid="false" show-parent-name="false" show-stereotypes="true" show-tagged-values="false" type="sequence-action">
-            <layout x1="823" y1="260" x2="648" y2="260" ax="648" ay="245" awidth="175" aheight="20" x="0" y="0" width="0" height="0" />
+            <layout x1="823" y1="260" x2="648" y2="260" ax="648" ay="245" awidth="175" aheight="20" x="648" y="245" width="175" height="20" />
             <sequence-action from="di674731400228420695" to="di247239210590160130" />
           </item>
         </layer>

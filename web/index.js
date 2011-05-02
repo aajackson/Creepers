@@ -41,13 +41,37 @@ $(document).ready(function()
 		loadPage("./home.html");
 		event.preventDefault();
 	});
-			
-			/*
-			var url = 'http://khadajmcs.dyndns-free.com/creepers/Servlet', d;
-var s = $.getJSON(url, 'method=create&type=member', function(data) {d = data;});
-
-			
-			*/
+	$("a#albums").click(function(event)
+	{
+		$("input.search_param").each(function(){this.checked = false});
+		$("input#search_albums").attr("checked",true);
+		loadPage("./search.html");
+	});
+	$("a#artists").click(function(event)
+	{
+		$("input.search_param").each(function(){this.checked = false});
+		$("input#search_artists").attr("checked",true);
+		loadPage("./search.html");
+	});
+	$("a#playlists").click(function(event)
+	{
+		$("input.search_param").each(function(){this.checked = false});
+		$("input#search_playlists").attr("checked",true);
+		loadPage("./search.html");
+	});
+	$("a#songs").click(function(event)
+	{
+		$("input.search_param").each(function(){this.checked = false});
+		$("input#search_songs").attr("checked",true);
+		loadPage("./search.html");
+	});
+	$("a#members").click(function(event)
+	{
+		$("input.search_param").each(function(){this.checked = false});
+		$("input#search_members").attr("checked",true);
+		loadPage("./search.html");
+	});
+								   
 });
 
 

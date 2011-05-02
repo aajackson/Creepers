@@ -1,0 +1,8 @@
+form.addSong {
+	text-align:center;
+	padding:3px;
+}
+
+form.addSong input {
+	margin:3px;
+}

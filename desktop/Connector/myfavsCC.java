@@ -36,12 +36,13 @@ public class myfavsCC
     public static void main(String[] args) throws Exception
     {
         myfavsCC temp = new myfavsCC();
+		System.out.println(temp.createSong("happy go lucky",6,5,4));
     }
     
     public myfavsCC() throws Exception
     {
         httpclient = new DefaultHttpClient();
-        httpget = new HttpGet("http://khadajmcs.dyndns-free.com/creepers/Servlet");
+        httpget = new HttpGet(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet"));
         response = httpclient.execute(httpget);
         response.getEntity().getContent().close();
         loggedIn = false;
@@ -146,12 +147,17 @@ public class myfavsCC
         }
     }
     
+	public String webFriendly(String in)
+	{
+		return in.replace( " " , "%20" );
+	}
+
     /**
      * creates a new member with the given parameters
      **/
     public boolean createUser(String username, String password) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=member&username=" + username + "&password=" + password);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=member&username=" + username + "&password=" + password));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -164,7 +170,7 @@ public class myfavsCC
      **/
     public Song createSong(String name, int album_id, int artist_id, int track_number) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number));
         response = httpclient.execute(httpost);  
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -188,7 +194,7 @@ public class myfavsCC
      **/
     public Album createAlbum(String name, int artist_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id));
         response = httpclient.execute(httpost);  
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -212,7 +218,7 @@ public class myfavsCC
      **/
     public Artist createArtist(String name) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=artist&name=" + name);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=artist&name=" + name));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -244,7 +250,7 @@ public class myfavsCC
         }
         temp += "]";
         System.out.println(temp);
-        HttpPost httpost = new HttpPost(temp);
+        HttpPost httpost = new HttpPost(webFriendly(temp));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
@@ -264,7 +270,7 @@ public class myfavsCC
      **/
     public boolean renamePlaylist(String new_name, int playlist_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&action=rename&type=playlist&name=" + new_name + "&playlist_id=" + playlist_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&action=rename&type=playlist&name=" + new_name + "&playlist_id=" + playlist_id));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -285,7 +291,7 @@ public class myfavsCC
                 temp += ",";
         }
         temp += "]";
-        HttpPost httpost = new HttpPost(temp);
+        HttpPost httpost = new HttpPost(webFriendly(temp));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
@@ -306,7 +312,7 @@ public class myfavsCC
                 temp += ",";
         }
         temp += "]";
-        HttpPost httpost = new HttpPost(temp);
+        HttpPost httpost = new HttpPost(webFriendly(temp));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
@@ -319,7 +325,7 @@ public class myfavsCC
      **/
     public boolean login(String username, String password) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username=" + username + "&password=" + password);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username=" + username + "&password=" + password));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -332,7 +338,7 @@ public class myfavsCC
      **/
     public boolean logout() throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout");
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout"));
         response = httpclient.execute(httpost);   
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -345,7 +351,7 @@ public class myfavsCC
      **/
     public boolean deletePlaylist(int playlist_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=delete&type=playlist&playlist_id=" + playlist_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=delete&type=playlist&playlist_id=" + playlist_id));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
@@ -355,7 +361,7 @@ public class myfavsCC
     
     public ArrayList<Member> getMember() throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members");
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members"));
         response = httpclient.execute(httpost);
         ArrayList<Member> myMembers = new ArrayList<Member>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -409,7 +415,7 @@ public class myfavsCC
     
     public ArrayList<Member> getMember(String user_name)throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&search=" + user_name);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&search=" + user_name));
         response = httpclient.execute(httpost);
         ArrayList<Member> myMembers = new ArrayList<Member>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -463,7 +469,7 @@ public class myfavsCC
     
     public Member getMember(int user_id)throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&id=" + user_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&id=" + user_id));
         response = httpclient.execute(httpost);
         ArrayList<Member> myMembers = new ArrayList<Member>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -520,7 +526,7 @@ public class myfavsCC
     
     public ArrayList<Artist> getArtist() throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists");
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists"));
         response = httpclient.execute(httpost);
         ArrayList<Artist> myArtists= new ArrayList<Artist>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -574,7 +580,7 @@ public class myfavsCC
     
     public ArrayList<Artist> getArtist(String art_name) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&search=" + art_name);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&search=" + art_name));
         response = httpclient.execute(httpost);
         ArrayList<Artist> myArtists= new ArrayList<Artist>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -628,7 +634,7 @@ public class myfavsCC
     
     public Artist getArtist(int art_id) throws Exception    
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&id=" + art_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&id=" + art_id));
         response = httpclient.execute(httpost);
         Artist myArtists = new Artist(0,"");
         String temp = responseToString(response); String tempstr,laststr;
@@ -682,7 +688,7 @@ public class myfavsCC
     
     public ArrayList<Song> getSong() throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs");
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs"));
         response = httpclient.execute(httpost);
         ArrayList<Song> mySongs= new ArrayList<Song>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -714,7 +720,7 @@ public class myfavsCC
     
     public ArrayList<Song> getSong(String s_name) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs&search="+ s_name);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs&search="+ s_name));
         response = httpclient.execute(httpost);
         ArrayList<Song> mySongs= new ArrayList<Song>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -757,7 +763,7 @@ public class myfavsCC
     
     public ArrayList<Playlist> getPlaylist() throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists");
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists"));
         response = httpclient.execute(httpost);
         ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -805,7 +811,7 @@ public class myfavsCC
     
     public ArrayList<Playlist> getPlaylist(String playlist_n) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&search=" + playlist_n);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&search=" + playlist_n));
         response = httpclient.execute(httpost);
         ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -853,7 +859,7 @@ public class myfavsCC
     
     public Playlist getPlaylist(int pl_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&id=" + pl_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&id=" + pl_id));
         response = httpclient.execute(httpost);
         ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -934,7 +940,7 @@ public class myfavsCC
     
     public ArrayList<Album> getAlbum() throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums");
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums"));
         response = httpclient.execute(httpost);
         ArrayList<Album> myAlbums= new ArrayList<Album>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -980,7 +986,7 @@ public class myfavsCC
     
     public ArrayList<Album> getAlbum(String album_n) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&search=" + album_n);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&search=" + album_n));
         response = httpclient.execute(httpost);
         ArrayList<Album> myAlbums= new ArrayList<Album>();
         String temp = responseToString(response); String tempstr,laststr;
@@ -1026,7 +1032,7 @@ public class myfavsCC
     
     public Album getAlbum(int alb_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&id=" + alb_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&id=" + alb_id));
         response = httpclient.execute(httpost);
         ArrayList<Album> myAlbums= new ArrayList<Album>();
         String temp = responseToString(response); String tempstr,laststr;

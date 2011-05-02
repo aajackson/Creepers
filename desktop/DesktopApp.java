@@ -5,9 +5,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
@@ -28,6 +31,8 @@ public class DesktopApp extends JFrame implements ActionListener{
 	JButton help = new JButton("help");
 	JButton addsongbottom = new JButton("Add Selected to Playlist");
     JButton addsongtop = new JButton("Add Selected to Playlist");
+    JButton removesongs = new JButton("Click to delete selected.");
+    JButton addmoresongs = new JButton("Click to add songs to playlist.");
 	JTextField searchField = new JTextField("Search for playlists, songs, and more!");
 	JLabel user = new JLabel("Username:");
 	JTextField username = new JTextField(25);
@@ -49,8 +54,10 @@ public class DesktopApp extends JFrame implements ActionListener{
 	ArrayList<Artist> artistlist = new ArrayList<Artist>();
 	ArrayList<Album> albumlist = new ArrayList<Album>();
 	ArrayList<Playlist> playlistlist = new ArrayList<Playlist>();
+	ArrayList<Member> memberlist = new ArrayList<Member>();
 	myfavsCC myfavs;
 	ArrayList<JCheckBox> booleanValues = new ArrayList<JCheckBox>();
+	ArrayList<JRadioButton> playlistValues = new ArrayList<JRadioButton>();
 	JButton addSong = new JButton("Add new song!");
 	JLabel createSong = new JLabel("Enter new Song");
 	JTextField inputText = new JTextField(25);
@@ -68,14 +75,31 @@ public class DesktopApp extends JFrame implements ActionListener{
 	String songName;
 	int album_id;
 	int trackNum;
-	ButtonGroup group = new ButtonGroup();
+	int playlist_id;
+	ButtonGroup group = new ButtonGroup();//search preferences
+	ButtonGroup group1 = new ButtonGroup();//user's playlists
+	JPanel displayPlaylists = new JPanel();
+	Image img;
+	Member currentMember, viewMember;
+	JLabel display = new JLabel();
+	JButton displayPlaylist = new JButton("View Playlist");
+	JPanel mainDisplay = new JPanel();
+	ArrayList<JRadioButton> uniqueUsers = new ArrayList<JRadioButton>();
+	JButton selectPlaylist = new JButton("Select");
+	JButton selectMember = new JButton("Select");
+	ButtonGroup group2 = new ButtonGroup();//searching playlists and members
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		DesktopApp desktop = new DesktopApp();
+		try {
+			DesktopApp desktop = new DesktopApp();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public DesktopApp()
+	public DesktopApp() throws IOException
     {	
 		super("myfaves");
 		setSize(1000,700);
@@ -83,6 +107,22 @@ public class DesktopApp extends JFrame implements ActionListener{
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
+		
+		displayPlaylists.setBounds(30,150,100,250);
+		displayPlaylists.setVisible(true);
+		displayPlaylists.add(display);
+		
+		mainDisplay.setBounds(200,220,600,300);
+		mainDisplay.setVisible(true);
+		mainDisplay.add(displayPlaylist);
+		mainDisplay.setPreferredSize(new Dimension(600,300));
+		mainDisplay.setBorder(BorderFactory.createLineBorder(Color.black));
+		mainDisplay.setLayout(new FlowLayout());
+		
+		selectPlaylist.setBounds(350,530,80,20);
+		selectMember.setBounds(350,530,80,20);
+		selectPlaylist.addActionListener(this);
+		selectMember.addActionListener(this);
 		
 		try
 		{
@@ -224,6 +264,12 @@ public class DesktopApp extends JFrame implements ActionListener{
         addsongtop.setBounds(200,190,220,20);
         addsongtop.addActionListener(this);
         
+        removesongs.setBounds(200,530,220,20);
+        removesongs.addActionListener(this);
+        
+        addmoresongs.setBounds(200,190,220,20);
+        addmoresongs.addActionListener(this);
+        
         addSong.setBounds(390,600,220,30);
         addSong.addActionListener(this);
         
@@ -253,7 +299,16 @@ public class DesktopApp extends JFrame implements ActionListener{
         group.add(members);
         group.add(playlists);
         group.add(albums);
+        
+        displayPlaylist.addActionListener(this);
     	
+        table.getColumnModel().getColumn(0).setPreferredWidth(10);
+	    table.getColumnModel().getColumn(1).setPreferredWidth(30);
+	    table.getColumnModel().getColumn(2).setPreferredWidth(1000);
+	    table.getColumnModel().getColumn(3).setPreferredWidth(1000);
+	    table.getColumnModel().getColumn(4).setPreferredWidth(1000);
+	    table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+        
 	    repaint();
     }
 
@@ -270,7 +325,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(password);
 			getContentPane().add(loginsubmit);
 		}
-		if(button == register)
+		else if(button == register)
 		{
 			getContentPane().add(user);
 			getContentPane().add(username);
@@ -280,14 +335,9 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(confirmPassword);
 			getContentPane().add(registersubmit);
 		}
-		if(button == search)
+		else if(button == search)
 		{
-			table.getColumnModel().getColumn(0).setPreferredWidth(10);
-		    table.getColumnModel().getColumn(1).setPreferredWidth(30);
-		    table.getColumnModel().getColumn(2).setPreferredWidth(1000);
-		    table.getColumnModel().getColumn(3).setPreferredWidth(1000);
-		    table.getColumnModel().getColumn(4).setPreferredWidth(1000);
-		    table.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+			booleanValues.clear();
 			getContentPane().add(scrollPane);
 			getContentPane().add(addsongtop);
 			getContentPane().add(addsongbottom);
@@ -298,10 +348,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			((MyTableModel)table.getModel()).removeAllRows();
 			String query = searchField.getText();
 			try {
-				songlist.addAll(myfavs.readSongs());
-				albumlist.addAll(myfavs.readAlbums());
-				artistlist.addAll(myfavs.readArtists());
-				//playlistlist.addAll(myfavs.readPlaylists());
+				songlist.addAll(myfavs.getSong());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -309,14 +356,63 @@ public class DesktopApp extends JFrame implements ActionListener{
 			if(members.isSelected())
 			{
 				getContentPane().remove(scrollPane);
-				//JTable memberTable = new JTable(myfavs.readMembers());
-				//memberTable.add(comp)
+				getContentPane().remove(addsongbottom);
+				getContentPane().remove(addsongtop);
+				try {
+					memberlist = myfavs.getMember(searchField.getText());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mainDisplay.removeAll();
+				getContentPane().add(mainDisplay);
+				getContentPane().add(selectMember);
+				for(int i = 0;i<uniqueUsers.size();i++)
+					group2.remove(uniqueUsers.get(i));
+				while(!uniqueUsers.isEmpty())
+					uniqueUsers.remove(0);
+				for(int i = 0;i<memberlist.size();i++)
+				{
+					try {
+						uniqueUsers.add(new JRadioButton(memberlist.get(i).username));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mainDisplay.add(uniqueUsers.get(i));
+					group2.add(uniqueUsers.get(i));
+				}
+				if(uniqueUsers.get(0)!=null)
+					uniqueUsers.get(0).setSelected(true);
 			}
 			else if(playlists.isSelected())
 			{
 				getContentPane().remove(scrollPane);
+				getContentPane().remove(addsongbottom);
+				getContentPane().remove(addsongtop);
+				try {
+					playlistlist = myfavs.getPlaylist(searchField.getText());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mainDisplay.removeAll();
+				getContentPane().add(mainDisplay);
+				getContentPane().add(selectPlaylist);
+				for(int i = 0;i<uniqueUsers.size();i++)
+					group2.remove(uniqueUsers.get(i));
+				while(!uniqueUsers.isEmpty())
+					uniqueUsers.remove(0);
+				for(int i = 0;i<playlistlist.size();i++)
+				{
+					uniqueUsers.add(new JRadioButton(playlistlist.get(i).name));
+					mainDisplay.add(uniqueUsers.get(i));
+					group2.add(uniqueUsers.get(i));
+				}
+				if(uniqueUsers.get(0)!=null)
+					uniqueUsers.get(0).setSelected(true);
 			}
-			if(artists.isSelected())
+			else if(artists.isSelected())
 			{
 				for(int i = 0; i < songlist.size(); i++)
 				{
@@ -327,18 +423,16 @@ public class DesktopApp extends JFrame implements ActionListener{
 					}
 				}
 			}
-			if(songs.isSelected())
+			else if(songs.isSelected())
 			{
-				for(int i = 0; i < songlist.size(); i++)
-				{
-					if(!query.equalsIgnoreCase(songlist.get(i).name))
-					{
-						songlist.remove(i);
-						i--;
-					}
+				try {
+					songlist = myfavs.getSong(searchField.getText());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-			if(albums.isSelected())
+			else if(albums.isSelected())
 			{
 				for(int i = 0; i < songlist.size(); i++)
 				{
@@ -354,18 +448,37 @@ public class DesktopApp extends JFrame implements ActionListener{
 				booleanValues.add(new JCheckBox());
 			}
 		}
-		if(button == loginsubmit)
+		else if(button == loginsubmit)
 		{
 			//put code here to login to server
 			try {
 				if(myfavs.login(username.getText(), password.getText()))
 				{
+					for(int i = 0;i<playlistValues.size();i++)
+						group1.remove(playlistValues.get(i));
+					while(!playlistValues.isEmpty())
+						playlistValues.remove(0);
 					getContentPane().remove(login);
 					getContentPane().remove(register);
 					getContentPane().add(displayUser);
 					displayUser.setText(username.getText());
 					getContentPane().add(logout);
 					getContentPane().add(addSong);
+					getContentPane().add(displayPlaylists);
+					//add in player's playlists
+					memberlist = myfavs.getMember(username.getText());
+					currentMember = memberlist.get(0);
+					playlistlist = currentMember.playlists;
+					for(int i = 0; i < playlistlist.size(); i++)
+					{
+						playlistValues.add(new JRadioButton(playlistlist.get(i).name));
+						displayPlaylists.add(playlistValues.get(i));
+						group1.add(playlistValues.get(i));
+					}
+					if(playlistValues.get(0)!=null)
+						playlistValues.get(0).setSelected(true);
+					displayPlaylists.add(displayPlaylist);
+					display.setText(currentMember.username+"'s Playlists");
 				}
 				else
 				{
@@ -383,7 +496,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			}
 			
 		}
-		if(button == registersubmit)
+		else if(button == registersubmit)
 		{
 			//put code here to register to server
 			if(password.getText().equals(confirmPassword.getText()))
@@ -391,6 +504,10 @@ public class DesktopApp extends JFrame implements ActionListener{
 				try {
 					if(myfavs.createUser(username.getText(), password.getText()))
 					{
+						for(int i = 0;i<playlistValues.size();i++)
+							group1.remove(playlistValues.get(i));
+						while(!playlistValues.isEmpty())
+							playlistValues.remove(0);
 						JOptionPane.showMessageDialog(null,"Welcome "+username.getText()+", you will shortly be redirected to the home page.");
 						getContentPane().remove(login);
 						getContentPane().remove(register);
@@ -398,6 +515,21 @@ public class DesktopApp extends JFrame implements ActionListener{
 						displayUser.setText(username.getText());
 						getContentPane().add(logout);
 						getContentPane().add(addSong);
+						getContentPane().add(displayPlaylists);
+						//add in player's playlists
+						memberlist = myfavs.getMember(username.getText());
+						currentMember = memberlist.get(0);
+						playlistlist = currentMember.playlists;
+						for(int i = 0; i < playlistlist.size(); i++)
+						{
+							playlistValues.add(new JRadioButton(playlistlist.get(i).name));
+							displayPlaylists.add(playlistValues.get(i));
+							group1.add(playlistValues.get(i));
+						}
+						if(playlistValues.get(0)!=null)
+							playlistValues.get(0).setSelected(true);
+						displayPlaylists.add(displayPlaylist);
+						display.setText(currentMember.username+"'s Playlists");
 					}
 					else
 					{
@@ -429,7 +561,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 				confirmPassword.setText("");
 			}
 		}
-		if(button == addsongtop || button == addsongbottom)
+		else if(button == addsongtop || button == addsongbottom)
 		{
 			ArrayList<Integer> temp = new ArrayList<Integer>();
 			for(int i = 0;i<songlist.size();i++)
@@ -450,27 +582,30 @@ public class DesktopApp extends JFrame implements ActionListener{
 				e.printStackTrace();
 			}
 		}
-		if(button == logout)
+		else if(button == logout)
 		{
 			try {
 				myfavs.logout();
+				Component[] mycomponents = displayPlaylists.getComponents();
+				displayPlaylists.removeAll();
 				getContentPane().add(login);
 				getContentPane().add(register);
 				getContentPane().remove(displayUser);
 				getContentPane().remove(logout);
 				getContentPane().remove(addSong);
+				getContentPane().remove(displayPlaylists);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		if(button == addSong)
+		else if(button == addSong)
 		{
 			pickfrom.setText("Pick from albums:");
 			songlist.clear();
 			list.removeAllItems();
 			try {
-				songlist.addAll(myfavs.readSongs());
+				songlist.addAll(myfavs.getSong());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -486,7 +621,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(inputText);
 			getContentPane().add(nextButton);
 		}
-		if(button == nextButton)
+		else if(button == nextButton)
 		{
 			if(!inputText.getText().equals(""))
 			{
@@ -508,7 +643,6 @@ public class DesktopApp extends JFrame implements ActionListener{
 			{
 				list.addItem(songlist.get(i).artist_name);
 			}
-			
 			getContentPane().add(pickfrom);
 			getContentPane().add(list);
 			getContentPane().add(or);
@@ -516,7 +650,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(inputText);
 			getContentPane().add(nextButton2);
 		}
-		if(button == nextButton2)
+		else if(button == nextButton2)
 		{
 			if(!inputText.getText().equals(""))
 			{
@@ -538,7 +672,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(inputText);
 			getContentPane().add(finalizeButton);
 		}
-		if(button == finalizeButton)
+		else if(button == finalizeButton)
 		{
 			try {
 				songlist.add(myfavs.createSong(songInputText.getText(), album_id, artist_id, Integer.parseInt(inputText.getText())));
@@ -550,6 +684,137 @@ public class DesktopApp extends JFrame implements ActionListener{
 				e.printStackTrace();
 			}
 		}
+		else if(button == displayPlaylist)
+		{
+			songlist.clear();
+			booleanValues.clear();
+			for(int i = 0;i<playlistValues.size();i++)
+			{
+				if(playlistValues.get(i).isSelected())
+				{
+					try {
+						songlist.addAll(myfavs.getPlaylist(currentMember.playlists.get(i).playlist_id).songs);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					playlist_id = currentMember.playlists.get(i).playlist_id;
+				}
+			}
+			for(int i = 0;i<songlist.size();i++)
+			{
+				booleanValues.add(new JCheckBox());
+			}
+			getContentPane().add(scrollPane);
+			getContentPane().add(addmoresongs);
+			getContentPane().add(removesongs);
+		}
+		else if(button == selectMember)
+		{
+			getContentPane().remove(scrollPane);
+			getContentPane().remove(addsongbottom);
+			getContentPane().remove(addsongtop);
+			mainDisplay.removeAll();
+			for(int i = 0; i<uniqueUsers.size();i++)
+			{
+				if(uniqueUsers.get(i).isSelected())
+				{
+					try {
+						memberlist = myfavs.getMember(uniqueUsers.get(i).getText());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			viewMember = memberlist.get(0);
+			for(int i = 0;i<uniqueUsers.size();i++)
+				group2.remove(uniqueUsers.get(i));
+			while(!uniqueUsers.isEmpty())
+				uniqueUsers.remove(0);
+			playlistlist = viewMember.playlists;
+			for(int i = 0; i < playlistlist.size(); i++)
+			{
+				uniqueUsers.add(new JRadioButton(playlistlist.get(i).name));
+				mainDisplay.add(uniqueUsers.get(i));
+				group2.add(uniqueUsers.get(i));
+			}
+			if(uniqueUsers.get(0)!=null)
+				uniqueUsers.get(0).setSelected(true);
+			getContentPane().add(mainDisplay);
+			getContentPane().add(selectPlaylist);
+		}
+		else if(button == selectPlaylist)
+		{
+			getContentPane().remove(addsongbottom);
+			getContentPane().remove(addsongtop);
+			mainDisplay.removeAll();
+			songlist.clear();
+			booleanValues.clear();
+			String playlist;
+			for(int i = 0;i<uniqueUsers.size();i++)
+			{
+				if(uniqueUsers.get(i).isSelected())
+				{
+					playlist = uniqueUsers.get(i).getText();
+					try {
+						playlistlist = (myfavs.getPlaylist(playlist));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			songlist.addAll(playlistlist.get(0).songs);
+			for(int i = 0;i<songlist.size();i++)
+			{
+				booleanValues.add(new JCheckBox());
+			}
+			getContentPane().add(scrollPane);
+		}
+		else if(button == addmoresongs)
+		{
+			songlist.clear();
+			try {
+				songlist.addAll(myfavs.getSong());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			getContentPane().add(scrollPane);
+		}
+		else if(button == removesongs)
+		{
+			ArrayList<Integer> temp = new ArrayList<Integer>();
+			for(int i = 0;i<booleanValues.size();i++)
+			{
+				if(booleanValues.get(i).isSelected())
+				{
+					temp.add(songlist.get(i).song_id);
+				}
+			}
+			int [] strArray = new int[temp.size()];
+			for(int i = 0;i<temp.size();i++)
+				strArray[i] = temp.get(i);
+			try {
+				myfavs.removeSongs(strArray,playlist_id);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			songlist.clear();
+			try {
+				songlist.addAll(myfavs.getPlaylist(playlist_id).songs);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			getContentPane().add(scrollPane);
+			getContentPane().add(addmoresongs);
+			getContentPane().add(removesongs);
+		}
+		displayPlaylists.revalidate();
+		mainDisplay.revalidate();
 		repaint();
 	}
 	public void clearDisplay()
@@ -577,6 +842,11 @@ public class DesktopApp extends JFrame implements ActionListener{
 		getContentPane().remove(finalizeButton);
 		getContentPane().remove(inputText);
 		getContentPane().remove(songInputText);
+		getContentPane().remove(selectPlaylist);
+		getContentPane().remove(selectMember);
+		getContentPane().remove(mainDisplay);
+		getContentPane().remove(addmoresongs);
+		getContentPane().remove(removesongs);
 	}
 	class MyItemListener implements ItemListener  
 	{  

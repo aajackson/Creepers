@@ -29,24 +29,22 @@ public class myfavsCC
     private HttpGet httpget;
     private HttpResponse response;
     private boolean loggedIn;
-    
+
     /**
      * Main Method - Mainly for debugging.
      */
     public static void main(String[] args) throws Exception
     {
         myfavsCC temp = new myfavsCC();
-        System.out.println(temp.login("tj","tj"));
-        ArrayList<Album> test = temp.readAlbums();
     }
     
-    /**
-     * Conctructor (must be innitalized)
-     */
+	/**
+	 * Constructor - must be called
+	 */
     public myfavsCC() throws Exception
     {
         httpclient = new DefaultHttpClient();
-        httpget = new HttpGet("http://khadajmcs.dyndns-free.com/creepers/Servlet");
+        httpget = new HttpGet(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet"));
         response = httpclient.execute(httpget);
         response.getEntity().getContent().close();
         loggedIn = false;
@@ -151,12 +149,20 @@ public class myfavsCC
         }
     }
     
+	/**
+	 * takes a string and prepares it for uri delivery
+	 */
+	public String webFriendly(String in)
+	{
+		return in.replace( " " , "%20" );
+	}
+
     /**
      * creates a new member with the given parameters
      **/
     public boolean createUser(String username, String password) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=member&username=" + username + "&password=" + password);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=member&username=" + username + "&password=" + password));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -169,7 +175,7 @@ public class myfavsCC
      **/
     public Song createSong(String name, int album_id, int artist_id, int track_number) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number));
         response = httpclient.execute(httpost);  
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -193,7 +199,7 @@ public class myfavsCC
      **/
     public Album createAlbum(String name, int artist_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id));
         response = httpclient.execute(httpost);  
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -217,7 +223,7 @@ public class myfavsCC
      **/
     public Artist createArtist(String name) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=artist&name=" + name);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=artist&name=" + name));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -249,7 +255,7 @@ public class myfavsCC
         }
         temp += "]";
         System.out.println(temp);
-        HttpPost httpost = new HttpPost(temp);
+        HttpPost httpost = new HttpPost(webFriendly(temp));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
@@ -265,404 +271,11 @@ public class myfavsCC
     }
     
     /**
-     * returns an ArrayList<Artist> contianing all artists in the database
-     */
-    public ArrayList<Artist> readArtists() throws Exception
-    {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists");
-        response = httpclient.execute(httpost);
-        ArrayList<Artist> myArtists= new ArrayList<Artist>();
-        int artists = 0;
-        
-        String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
-        st.nextToken(); //success:
-        if (st.nextToken().equalsIgnoreCase("true")) //true or false
-        {
-            st.nextToken(); //results:
-            while(st.hasMoreTokens())
-            {
-                String tempstr = st.nextToken();
-                if (tempstr.equalsIgnoreCase("artist_id")) //type of result (playlist, album, ect)
-                {
-                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String artist_name = st.nextToken();  st.nextToken(); 
-                    String username =  st.nextToken();
-                    myArtists.add(artists, new Artist(artist_id, artist_name));
-                    artists++;
-                }
-                else if(tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("album_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("albums"))
-                        st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String artist_name = st.nextToken();  st.nextToken(); 
-                    String album_name = st.nextToken();
-                    myArtists.get(artists-1).addAlbum(new Album(album_id,artist_id,artist_name,album_name));
-                    //System.out.println("adding album " + album_name); 
-                }
-                else if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("songs"))
-                        st.nextToken(); 
-                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String song_name = st.nextToken();  st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String album_name = st.nextToken(); st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                    String artist_name = st.nextToken(); st.nextToken();
-                    int track_number = Integer.parseInt(st.nextToken());
-                    myArtists.get(artists-1).albums.get(myArtists.get(artists-1).albums.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
-                    //System.out.println("adding song " + song_name); 
-                }
-            }
-        }
-        return myArtists;
-    }
-    
-    /**
-     * returns an artist indicated by artist id
-     */
-    public Artist getArtist(int artist_id) throws Exception
-    {
-        ArrayList<Artist> myArtists = readArtists();
-        for (int x=0;x<myArtists.size();x++)
-        {
-            if (artist_id == myArtists.get(x).artist_id)
-                return myArtists.get(x);
-        }
-        return null;
-    }
-    
-    /**
-     * returns a song indicated by song_id
-     */
-    public Song getSong(int song_id) throws Exception
-    {
-        ArrayList<Song> mySongs = readSongs();
-        for (int x=0;x<mySongs.size();x++)
-        {
-            if (song_id == mySongs.get(x).song_id)
-                return mySongs.get(x);
-        }
-        return null;
-    }
-    
-    /**
-     * returns a playlist selected by playlist_id
-     */
-    public Playlist getPlaylist(int playlist_id) throws Exception
-    {
-        ArrayList<Playlist> myPlaylists = readPlaylists();
-        for (int x=0;x<myPlaylists.size();x++)
-        {
-            if (playlist_id == myPlaylists.get(x).playlist_id)
-                return myPlaylists.get(x);
-        }
-        return null;
-    }
-
-    /**
-     * returns an album selected by the album_id
-     */
-    public Album getAlbum(int album_id) throws Exception
-    {
-        ArrayList<Album> myAlbums = readAlbums();
-        for (int x=0;x<myAlbums.size();x++)
-        {
-            if (album_id == myAlbums.get(x).album_id)
-                return myAlbums.get(x);
-        }
-        return null;
-    }
-    
-    /**
-     * returns an ArrayList<Playlist> containing all playlists
-     **/
-    public ArrayList<Playlist> readPlaylists() throws Exception
-    {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists");
-        response = httpclient.execute(httpost);
-        ArrayList<Playlist> myPlaylists = new ArrayList<Playlist>();
-        int playlists = 0;
-        
-        String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
-        st.nextToken(); //success:
-        if (st.nextToken().equalsIgnoreCase("true")) //true or false
-        {
-            st.nextToken(); //results:
-            while(st.hasMoreTokens())
-            {
-                String tempstr = st.nextToken();
-                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
-                {
-                    int id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String name = st.nextToken();  st.nextToken(); 
-                    int member_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String username =  st.nextToken();
-                    myPlaylists.add(playlists, new Playlist(id, member_id, name, username));
-                    //System.out.println("adding playlist " + name); 
-                    playlists++;
-                }
-                else if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("songs"))
-                        st.nextToken(); 
-                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String song_name = st.nextToken();  st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String album_name = st.nextToken(); st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                    String artist_name = st.nextToken(); st.nextToken();
-                    int track_number = Integer.parseInt(st.nextToken());
-                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
-                    //System.out.println("adding song " + song_name); 
-                }
-            }
-        }
-        return myPlaylists;
-    }
-    
-    /**
-     * returns a list of all albums in the database
-     */
-    public ArrayList<Album> readAlbums() throws Exception
-    {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums");
-        response = httpclient.execute(httpost);
-        ArrayList<Album> myAlbums = new ArrayList<Album>();
-        int albums = 0;
-        String album_name="";
-        
-        String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
-        //while(st.hasMoreTokens())
-        st.nextToken(); //success:
-        if (st.nextToken().equalsIgnoreCase("true")) //true or false
-        {
-            st.nextToken(); //results:
-            while(st.hasMoreTokens())
-            {
-                String tempstr = st.nextToken();
-                if(st.hasMoreTokens())
-                {
-                    if(tempstr.equalsIgnoreCase("album_id"))
-                    {
-                        int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                        int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
-                        String artist_name = st.nextToken();  st.nextToken(); 
-                        album_name = st.nextToken();
-                        myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
-                        //System.out.println("adding album " + album_name); 
-                        albums++;
-                    }
-                    else if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                    {
-                        if (tempstr.equalsIgnoreCase("songs"))
-                            st.nextToken(); 
-                        int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                        String song_name = st.nextToken();  st.nextToken(); 
-                        int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                        int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                        String artist_name = st.nextToken(); st.nextToken();
-                        int track_number = Integer.parseInt(st.nextToken());
-                        myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number,album_id,album_name,artist_id,artist_name));
-                        //System.out.println("adding song " + song_name);
-                    }
-                }
-            }
-        }
-        return myAlbums;
-    }
-    
-    /**
-     * returns an ArrayList<Artist> containing all the albums of the artist given by the art_id
-     **/
-    public ArrayList<Album> readArtistAlbums(int art_id) throws Exception
-    {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&id=" + art_id );
-        response = httpclient.execute(httpost);
-        ArrayList<Album> myAlbums = new ArrayList<Album>();
-        int albums = 0, songs=0;
-        
-        String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
-        st.nextToken(); //success:
-        if (st.nextToken().equalsIgnoreCase("true")) //true or false
-        {
-            st.nextToken(); //results:
-            while(st.hasMoreTokens())
-            {
-                String tempstr = st.nextToken();
-                if (tempstr.equalsIgnoreCase("album_id")) //type of result (playlist, album, ect)
-                {
-                    st.nextToken();st.nextToken();
-                    String artist_name = st.nextToken();  st.nextToken(); 
-                    //System.out.println("adding artist " + artist_name); 
-                    albums++;
-                }
-                else if(tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("album_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("albums"))
-                        st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String artist_name = st.nextToken();  st.nextToken(); 
-                    String album_name = st.nextToken();
-                    myAlbums.add(new Album(album_id,art_id,artist_name,album_name));
-                    //System.out.println("adding album " + album_name); 
-                }
-                else if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("songs"))
-                        st.nextToken(); 
-                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String song_name = st.nextToken();  st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String album_name = st.nextToken(); st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                    String artist_name = st.nextToken(); st.nextToken();
-                    int track_number = Integer.parseInt(st.nextToken());
-                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
-                    //System.out.println("adding song " + song_name); 
-                }
-            }
-        }
-        return myAlbums;
-    }
-    
-    /**
-     * returns an ArrayList<Song> containing all the songs of the album given by the album_id
-     **/
-    public ArrayList<Song> readAlbumSongs(int alb_id) throws Exception
-    {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&_id=" + alb_id);
-        response = httpclient.execute(httpost);
-        ArrayList<Song> mySongs = new ArrayList<Song>();
-        int songs=0;
-        
-        String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
-        st.nextToken(); //success:
-        if (st.nextToken().equalsIgnoreCase("true")) //true or false
-        {
-            st.nextToken(); //results:
-            while(st.hasMoreTokens())
-            {
-                String tempstr = st.nextToken();
-                if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("songs"))
-                        st.nextToken(); 
-                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String song_name = st.nextToken();  st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String album_name = st.nextToken(); st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                    String artist_name = st.nextToken(); st.nextToken();
-                    int track_number = Integer.parseInt(st.nextToken());
-                    mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
-                    //System.out.println("adding song " + song_name); 
-                }
-            }
-        }
-        return mySongs;
-    }
-    
-    /**
-     * returns an ArrayList<Playlist> containing all the playlists of the member given by the member_id
-     **/
-    public ArrayList<Playlist> readMembersPlaylists(int mem_id) throws Exception
-    {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&id=" + mem_id);
-        response = httpclient.execute(httpost);
-        ArrayList<Playlist> myPlaylists = new ArrayList<Playlist>();
-        int playlists = 0;
-        
-        String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
-        st.nextToken(); //success:
-        if (st.nextToken().equalsIgnoreCase("true")) //true or false
-        {
-            st.nextToken(); //results:
-            while(st.hasMoreTokens())
-            {
-                String tempstr = st.nextToken();
-                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
-                {
-                    int id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String name = st.nextToken();  st.nextToken(); 
-                    int member_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String username =  st.nextToken();
-                    myPlaylists.add(playlists, new Playlist(id, member_id, name, username));
-                    //System.out.println("adding playlist " + name); 
-                    playlists++;
-                }
-                else if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("songs"))
-                        st.nextToken(); 
-                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String song_name = st.nextToken();  st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String album_name = st.nextToken(); st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                    String artist_name = st.nextToken(); st.nextToken();
-                    int track_number = Integer.parseInt(st.nextToken());
-                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
-                    //System.out.println("adding song " + song_name); 
-                }
-            }
-        }
-        return myPlaylists;
-    }
-    
-    /**
-     * returns an ArrayList<Song> containing all songs in the database
-     **/
-    public ArrayList<Song> readSongs() throws Exception
-    {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs");
-        response = httpclient.execute(httpost);
-        ArrayList<Song> mySongs = new ArrayList<Song>();
-        int songs = 0;
-        
-        String temp = responseToString(response);
-        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
-        st.nextToken(); //success:
-        if (st.nextToken().equalsIgnoreCase("true")) //true or false
-        {
-            st.nextToken(); //results:
-            while(st.hasMoreTokens())
-            {
-                String tempstr = st.nextToken();
-                if(tempstr.equalsIgnoreCase("songs") || tempstr.equalsIgnoreCase("song_id"))
-                {
-                    if (tempstr.equalsIgnoreCase("songs"))
-                        st.nextToken(); 
-                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String song_name = st.nextToken();  st.nextToken(); 
-                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
-                    String album_name = st.nextToken(); st.nextToken();
-                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
-                    String artist_name = st.nextToken(); st.nextToken();
-                    int track_number = Integer.parseInt(st.nextToken());
-                    mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
-                    //System.out.println("adding song " + song_name); 
-                }
-            }
-        }
-        return mySongs;
-    }
-    
-    /**
      * renames a playlist indicated by the playlist_id to the name given by the new_name
      **/
     public boolean renamePlaylist(String new_name, int playlist_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&action=rename&type=playlist&name=" + new_name + "&playlist_id=" + playlist_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&action=rename&type=playlist&name=" + new_name + "&playlist_id=" + playlist_id));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -683,7 +296,7 @@ public class myfavsCC
                 temp += ",";
         }
         temp += "]";
-        HttpPost httpost = new HttpPost(temp);
+        HttpPost httpost = new HttpPost(webFriendly(temp));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
@@ -704,7 +317,7 @@ public class myfavsCC
                 temp += ",";
         }
         temp += "]";
-        HttpPost httpost = new HttpPost(temp);
+        HttpPost httpost = new HttpPost(webFriendly(temp));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
@@ -717,7 +330,7 @@ public class myfavsCC
      **/
     public boolean login(String username, String password) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username=" + username + "&password=" + password);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username=" + username + "&password=" + password));
         response = httpclient.execute(httpost);
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -730,7 +343,7 @@ public class myfavsCC
      **/
     public boolean logout() throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout");
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout"));
         response = httpclient.execute(httpost);   
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -743,11 +356,782 @@ public class myfavsCC
      **/
     public boolean deletePlaylist(int playlist_id) throws Exception
     {
-        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=delete&type=playlist&playlist_id=" + playlist_id);
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=delete&type=playlist&playlist_id=" + playlist_id));
         response = httpclient.execute(httpost);
         String temp2 = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
         st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
         return suceeded;
+    }
+    
+	/**
+     * returns an ArrayList<Member> containing all members
+     **/
+    public ArrayList<Member> getMember() throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members"));
+        response = httpclient.execute(httpost);
+        ArrayList<Member> myMembers = new ArrayList<Member>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int members = 0,member_id=0;
+		String member_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("playlists") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("member_id")) //type of result (playlist, album, ect)
+                {
+                    member_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    member_name = st.nextToken();  st.nextToken(); 
+                    myMembers.add(members, new Member(member_id, member_name));
+                    System.out.println("added member " + member_name + " " + member_id);
+                    members++;
+                }
+                else if(tempstr.equalsIgnoreCase("playlist_id"))
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String playlist_name = st.nextToken();  st.nextToken();
+					st.nextToken();st.nextToken();
+                    myMembers.get(members-1).addPlaylist(new Playlist(playlist_id,member_id,playlist_name,member_name));
+                    System.out.println("adding playlist " + playlist_name + " " + playlist_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id")) //should never be used, but its still there.
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myMembers.get(members-1).playlists.get(myMembers.get(members-1).playlists.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myMembers;
+    }
+
+	/**
+     * returns an ArrayList<Member> containing all members with the given name
+     **/
+    public ArrayList<Member> getMember(String user_name)throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&search=" + user_name));
+        response = httpclient.execute(httpost);
+        ArrayList<Member> myMembers = new ArrayList<Member>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int members = 0,member_id=0;
+		String member_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("playlists") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("member_id")) //type of result (playlist, album, ect)
+                {
+                    member_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    member_name = st.nextToken();  st.nextToken(); 
+                    myMembers.add(members, new Member(member_id, member_name));
+                    System.out.println("added member " + member_name + " " + member_id);
+                    members++;
+                }
+                else if(tempstr.equalsIgnoreCase("playlist_id"))
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String playlist_name = st.nextToken();  st.nextToken();
+					st.nextToken();st.nextToken();
+                    myMembers.get(members-1).addPlaylist(new Playlist(playlist_id,member_id,playlist_name,member_name));
+                    System.out.println("adding playlist " + playlist_name + " " + playlist_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id")) //should never be used, but its still there.
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myMembers.get(members-1).playlists.get(myMembers.get(members-1).playlists.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myMembers;
+    }	
+
+	/**
+     * returns an Member from the user_id given
+     **/
+    public Member getMember(int user_id)throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&id=" + user_id));
+        response = httpclient.execute(httpost);
+        ArrayList<Member> myMembers = new ArrayList<Member>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int members = 0,member_id=0;
+		String member_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("playlists") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("member_id")) //type of result (playlist, album, ect)
+                {
+                    member_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    member_name = st.nextToken();  st.nextToken(); 
+                    myMembers.add(members, new Member(member_id, member_name));
+                    System.out.println("added member " + member_name + " " + member_id);
+                    members++;
+                }
+                else if(tempstr.equalsIgnoreCase("playlist_id"))
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String playlist_name = st.nextToken();  st.nextToken();
+					st.nextToken();st.nextToken();
+                    myMembers.get(members-1).addPlaylist(new Playlist(playlist_id,member_id,playlist_name,member_name));
+                    System.out.println("adding playlist " + playlist_name + " " + playlist_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id")) //should never be used, but its still there.
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myMembers.get(members-1).playlists.get(myMembers.get(members-1).playlists.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+		if (myMembers.size() > 0)
+        	return myMembers.get(0);
+		else
+			return null;
+    }
+
+	/**
+     * returns an ArrayList<Artist> of all artists
+     **/
+    public ArrayList<Artist> getArtist() throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists"));
+        response = httpclient.execute(httpost);
+        ArrayList<Artist> myArtists= new ArrayList<Artist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int artists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("artist_id")) //type of result (playlist, album, ect)
+                {
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    myArtists.add(artists, new Artist(artist_id, artist_name));
+                    System.out.println("added artist " + artist_name + " " + artist_id);
+                    artists++;
+                }
+                else if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    String album_name = st.nextToken();
+                    myArtists.get(artists-1).addAlbum(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myArtists.get(artists-1).albums.get(myArtists.get(artists-1).albums.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myArtists;
+    }
+
+	/**
+     * returns an ArrayList<Artist> of all artists with the given name
+     **/
+    public ArrayList<Artist> getArtist(String art_name) throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&search=" + art_name));
+        response = httpclient.execute(httpost);
+        ArrayList<Artist> myArtists= new ArrayList<Artist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int artists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("artist_id")) //type of result (playlist, album, ect)
+                {
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    myArtists.add(artists, new Artist(artist_id, artist_name));
+                    System.out.println("added artist " + artist_name + " " + artist_id);
+                    artists++;
+                }
+                else if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    String album_name = st.nextToken();
+                    myArtists.get(artists-1).addAlbum(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myArtists.get(artists-1).albums.get(myArtists.get(artists-1).albums.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myArtists;
+    }
+
+	/**
+     * returns an Artist with the given artist_id
+     **/
+    public Artist getArtist(int art_id) throws Exception    
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&id=" + art_id));
+        response = httpclient.execute(httpost);
+        Artist myArtists = new Artist(0,"");
+        String temp = responseToString(response); String tempstr,laststr;
+		int artists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("artist_id")) //type of result (playlist, album, ect)
+                {
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    myArtists = new Artist(artist_id, artist_name);
+                    System.out.println("added artist " + artist_name + " " + artist_id);
+                    artists++;
+                }
+                else if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    String album_name = st.nextToken();
+                    myArtists.addAlbum(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myArtists.albums.get(myArtists.albums.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myArtists;
+    }
+
+	/**
+     * returns an ArrayList<Song> of all songs in the database
+     **/
+    public ArrayList<Song> getSong() throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs"));
+        response = httpclient.execute(httpost);
+        ArrayList<Song> mySongs= new ArrayList<Song>();
+        String temp = responseToString(response); String tempstr,laststr;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return mySongs;
+    }
+
+	/**
+     * returns an ArrayList<Song> contining all songs with the given name
+     **/
+    public ArrayList<Song> getSong(String s_name) throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs&search="+ s_name));
+        response = httpclient.execute(httpost);
+        ArrayList<Song> mySongs= new ArrayList<Song>();
+        String temp = responseToString(response); String tempstr,laststr;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return mySongs;
+    }
+
+	/**
+     * returns a Song with the given song_id
+     **/
+    public Song getSong(int s_id) throws Exception
+    {
+        ArrayList<Song> mySongs = getSong();
+        for (int x=0;x<mySongs.size();x++)
+        {
+            if (s_id == mySongs.get(x).song_id)
+                return mySongs.get(x);
+        }
+        return null;
+    }
+
+	/**
+     * returns an ArrayList<Playlist> contining playlists
+     **/
+    public ArrayList<Playlist> getPlaylist() throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists"));
+        response = httpclient.execute(httpost);
+        ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int playlists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+					System.out.println (playlist_id);
+                    String playlist_name = st.nextToken();  st.nextToken();
+					int member_id = Integer.parseInt(st.nextToken());st.nextToken();
+					String member_name = st.nextToken();
+                    myPlaylists.add(playlists, new Playlist(playlist_id, member_id, playlist_name, member_name));
+                    System.out.println("added playlist " + playlist_name + " " + playlist_id);
+                    playlists++;
+                }
+				else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id + " " +track_number); 
+                }
+            }
+        }
+        return myPlaylists;
+    }
+
+	/**
+     * returns an ArrayList<Playlist> contining playlists with the given name
+     **/
+    public ArrayList<Playlist> getPlaylist(String playlist_n) throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&search=" + playlist_n));
+        response = httpclient.execute(httpost);
+        ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int playlists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+					System.out.println (playlist_id);
+                    String playlist_name = st.nextToken();  st.nextToken();
+					int member_id = Integer.parseInt(st.nextToken());st.nextToken();
+					String member_name = st.nextToken();
+                    myPlaylists.add(playlists, new Playlist(playlist_id, member_id, playlist_name, member_name));
+                    System.out.println("added playlist " + playlist_name + " " + playlist_id);
+                    playlists++;
+                }
+				else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id + " " +track_number); 
+                }
+            }
+        }
+        return myPlaylists;
+    }
+
+	/**
+     * returns a Playlist withthe given playlist_id
+     **/
+    public Playlist getPlaylist(int pl_id) throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&id=" + pl_id));
+        response = httpclient.execute(httpost);
+        ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int playlists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+					System.out.println (playlist_id);
+                    String playlist_name = st.nextToken();  st.nextToken();
+					int member_id = Integer.parseInt(st.nextToken());st.nextToken();
+					String member_name = st.nextToken();
+                    myPlaylists.add(playlists, new Playlist(playlist_id, member_id, playlist_name, member_name));
+                    System.out.println("added playlist " + playlist_name + " " + playlist_id);
+                    playlists++;
+                }
+				else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id + " " +track_number); 
+                }
+            }
+        }
+		if (myPlaylists.size() > 0)
+        	return myPlaylists.get(0);
+		else
+			return null;
+    }
+
+	/**
+     * returns an ArrayList<Playlist> contaning all playlists by a given member (member id)
+     **/
+    public ArrayList<Playlist> getMemberPlaylist(int member_id) throws Exception
+    {
+        ArrayList<Playlist> myPlaylists = getPlaylist();
+		ArrayList<Playlist> membersPlaylists = getPlaylist();
+        for (int x=0;x<myPlaylists.size();x++)
+        {
+            if (member_id == myPlaylists.get(x).member_id)
+                membersPlaylists.add(myPlaylists.get(x));
+        }
+		if (membersPlaylists.size() > 0)
+        	return membersPlaylists;
+		else
+			return null;
+    }
+
+	/**
+     * returns an ArrayList<Playlist> contaning all playlists by a given member (member name)
+     **/
+    public ArrayList<Playlist> getMemberPlaylist(String member_name) throws Exception
+    {
+        ArrayList<Playlist> myPlaylists = getPlaylist();
+		ArrayList<Playlist> membersPlaylists = getPlaylist();
+        for (int x=0;x<myPlaylists.size();x++)
+        {
+            if (member_name == myPlaylists.get(x).username)
+                membersPlaylists.add(myPlaylists.get(x));
+        }
+		if (membersPlaylists.size() > 0)
+        	return membersPlaylists;
+		else
+			return null;
+    }
+
+	/**
+     * returns an ArrayList<Album> contaning all albums
+     **/
+    public ArrayList<Album> getAlbum() throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums"));
+        response = httpclient.execute(httpost);
+        ArrayList<Album> myAlbums= new ArrayList<Album>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int albums = 0; String album_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    album_name = st.nextToken();
+                    myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+					albums++;
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myAlbums;
+    }
+
+	/**
+     * returns an ArrayList<Album> contaning all albums of a given name
+     **/
+    public ArrayList<Album> getAlbum(String album_n) throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&search=" + album_n));
+        response = httpclient.execute(httpost);
+        ArrayList<Album> myAlbums= new ArrayList<Album>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int albums = 0; String album_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    album_name = st.nextToken();
+                    myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+					albums++;
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myAlbums;
+    }
+
+	/**
+     * returns an Album of the given album_id 
+     **/
+    public Album getAlbum(int alb_id) throws Exception
+    {
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&id=" + alb_id));
+        response = httpclient.execute(httpost);
+        ArrayList<Album> myAlbums= new ArrayList<Album>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int albums = 0; String album_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    album_name = st.nextToken();
+                    myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+					albums++;
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+		if (myAlbums.size() > 0)
+        	return myAlbums.get(0);
+		else
+			return null;
     }
 }

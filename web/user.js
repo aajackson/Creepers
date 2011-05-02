@@ -51,11 +51,7 @@ $("document").ready(function()
 				{
 					"aoColumnDefs": [{ "bSortable": false, "aTargets": [ 0 ] }],
 					"bPaginate": false,
-					"bLengthChange": false,
-					"bFilter": false,
-					"bSort": false,
-					"bInfo": false,
-					"bAutoWidth": false
+					"bFilter": false
 					
 				});
 				
@@ -69,9 +65,7 @@ $("document").ready(function()
 					this.checked = c;
 				});
 			});
-			
-			
-			$("button#addbtn").click(function(event)
+			$("button#add_selected").click(function(event)
 			{
 				if(login == true)
 				{
@@ -93,7 +87,41 @@ $("document").ready(function()
 					alert("Please log in first!");
 				}
 			});
+			$("button#remove_selected").click(function(event)
+			{
+				if(login == true)
+				{
+					event.preventDefault();
+					var ss = $("input.song:checked");
+					var removeSongs = [];
+					
+					for(var i = 0; i < ss.length; i++)
+					{
+						removeSongs = removeSongs.concat(ss[i].value);
+					}
+					
+					$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=removesongs&songs=["+removeSongs+"]",function(data)
+					{
+						alert("Songs removed!");
+						loadPage("./home.html");
+					});
+				}
+				else
+				{
+					alert("Please log in first!");
+				}
+			});
+														 
+			
 			event.preventDefault();
 		});
 	});
+	
+	$("button#new_playlist").click(function(event)
+	{
+		$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&name="+$("input#new_playlist").attr('value'));
+		alert("Created a new playlist!");
+		loadPage("./search.html");
+	});
+									
 });

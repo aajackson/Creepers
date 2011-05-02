@@ -1,988 +1,1075 @@
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+/**
+ * This is the myfavs Command Connection class
+ * 
+ * The point in this class is to provide a simple way for a java application to send http requests to a server running apache tomcat
+ * 
+ * @author James "T.J." Moats
+ * @version 4/25/2011
+ */
 
-import java.sql.*;
-import java.util.ArrayList;
+import java.net.*;
+import java.io.*;
+import java.util.*;
 
-import com.google.gson.Gson;
+import org.apache.http.client.*;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.utils.*;
+import org.apache.http.*;
+import org.apache.http.message.*;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.*;
 
-public class CreeperServlet extends HttpServlet
+public class myfavsCC
 {
-	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-	{
-		doStuff(req, res);
-	}
-	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-	{
-		doStuff(req, res);
-	}
-	public void doStuff(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-	{
-		/*
-		HttpSession session = req.getSession(true);
-		session.setAttribute("key", "value");
-		(String)session.getAttribute("key")
-		*/
-		/*
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
-		out.println("<html>");
-		out.close();
-		*/
-		/*
-		res.sendRedirect("success.html");
-		*/
-		Gson gson = new Gson();
+    private DefaultHttpClient httpclient;
+    private HttpGet httpget;
+    private HttpResponse response;
+    private boolean loggedIn;
 
-		//res.setContentType("text/html");
-		res.setContentType("application/json");
-		
-		PrintWriter out = res.getWriter();
-		DBAL db = DBAL.getInstance(out);
-		
-		HttpSession session = req.getSession(true);
-		
-		String uidString = (String)session.getAttribute("user_id");
-		int uid = 0; //user id is 0 when not logged in
-		if (uidString != null)
-			uid = Integer.parseInt(uidString);
-		
-		String method = req.getParameter("method");
-		String type = req.getParameter("type");
-		
-		if (method == null || type == null)
-		{ 
-			out.println("{\"success\":false,\"error\":\"Missing a method or type parameter. Request aborted.\"}");
-			out.close(); db.close(); return;
-		}
-		
-		if (method.equalsIgnoreCase("create"))
-		{
-			//check for login when needed
-			if (!type.equalsIgnoreCase("member") && uid == 0)
-			{
-				out.println("{\"success\":false,\"error\":\"You need to be logged in to do this action.\"}");
-				out.close(); db.close(); return;
-			}
-			else if (type.equalsIgnoreCase("member") && uid != 0)
-			{
-				out.println("{\"success\":false,\"error\":\"You need to be logged out to do this action.\"}");
-				out.close(); db.close(); return;
-			}
-			if (type.equalsIgnoreCase("song"))
-			{
-				//create song, assigned to album and artist
-				String name = req.getParameter("name");
-				String album_id = req.getParameter("album_id");
-				String artist_id = req.getParameter("artist_id");
-				String track_number = req.getParameter("track_number");
-				// Do we have all parameters?
-				if (name == null || album_id == null || track_number == null || artist_id == null) 
-				{
-					out.println("{\"success\":false,\"error\":\"Missing a parameter needed for song creation.\"}");
-					out.close(); db.close(); return;
-				}
-				try 
-				{
-					// Check all numbers are in range or actually integers
-					if (Integer.parseInt(artist_id) < 1 || Integer.parseInt(album_id) < 1 || Integer.parseInt(track_number) < 1)
-					{
-						throw new NumberFormatException();
-					}
-					// Check if valid IDs
-					ResultSet rs = db.query("SELECT album_id FROM album WHERE album_id = " + Integer.parseInt(album_id));
-					if (!rs.next())
-					{
-						out.println("{\"success\":false,\"error\":\"There is no album associated with the album id specified.\"}");
-						rs.close();
-						out.close(); db.close(); return;
-					}
-					rs.close();
-					rs = db.query("SELECT artist_id FROM artist WHERE artist_id = " + Integer.parseInt(artist_id));
-					if (!rs.next())
-					{
-						out.println("{\"success\":false,\"error\":\"There is no artist associated with the artist id specified.\"}");
-						rs.close();
-						out.close(); db.close(); return;
-					}
-					rs.close();
-					// Insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO song (`name`, album_id, artist_id, track_number) VALUES (?, ?, ?, ?)");
-					query.setString(1, name);
-					query.setInt(2, Integer.parseInt(album_id));
-					query.setInt(3, Integer.parseInt(artist_id));
-					query.setInt(4, Integer.parseInt(track_number));
-					query.executeUpdate();
-					rs = db.query("SELECT LAST_INSERT_ID()");
-					rs.next();
-					out.println("{\"success\":true,\"id\":"+rs.getInt(1)+"}");
-					rs.close();
-					out.close(); db.close(); return;
-				}
-				// Invalid numbers!
-				catch (NumberFormatException e)
-				{
-					out.println("{\"success\":false,\"error\":\"One of the integer parameters was out of range or an invalid number.\"}");
-					out.close(); db.close(); return;
-				}
-				// Oh noes!
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in running the insertion.\"}");
-					//out.println(e);
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("album"))
-			{
-				//create album, assigned to artist
-				String name = req.getParameter("name");
-				String artist_id = req.getParameter("artist_id");
-				// Do we have all parameters?
-				if (name == null || artist_id == null) 
-				{
-					out.println("{\"success\":false,\"error\":\"Missing a parameter needed for album creation.\"}");
-					out.close(); db.close(); return;
-				}
-				try 
-				{
-					// Check all numbers are in range or actually integers
-					if (Integer.parseInt(artist_id) < 1)
-					{
-						throw new NumberFormatException();
-					}
-					// Check if valid IDs
-					ResultSet rs = db.query("SELECT artist_id FROM artist WHERE artist_id = " + Integer.parseInt(artist_id));
-					if (!rs.next())
-					{
-						out.println("{\"success\":false,\"error\":\"There is no artist associated with the artist id specified.\"}");
-						rs.close();
-						out.close(); db.close(); return;
-					}
-					rs.close();
-					// Insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO album (`name`, artist_id) VALUES (?, ?)");
-					query.setString(1, name);
-					query.setInt(2, Integer.parseInt(artist_id));
-					query.executeUpdate();
-					rs = db.query("SELECT LAST_INSERT_ID()");
-					rs.next();
-					out.println("{\"success\":true,\"id\":"+rs.getInt(1)+"}");
-					rs.close();
-					out.close(); db.close(); return;
-				}
-				// Invalid numbers!
-				catch (NumberFormatException e)
-				{
-					out.println("{\"success\":false,\"error\":\"One of the integer parameters was out of range or an invalid number.\"}");
-					out.close(); db.close(); return;
-				}
-				// Oh noes!
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in running the insertion.\"}");
-					//out.println(e);
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("artist"))
-			{
-				//create artist
-				String name = req.getParameter("name");
-				// Do we have all parameters?
-				if (name == null) 
-				{
-					out.println("{\"success\":false,\"error\":\"Missing a parameter needed for artist creation.\"}");
-					out.close(); db.close(); return;
-				}
-				try 
-				{
-					// Insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO artist (`name`) VALUES (?)");
-					query.setString(1, name);
-					query.executeUpdate();
-					ResultSet rs = db.query("SELECT LAST_INSERT_ID()");
-					rs.next();
-					out.println("{\"success\":true,\"id\":"+rs.getInt(1)+"}");
-					rs.close();
-					out.close(); db.close(); return;
-				}
-				// Oh noes!
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in running the insertion.\"}");
-					//out.println(e);
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("playlist"))
-			{
-				//create playlist (from list of songs)
-				String name = req.getParameter("name");
-				String songs = req.getParameter("songs");
-				// Do we have all parameters?
-				if (name == null) 
-				{
-					out.println("{\"success\":false,\"error\":\"Missing a parameter needed for playlist creation.\"}");
-					out.close(); db.close(); return;
-				}
-				int[] song_ids = new int[0];
-				ResultSet rs;
-				try
-				{
-					if (songs != null)
-					{
-						//get the integer array of song ids
-						song_ids = gson.fromJson(songs, int[].class); 
-						for (int i = 0; i < song_ids.length; i++)
-						{
-							//check if each song id valid
-							if (song_ids[i] < 1) throw new Exception();
-						}
-						//clip off the square brackets
-						String song_id_list = songs.substring(1, songs.length() - 1);
-						//check all song ids are valid
-						rs = db.query("SELECT COUNT(*) FROM song WHERE song_id IN ("+song_id_list+")");
-						rs.next();
-						if (rs.getInt(1) != song_ids.length) //check length of results
-						{
-							out.println("{\"success\":false,\"error\":\"At least one of the provided songs does not exist.\"}");
-							out.close(); db.close(); return;
-						}
-						rs.close();
-					}
-					//all good, insertion time!
-					PreparedStatement query = db.preparedStatement("INSERT INTO playlist (`name`, member_id) VALUES (?, ?)");
-					query.setString(1, name);
-					query.setInt(2, uid);
-					query.executeUpdate();
-					rs = db.query("SELECT LAST_INSERT_ID()");
-					rs.next();
-					int playlist_id = rs.getInt(1);
-					if (songs != null)
-					{
-						for (int i = 0; i < song_ids.length; i++)
-						{
-							query = db.preparedStatement("INSERT INTO playlistsong (playlist_id, song_id, track_number) VALUES (?, ?, ?)");
-							query.setInt(1, playlist_id);
-							query.setInt(2, song_ids[i]);
-							query.setInt(3, i);
-							query.executeUpdate();
-						}
-					}
-					rs.close();
-					out.println("{\"success\":true,\"id\":"+playlist_id+"}");
-					out.close(); db.close(); return;
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
-					//out.println(e.getMessage());
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("member"))
-			{
-				//create a new member
-				String username = req.getParameter("username");
-				String password = req.getParameter("password");
-				// Do we have all parameters?
-				if (username == null || password == null) 
-				{
-					out.println("{\"success\":false,\"error\":\"Missing a parameter needed for member creation.\"}");
-					out.close(); db.close(); return;
-				}
-				try 
-				{
-					PreparedStatement query = db.preparedStatement("SELECT username FROM member WHERE username = ?");
-					query.setString(1, username);
-					ResultSet rs = query.executeQuery();
-					if (rs.next())
-					{
-						out.println("{\"success\":false,\"error\":\"There is already a user with this username.\"}");
-						out.close(); db.close(); return;
-					}
-					rs.close();
-					query = db.preparedStatement("INSERT INTO member (username, password) VALUES (?, ?)");
-					query.setString(1, username);
-					query.setString(2, password);
-					query.executeUpdate();
-					rs = db.query("SELECT LAST_INSERT_ID()");
-					rs.next();
-					uid = rs.getInt(1);
-					rs.close();
-					session.setAttribute("user_id", "" + uid);
-					out.println("{\"success\":true}");
-					out.close(); db.close(); return;
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in creating a new member.\"}");
-					//out.println(e.getMessage());
-					out.close(); db.close(); return;
-				}
-			}
-		}
-		else if (method.equalsIgnoreCase("read"))
-		{
-			String search = req.getParameter("search"); //optional query string
-			String sort = req.getParameter("sort"); //optional sort (asc or desc)
-			String id = req.getParameter("id"); //optional id for a single item
-			String duration = req.getParameter("duration"); //optional limit count of result
-			String start = req.getParameter("start"); //optional start index of result
-			if (id != null) //parse the id if exists
-			{
-				try
-				{
-					if (Integer.parseInt(id) < 1)
-						throw new NumberFormatException();
-				}
-				catch (NumberFormatException e)
-				{
-					out.println("{\"success\":false,\"error\":\"ID must be an integer above zero.\"}");
-					out.close(); db.close(); return;
-				}
-			}
-			if (start != null) //parse the start index if exists
-			{
-				try
-				{
-					if (Integer.parseInt(start) < 0)
-						throw new NumberFormatException();
-				}
-				catch (NumberFormatException e)
-				{
-					out.println("{\"success\":false,\"error\":\"Start index must be an integer at or above zero.\"}");
-					out.close(); db.close(); return;
-				}
-			}
-			if (duration != null) //parse the count limit if exists
-			{
-				try
-				{
-					if (Integer.parseInt(duration) < 1)
-						throw new NumberFormatException();
-				}
-				catch (NumberFormatException e)
-				{
-					out.println("{\"success\":false,\"error\":\"Limit duration must be an integer above zero.\"}");
-					out.close(); db.close(); return;
-				}
-			}
-			if (sort != null) //parse the sort if exists
-			{
-				if (sort.equalsIgnoreCase("asc"))
-					sort = "ASC";
-				else if (sort.equalsIgnoreCase("desc"))
-					sort = "DESC";
-				else
-					sort = null; //invalid sort parameter, ignore
-			}
-			if (type.equalsIgnoreCase("playlists"))
-			{
-				//get list of playlists [name, list of songs]
-				//	can search by member or random
-				//	can sort by playlist name
-				//	can also specify by id to return that playlist
-				String queryStr = "SELECT * FROM playlist NATURAL JOIN member";
-				if (id != null) //return just one result
-				{
-					queryStr += " WHERE playlist_id = ?";
-				}
-				else if (search != null) //searching
-				{
-					queryStr += " WHERE `name` LIKE ?";
-				}
-				if (sort != null)
-				{
-					queryStr += " ORDER BY `name` " + sort;
-				}
-				else
-				{
-					queryStr += " ORDER BY playlist_id DESC";
-				}
-				if (duration != null) //limit
-				{
-					queryStr += " LIMIT ";
-					if (start != null)
-					{
-						queryStr += start + ", ";
-					}
-					queryStr += duration;
-				}
-				try
-				{
-					PreparedStatement query = db.preparedStatement(queryStr);
-					if (id != null)
-						query.setInt(1, Integer.parseInt(id));
-					else if (search != null)
-						query.setString(1, "%"+search+"%");
-					ResultSet rs = query.executeQuery();
-					ArrayList<Playlist> list = new ArrayList<Playlist>();
-					while (rs.next())
-					{
-						Playlist pl = new Playlist(rs.getInt("playlist_id"), rs.getInt("member_id"), rs.getString("name"), rs.getString("username"));
-						PreparedStatement query2 = db.preparedStatement("SELECT song.song_id, artist.artist_id, album.album_id, song.name AS song_name, artist.name AS artist_name, album.name AS album_name, playlistsong.track_number FROM playlistsong, song, artist, album WHERE playlistsong.playlist_id = ? AND playlistsong.song_id = song.song_id AND song.artist_id = artist.artist_id AND song.album_id = album.album_id ORDER BY track_number ASC");
-						query2.setInt(1, rs.getInt("playlist_id"));
-						ResultSet rs2 = query2.executeQuery();
-						while (rs2.next())
-						{
-							//Song(int id, String n, int t, int ali, String aln, int ari, String arn)
-							pl.addSong(new Song(rs2.getInt("song_id"), rs2.getString("song_name"), rs2.getInt("track_number"), rs2.getInt("album_id"), rs2.getString("album_name"), rs2.getInt("artist_id"), rs2.getString("artist_name")));
-						}
-						rs2.close();
-						list.add(pl);
-					}
-					rs.close();
-					out.println("{\"success\":true,\"results\":"+gson.toJson(list)+"}");
-					out.close(); db.close(); return;
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in searching for playlists.\"}");
-					//out.println(e.getMessage());
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("artists"))
-			{
-				//get list of artists [name, list of albums]
-				//	can search by artist name
-				//	can sort by artist name
-				//	can also specify by id to return that artist
-				String queryStr = "SELECT * FROM artist";
-				if (id != null) //return just one result
-				{
-					queryStr += " WHERE artist_id = ?";
-				}
-				else if (search != null) //searching
-				{
-					queryStr += " WHERE `name` LIKE ?";
-				}
-				if (sort != null)
-				{
-					queryStr += " ORDER BY `name` " + sort;
-				}
-				else
-				{
-					queryStr += " ORDER BY artist_id DESC";
-				}
-				if (duration != null) //limit
-				{
-					queryStr += " LIMIT ";
-					if (start != null)
-					{
-						queryStr += start + ", ";
-					}
-					queryStr += duration;
-				}
-				try
-				{
-					PreparedStatement query = db.preparedStatement(queryStr);
-					if (id != null)
-						query.setInt(1, Integer.parseInt(id));
-					else if (search != null)
-						query.setString(1, "%"+search+"%");
-					ResultSet rs = query.executeQuery();
-					ArrayList<Artist> list = new ArrayList<Artist>();
-					while (rs.next())
-					{
-						Artist ar = new Artist(rs.getInt("artist_id"), rs.getString("name"));
-						PreparedStatement query2 = db.preparedStatement("SELECT * FROM album WHERE artist_id = ? ORDER BY name ASC");
-						query2.setInt(1, rs.getInt("artist_id"));
-						ResultSet rs2 = query2.executeQuery();
-						while (rs2.next())
-						{
-							ar.addAlbum(new Album(rs2.getInt("album_id"), -1, "", rs2.getString("name")));
-						}
-						rs2.close();
-						list.add(ar);
-					}
-					rs.close();
-					out.println("{\"success\":true,\"results\":"+gson.toJson(list)+"}");
-					out.close(); db.close(); return;
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in searching for artists.\"}");
-					//out.println(e.getMessage());
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("albums"))
-			{
-				//get list of albums [name, artist info, list of songs]
-				//	can search by album name
-				//	can sort by album name, artist name 
-				//	can also specify an id to return that album
-				String queryStr = "SELECT album_id, artist.artist_id, artist.name AS artist_name, album.name AS album_name FROM album, artist WHERE artist.artist_id = album.artist_id";
-				if (id != null) //return just one result
-				{
-					queryStr += " AND album.album_id = ?";
-				}
-				else if (search != null) //searching
-				{
-					queryStr += " AND album.name LIKE ?";
-				}
-				if (sort != null)
-				{
-					queryStr += " ORDER BY album.name " + sort;
-				}
-				else
-				{
-					queryStr += " ORDER BY artist.artist_id DESC";
-				}
-				if (duration != null) //limit
-				{
-					queryStr += " LIMIT ";
-					if (start != null)
-					{
-						queryStr += start + ", ";
-					}
-					queryStr += duration;
-				}
-				try
-				{
-					PreparedStatement query = db.preparedStatement(queryStr);
-					if (id != null)
-						query.setInt(1, Integer.parseInt(id));
-					else if (search != null)
-						query.setString(1, "%"+search+"%");
-					ResultSet rs = query.executeQuery();
-					ArrayList<Album> list = new ArrayList<Album>();
-					while (rs.next())
-					{
-						Album al = new Album(rs.getInt("album_id"), rs.getInt("artist_id"), rs.getString("artist_name"), rs.getString("album_name"));
-						PreparedStatement query2 = db.preparedStatement("SELECT artist.artist_id, song_id, song.name AS song_name, track_number, artist.name AS artist_name FROM song, artist WHERE artist.artist_id = song.artist_id AND album_id = ? ORDER BY track_number ASC");
-						query2.setInt(1, rs.getInt("album_id"));
-						ResultSet rs2 = query2.executeQuery();
-						while (rs2.next())
-						{
-							al.addSong(new Song(rs2.getInt("song_id"), rs2.getString("song_name"), rs2.getInt("track_number"), -1, null, rs2.getInt("artist_id"), rs2.getString("artist_name")));
-						}
-						rs2.close();
-						list.add(al);
-					}
-					rs.close();
-					out.println("{\"success\":true,\"results\":"+gson.toJson(list)+"}");
-					out.close(); db.close(); return;
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in searching for playlists.\"}");
-					//out.println(e.getMessage());
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("members"))
-			{
-				//get list of members [info, list of playlists]
-				//	can search by member name
-				//	can sort by member name
-				//	can also specify an id to return that member
-				String queryStr = "SELECT member_id, username FROM member";
-				if (id != null) //return just one result
-				{
-					queryStr += " WHERE member_id = ?";
-				}
-				else if (search != null) //searching
-				{
-					queryStr += " WHERE username LIKE ?";
-				}
-				if (sort != null)
-				{
-					queryStr += " ORDER BY username " + sort;
-				}
-				else
-				{
-					queryStr += " ORDER BY member_id DESC";
-				}
-				if (duration != null) //limit
-				{
-					queryStr += " LIMIT ";
-					if (start != null)
-					{
-						queryStr += start + ", ";
-					}
-					queryStr += duration;
-				}
-				try
-				{
-					PreparedStatement query = db.preparedStatement(queryStr);
-					if (id != null)
-						query.setInt(1, Integer.parseInt(id));
-					else if (search != null)
-						query.setString(1, "%"+search+"%");
-					ResultSet rs = query.executeQuery();
-					ArrayList<Member> list = new ArrayList<Member>();
-					while (rs.next())
-					{
-						Member m = new Member(rs.getInt("member_id"), rs.getString("username"));
-						PreparedStatement query2 = db.preparedStatement("SELECT * FROM playlist WHERE member_id = ? ORDER BY `name` ASC");
-						query2.setInt(1, rs.getInt("member_id"));
-						ResultSet rs2 = query2.executeQuery();
-						while (rs2.next())
-						{
-							m.addPlaylist(new Playlist(rs2.getInt("playlist_id"), -1, rs2.getString("name"), ""));
-						}
-						rs2.close();
-						list.add(m);
-					}
-					rs.close();
-					out.println("{\"success\":true,\"results\":"+gson.toJson(list)+"}");
-					out.close(); db.close(); return;
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in searching for artists.\"}");
-					//out.println(e.getMessage());
-					out.close(); db.close(); return;
-				}
-			}
-			else if (type.equalsIgnoreCase("songs"))
-			{
-				//get list of songs [info]
-				//	can search by song name
-				//	can sort by song name
-				String queryStr = "SELECT song_id, song.name AS song_name, song.track_number, album.album_id, album.name AS album_name, artist.artist_id, artist.name AS artist_name FROM song, artist, album WHERE song.artist_id = artist.artist_id AND song.album_id = album.album_id";
-				if (search != null) //searching
-				{
-					queryStr += " AND song.name LIKE ?";
-				}
-				if (sort != null)
-				{
-					queryStr += " ORDER BY song.name " + sort;
-				}
-				else
-				{
-					queryStr += " ORDER BY song_id DESC";
-				}
-				if (duration != null) //limit
-				{
-					queryStr += " LIMIT ";
-					if (start != null)
-					{
-						queryStr += start + ", ";
-					}
-					queryStr += duration;
-				}
-				try
-				{
-					PreparedStatement query = db.preparedStatement(queryStr);
-					if (search != null)
-						query.setString(1, "%"+search+"%");
-					ResultSet rs = query.executeQuery();
-					ArrayList<Song> list = new ArrayList<Song>();
-					while (rs.next())
-					{
-						Song s = new Song(rs.getInt("song_id"), rs.getString("song_name"), rs.getInt("track_number"), rs.getInt("album_id"), rs.getString("album_name"), rs.getInt("artist_id"), rs.getString("artist_name"));
-						list.add(s);
-					}
-					rs.close();
-					out.println("{\"success\":true,\"results\":"+gson.toJson(list)+"}");
-					out.close(); db.close(); return;
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in searching for artists.\"}");
-					//out.println(e.getMessage());
-					out.close(); db.close(); return;
-				}
-			}
-		}
-		else if (method.equalsIgnoreCase("update"))
-		{
-			String action = req.getParameter("action");
-			if (type.equalsIgnoreCase("playlist"))
-			{
-				if (uid == 0)
-				{
-					out.println("{\"success\":false,\"error\":\"You must be logged in to take this action.\"}");
-					out.close(); db.close(); return;
-				}
-				String playlist_id = req.getParameter("playlist_id");
-				if (playlist_id == null)
-				{
-					out.println("{\"success\":false,\"error\":\"No playlist was specified.\"}");
-					out.close(); db.close(); return;
-				}
-				try
-				{
-					PreparedStatement query = db.preparedStatement("SELECT member_id FROM playlist WHERE playlist_id = ? AND member_id = ?");
-					query.setInt(1, Integer.parseInt(playlist_id));
-					query.setInt(2, uid);
-					ResultSet rs = query.executeQuery();
-					if (!rs.next())
-					{
-						out.println("{\"success\":false,\"error\":\"The specified playlist could not be found.\"}");
-						rs.close();
-						out.close(); db.close(); return;
-					}
-					rs.close();
-				}
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in checking the playlist.\"}");
-					//out.println(e);
-					out.close(); db.close(); return;
-				}
-				if (action.equalsIgnoreCase("rename"))
-				{
-					//renames playlist
-					String name = req.getParameter("name");
-					// Do we have all parameters?
-					if (name == null) 
-					{
-						out.println("{\"success\":false,\"error\":\"Missing a parameter needed for playlist update.\"}");
-						out.close(); db.close(); return;
-					}
-					try 
-					{
-						PreparedStatement query = db.preparedStatement("UPDATE playlist SET `name` = ? WHERE playlist_id = ?");
-						query.setString(1, name);
-						query.setInt(2, Integer.parseInt(playlist_id));
-						query.executeUpdate();
-						out.println("{\"success\":true}");
-					}
-					catch (Exception e)
-					{
-						out.println("{\"success\":false,\"error\":\"There was an error in renaming the playlist.\"}");
-						//out.println(e);
-						out.close(); db.close(); return;
-					}
-					out.println("{\"success\":true}");
-					out.close(); db.close(); return;
-				}
-				else if (action.equalsIgnoreCase("addsongs"))
-				{
-					//adds list of song ids to playlist
-					String songs = req.getParameter("songs");
-					// Do we have all parameters?
-					if (songs == null) 
-					{
-						out.println("{\"success\":false,\"error\":\"Missing a parameter needed for playlist update.\"}");
-						out.close(); db.close(); return;
-					}
-					try 
-					{
-						int[] song_ids = gson.fromJson(songs, int[].class);
-						for (int i = 0; i < song_ids.length; i++)
-						{
-							//check if each song id valid
-							if (song_ids[i] < 1) throw new Exception();
-						}
-						//clip off the square brackets
-						String song_id_list = songs.substring(1, songs.length() - 1);
-						//check all songs exist
-						ResultSet rs = db.query("SELECT COUNT(*) FROM song WHERE song_id IN ("+song_id_list+")");
-						rs.next();
-						if (rs.getInt(1) != song_ids.length) //check length of results
-						{
-							out.println("{\"success\":false,\"error\":\"At least one of the provided songs does not exist.\"}");
-							rs.close();
-							out.close(); db.close(); return;
-						}
-						rs.close();
-						//remove any songs already in the playlist
-						rs = db.query("SELECT song_id FROM playlistsong WHERE playlist_id = "+Integer.parseInt(playlist_id)+" AND song_id IN ("+song_id_list+")");
-						ArrayList<Integer> existing = new ArrayList<Integer>();
-						while (rs.next())
-						{
-							existing.add(new Integer(rs.getInt("song_id")));
-						}
-						rs.close();
-						ArrayList<Integer> adding = new ArrayList<Integer>();
-						for (int i = 0; i < song_ids.length; i++)
-						{
-							//only add songs to the add list if they don't already exist
-							if (!existing.contains(new Integer(song_ids[i])))
-								adding.add(new Integer(song_ids[i]));
-						}
-						//get the current highest value of track num
-						rs = db.query("SELECT MAX(track_number) FROM playlistsong WHERE playlist_id = "+Integer.parseInt(playlist_id));
-						rs.next();
-						int nextTrackNum = rs.getInt(1) + 1;
-						rs.close();
-						//finally add the songs to the playlist
-						for (int i = 0; i < adding.size(); i++)
-						{
-							PreparedStatement query = db.preparedStatement("INSERT INTO playlistsong (playlist_id, song_id, track_number) VALUES (?, ?, ?)");
-							query.setInt(1, Integer.parseInt(playlist_id));
-							query.setInt(2, adding.get(i).intValue());
-							query.setInt(3, nextTrackNum++);
-							query.executeUpdate();
-						}
-						out.println("{\"success\":true}");
-						out.close(); db.close(); return;
-					}
-					catch (Exception e)
-					{
-						out.println("{\"success\":false,\"error\":\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
-						//out.println(e);
-						out.close(); db.close(); return;
-					}
-				}
-				else if (action.equalsIgnoreCase("removesongs"))
-				{
-					//removes list of song ids from playlist
-					String songs = req.getParameter("songs");
-					// Do we have all parameters?
-					if (songs == null) 
-					{
-						out.println("{\"success\":false,\"error\":\"Missing a parameter needed for playlist update.\"}");
-						out.close(); db.close(); return;
-					}
-					try 
-					{
-						int[] song_ids = gson.fromJson(songs, int[].class);
-						for (int i = 0; i < song_ids.length; i++)
-						{
-							//check if each song id valid
-							if (song_ids[i] < 1) throw new Exception();
-						}
-						//clip off the square brackets
-						String song_id_list = songs.substring(1, songs.length() - 1);
-						//just delete all song ids listed from the playlist
-						//	no point in checking if songs are even in playlist
-						PreparedStatement query = db.preparedStatement("DELETE FROM playlistsong WHERE playlist_id = ? AND song_id IN ("+song_id_list+")");
-						query.setInt(1, Integer.parseInt(playlist_id));
-						query.executeUpdate();
-						//fix the track numbers while maintaining the order
-						query = db.preparedStatement("SELECT playlistsong_id FROM playlistsong WHERE playlist_id = ? ORDER BY track_number ASC");
-						query.setInt(1, Integer.parseInt(playlist_id));
-						ResultSet rs = query.executeQuery();
-						int track_num = 1;
-						while (rs.next())
-						{
-							query = db.preparedStatement("UPDATE playlistsong SET track_number = ? WHERE playlistsong_id = ?");
-							query.setInt(1, track_num++);
-							query.setInt(2, rs.getInt(1));
-							query.executeUpdate();
-						}
-						rs.close();
-						out.println("{\"success\":true}");
-						out.close(); db.close(); return;
-					}
-					catch (Exception e)
-					{
-						out.println("{\"success\":false,\"error\":\"The list of song ids is malformed, contains invalid numbers, or has numbers outside the valid range.\"}");
-						//out.println(e);
-						out.close(); db.close(); return;
-					}
-				}
-			}
-			else if (type.equalsIgnoreCase("user"))
-			{
-				if (action.equalsIgnoreCase("login") && uid != 0)
-				{
-					out.println("{\"success\":false,\"error\":\"You are already logged in.\"}");
-					out.close(); db.close(); return;
-				}
-				if (action.equalsIgnoreCase("logout") && uid == 0)
-				{
-					out.println("{\"success\":false,\"error\":\"You are not logged in.\"}");
-					out.close(); db.close(); return;
-				}
-				if (action.equalsIgnoreCase("login"))
-				{
-					//login user
-					String username = req.getParameter("username");
-					String password = req.getParameter("password");
-					// Do we have all parameters?
-					if (username == null || password == null) 
-					{
-						out.println("{\"success\":false,\"error\":\"Missing a parameter needed for login.\"}");
-						out.close(); db.close(); return;
-					}
-					try
-					{
-						PreparedStatement query = db.preparedStatement("SELECT member_id,username FROM member WHERE username = ? AND password = ?");
-						query.setString(1, username);
-						query.setString(2, password);
-						ResultSet rs = query.executeQuery();
-						if (rs.next())
-						{
-							session.setAttribute("user_id", "" + rs.getInt("member_id"));
-							out.println("{\"success\":true,\"user_id\":"+rs.getInt("member_id")+",\"username\":\""+rs.getString("username")+"\"}");
-							rs.close();
-							out.close(); db.close(); return;
-						}
-						else
-						{
-							session.setAttribute("user_id", "" + 0);
-							out.println("{\"success\":false,\"error\":\"Invalid username/password combination.\"}");
-							rs.close();
-							out.close(); db.close(); return;
-						}
-					}
-					catch (Exception e)
-					{
-						out.println("{\"success\":false,\"error\":\"There was an error in logging in.\"}");
-						//out.println(e);
-						out.close(); db.close(); return;
-					}
-				}
-				else if (action.equalsIgnoreCase("logout"))
-				{
-					//logout user
-					session.setAttribute("user_id", "" + 0);
-					out.println("{\"success\":true}");
-					out.close(); db.close(); return;
-				}
-			}
-		}
-		else if (method.equalsIgnoreCase("delete"))
-		{
-			if (uid == 0)
-			{
-				out.println("{\"success\":false,\"error\":\"You need to be logged in to do this action.\"}");
-				out.close(); db.close(); return;
-			}
-			if (type.equalsIgnoreCase("playlist"))
-			{
-				//deletes playlist with given id 
-				String playlist_id = req.getParameter("playlist_id");
-				// Do we have all parameters?
-				if (playlist_id == null) 
-				{
-					out.println("{\"success\":false,\"error\":\"Missing a parameter needed for playlist deletion.\"}");
-					out.close(); db.close(); return;
-				}
-				try
-				{
-					ResultSet rs = db.query("SELECT playlist_id FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
-					if (!rs.next())
-					{
-						out.println("{\"success\":false,\"error\":\"The specified playlist does not exist.\"}");
-						rs.close();
-						out.close(); db.close(); return;
-					}
-					rs.close();
-					PreparedStatement query = db.preparedStatement("DELETE FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
-					query.executeUpdate();
-					query = db.preparedStatement("DELETE FROM playlistsong WHERE playlist_id = " + Integer.parseInt(playlist_id));
-					query.executeUpdate();
-					out.println("{\"success\":true}");
-				}
-				catch (NumberFormatException e)
-				{
-					out.println("{\"success\":false,\"error\":\"One of the integer parameters was out of range or an invalid number.\"}");
-					out.close(); db.close(); return;
-				}
-				// Oh noes!
-				catch (Exception e)
-				{
-					out.println("{\"success\":false,\"error\":\"There was an error in running the deletion.\"}");
-					//out.println(e);
-					out.close(); db.close(); return;
-				}
-			}
-		}
-		out.println("{\"success\":false,\"error\":\"This action does not exist.\"}");
-		out.close();
-	}
+    /**
+     * Main Method - Mainly for debugging.
+     */
+    public static void main(String[] args) throws Exception
+    {
+        myfavsCC temp = new myfavsCC();
+    }
+    
+    public myfavsCC() throws Exception
+    {
+        httpclient = new DefaultHttpClient();
+        httpget = new HttpGet("http://khadajmcs.dyndns-free.com/creepers/Servlet");
+        response = httpclient.execute(httpget);
+        response.getEntity().getContent().close();
+        loggedIn = false;
+    }
+    
+    /**
+     * debugging method - prints important data data.
+     */
+    public void printData() throws Exception
+    {
+        printResponse(response);
+        printCookie(httpclient);
+        System.out.println();
+    }
+    
+    /**
+     * debugging method - prints the cookies of responses.
+     */
+    public void printCookie(DefaultHttpClient httpclient)
+    {
+        System.out.println("-----------Cookies------------");
+        List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+        if (cookies.isEmpty()) 
+        {
+            System.out.println("None");
+        } 
+        else 
+        {
+            for (int i = 0; i < cookies.size(); i++) 
+            {
+                System.out.println("- " + cookies.get(i).toString());
+            }
+        }
+    }
+    
+    /**
+     * debugging method - converts responses to Strings.
+     */
+    public String responseToString(HttpResponse response) throws Exception //simple test method to show the output of the request
+    {
+        String temp = "";
+        HttpEntity entity = response.getEntity();
+        if (entity != null) 
+        {
+            InputStream instream = entity.getContent();
+            try 
+            {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(instream));
+                // do something useful with the response
+                temp += reader.readLine();
+            } catch (IOException ex) 
+            {
+                // In case of an IOException the connection will be released
+                // back to the connection manager automatically
+                throw ex;
+            } catch (RuntimeException ex) 
+            {
+                // In case of an unexpected exception you may want to abort
+                // the HTTP request in order to shut down the underlying
+                // connection and release it back to the connection manager.
+                throw ex;
+            } finally 
+            {
+                // Closing the input stream will trigger connection release
+                instream.close();
+            }
+        }
+        return temp;
+    }
+    
+    /**
+     * debugging method - prints the output of responses.
+     */
+    public void printResponse(HttpResponse response) throws Exception //simple test method to show the output of the request
+    {
+        System.out.println("------------Entity------------");
+        HttpEntity entity = response.getEntity();
+        if (entity != null) 
+        {
+            InputStream instream = entity.getContent();
+            try 
+            {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(instream));
+                // do something useful with the response
+                System.out.println(reader.readLine());
+            } catch (IOException ex) 
+            {
+                // In case of an IOException the connection will be released
+                // back to the connection manager automatically
+                throw ex;
+            } catch (RuntimeException ex) 
+            {
+                // In case of an unexpected exception you may want to abort
+                // the HTTP request in order to shut down the underlying
+                // connection and release it back to the connection manager.
+                throw ex;
+            } finally 
+            {
+                // Closing the input stream will trigger connection release
+                instream.close();
+            }
+        }
+    }
+    
+    /**
+     * creates a new member with the given parameters
+     **/
+    public boolean createUser(String username, String password) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=member&username=" + username + "&password=" + password);
+        response = httpclient.execute(httpost);
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); loggedIn = Boolean.parseBoolean(st.nextToken());
+        return loggedIn;
+    }
+    
+    /**
+     * creates a song with the given parameters
+     **/
+    public Song createSong(String name, int album_id, int artist_id, int track_number) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number);
+        response = httpclient.execute(httpost);  
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        int song_id;
+        if (suceeded)
+        {
+            st.nextToken();
+            song_id = Integer.parseInt(st.nextToken());
+        }
+        else
+        {
+            song_id = 0;
+        }
+        Song temp2 = new Song(song_id,name,track_number,album_id,getAlbum(album_id).name,artist_id,getArtist(artist_id).name);
+        return temp2;
+    }
+    
+    /**
+     * creates an album with the given parameters
+     **/
+    public Album createAlbum(String name, int artist_id) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id);
+        response = httpclient.execute(httpost);  
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        st.nextToken();
+        int album_id;
+        if (suceeded)
+        {
+            album_id = Integer.parseInt(st.nextToken());
+        }
+        else
+        {
+            album_id = 0;
+        }
+        Album temp2 = new Album(album_id,artist_id,getArtist(artist_id).name,name);
+        return temp2;
+    }
+    
+    /**
+     * creates an artist with the given parameters
+     **/
+    public Artist createArtist(String name) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=artist&name=" + name);
+        response = httpclient.execute(httpost);
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        if (suceeded)
+        {
+            st.nextToken();
+            int id = Integer.parseInt(st.nextToken());
+            return new Artist(id,name);
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    /**
+     * creates a playlist with the given parameters
+     **/
+    public Playlist createPlaylist(String name, int[] song_id_array) throws Exception
+    {
+        String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=playlist&name=" + name + "&songs=[";
+
+        for(int i = 0; i < song_id_array.length; i++)
+        {
+            temp += song_id_array[i];
+            if (i != song_id_array.length-1)
+                temp += ",";
+        }
+        temp += "]";
+        System.out.println(temp);
+        HttpPost httpost = new HttpPost(temp);
+        response = httpclient.execute(httpost);
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());st.nextToken();
+        if (suceeded)
+        {
+            return getPlaylist(Integer.parseInt(st.nextToken()));
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+        /**
+     * renames a playlist indicated by the playlist_id to the name given by the new_name
+     **/
+    public boolean renamePlaylist(String new_name, int playlist_id) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&action=rename&type=playlist&name=" + new_name + "&playlist_id=" + playlist_id);
+        response = httpclient.execute(httpost);
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
+    }
+    
+    /**
+     * adds songs indicated by the song_id's in the song_id_array to the playlist indicated by the playlist_id
+     **/
+    public boolean addSongs(String[] song_id_array, int playlist_id) throws Exception
+    {
+        String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=addsongs&song=[";
+        for(int i = 0; i < song_id_array.length; i++)
+        {
+            temp += song_id_array;
+            if (i != song_id_array.length-1)
+                temp += ",";
+        }
+        temp += "]";
+        HttpPost httpost = new HttpPost(temp);
+        response = httpclient.execute(httpost);
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
+    }
+    
+    /**
+     * Removes songs indicated by the song_is's in the song_id_array from the playlist indicated by the playlist_id
+     **/
+    public boolean removeSongs(int[] song_id_array, int playlist_id) throws Exception
+    {
+        String temp = "http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=playlist&action=removesongs&song=[";
+        for(int i = 0; i < song_id_array.length; i++)
+        {
+            temp += song_id_array[i];
+            if (i != song_id_array.length-1)
+                temp += ",";
+        }
+        temp += "]";
+        HttpPost httpost = new HttpPost(temp);
+        response = httpclient.execute(httpost);
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
+    }
+    
+    /**
+     * logs in a user with thie given username and password 
+     **/
+    public boolean login(String username, String password) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=login&username=" + username + "&password=" + password);
+        response = httpclient.execute(httpost);
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); loggedIn = Boolean.parseBoolean(st.nextToken());
+        return loggedIn;
+    }
+    
+    /**
+     * logs the current user out of their session 
+     **/
+    public boolean logout() throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout");
+        response = httpclient.execute(httpost);   
+        String temp = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); loggedIn = !Boolean.parseBoolean(st.nextToken());
+        return !loggedIn;
+    }
+     
+    /**
+     * deletes a playlist with thie given playlist_id 
+     **/
+    public boolean deletePlaylist(int playlist_id) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=delete&type=playlist&playlist_id=" + playlist_id);
+        response = httpclient.execute(httpost);
+        String temp2 = responseToString(response);
+        StringTokenizer st = new StringTokenizer(temp2, "{\":[],;}");
+        st.nextToken(); boolean suceeded = Boolean.parseBoolean(st.nextToken());
+        return suceeded;
+    }
+    
+    public ArrayList<Member> getMember() throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members");
+        response = httpclient.execute(httpost);
+        ArrayList<Member> myMembers = new ArrayList<Member>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int members = 0,member_id=0;
+		String member_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("playlists") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("member_id")) //type of result (playlist, album, ect)
+                {
+                    member_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    member_name = st.nextToken();  st.nextToken(); 
+                    myMembers.add(members, new Member(member_id, member_name));
+                    System.out.println("added member " + member_name + " " + member_id);
+                    members++;
+                }
+                else if(tempstr.equalsIgnoreCase("playlist_id"))
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String playlist_name = st.nextToken();  st.nextToken();
+					st.nextToken();st.nextToken();
+                    myMembers.get(members-1).addPlaylist(new Playlist(playlist_id,member_id,playlist_name,member_name));
+                    System.out.println("adding playlist " + playlist_name + " " + playlist_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id")) //should never be used, but its still there.
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myMembers.get(members-1).playlists.get(myMembers.get(members-1).playlists.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myMembers;
+    }
+    
+    public ArrayList<Member> getMember(String user_name)throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&search=" + user_name);
+        response = httpclient.execute(httpost);
+        ArrayList<Member> myMembers = new ArrayList<Member>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int members = 0,member_id=0;
+		String member_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("playlists") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("member_id")) //type of result (playlist, album, ect)
+                {
+                    member_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    member_name = st.nextToken();  st.nextToken(); 
+                    myMembers.add(members, new Member(member_id, member_name));
+                    System.out.println("added member " + member_name + " " + member_id);
+                    members++;
+                }
+                else if(tempstr.equalsIgnoreCase("playlist_id"))
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String playlist_name = st.nextToken();  st.nextToken();
+					st.nextToken();st.nextToken();
+                    myMembers.get(members-1).addPlaylist(new Playlist(playlist_id,member_id,playlist_name,member_name));
+                    System.out.println("adding playlist " + playlist_name + " " + playlist_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id")) //should never be used, but its still there.
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myMembers.get(members-1).playlists.get(myMembers.get(members-1).playlists.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myMembers;
+    }
+    
+    public Member getMember(int user_id)throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=members&id=" + user_id);
+        response = httpclient.execute(httpost);
+        ArrayList<Member> myMembers = new ArrayList<Member>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int members = 0,member_id=0;
+		String member_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("playlists") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("member_id")) //type of result (playlist, album, ect)
+                {
+                    member_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    member_name = st.nextToken();  st.nextToken(); 
+                    myMembers.add(members, new Member(member_id, member_name));
+                    System.out.println("added member " + member_name + " " + member_id);
+                    members++;
+                }
+                else if(tempstr.equalsIgnoreCase("playlist_id"))
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String playlist_name = st.nextToken();  st.nextToken();
+					st.nextToken();st.nextToken();
+                    myMembers.get(members-1).addPlaylist(new Playlist(playlist_id,member_id,playlist_name,member_name));
+                    System.out.println("adding playlist " + playlist_name + " " + playlist_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id")) //should never be used, but its still there.
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myMembers.get(members-1).playlists.get(myMembers.get(members-1).playlists.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+		if (myMembers.size() > 0)
+        	return myMembers.get(0);
+		else
+			return null;
+    }
+    
+    public ArrayList<Artist> getArtist() throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists");
+        response = httpclient.execute(httpost);
+        ArrayList<Artist> myArtists= new ArrayList<Artist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int artists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("artist_id")) //type of result (playlist, album, ect)
+                {
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    myArtists.add(artists, new Artist(artist_id, artist_name));
+                    System.out.println("added artist " + artist_name + " " + artist_id);
+                    artists++;
+                }
+                else if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    String album_name = st.nextToken();
+                    myArtists.get(artists-1).addAlbum(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myArtists.get(artists-1).albums.get(myArtists.get(artists-1).albums.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myArtists;
+    }
+    
+    public ArrayList<Artist> getArtist(String art_name) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&search=" + art_name);
+        response = httpclient.execute(httpost);
+        ArrayList<Artist> myArtists= new ArrayList<Artist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int artists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("artist_id")) //type of result (playlist, album, ect)
+                {
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    myArtists.add(artists, new Artist(artist_id, artist_name));
+                    System.out.println("added artist " + artist_name + " " + artist_id);
+                    artists++;
+                }
+                else if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    String album_name = st.nextToken();
+                    myArtists.get(artists-1).addAlbum(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myArtists.get(artists-1).albums.get(myArtists.get(artists-1).albums.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myArtists;
+    }
+    
+    public Artist getArtist(int art_id) throws Exception    
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=artists&id=" + art_id);
+        response = httpclient.execute(httpost);
+        Artist myArtists = new Artist(0,"");
+        String temp = responseToString(response); String tempstr,laststr;
+		int artists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("albums") || tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("artist_id")) //type of result (playlist, album, ect)
+                {
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    myArtists = new Artist(artist_id, artist_name);
+                    System.out.println("added artist " + artist_name + " " + artist_id);
+                    artists++;
+                }
+                else if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    String album_name = st.nextToken();
+                    myArtists.addAlbum(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myArtists.albums.get(myArtists.albums.size()-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myArtists;
+    }
+    
+    public ArrayList<Song> getSong() throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs");
+        response = httpclient.execute(httpost);
+        ArrayList<Song> mySongs= new ArrayList<Song>();
+        String temp = responseToString(response); String tempstr,laststr;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return mySongs;
+    }
+    
+    public ArrayList<Song> getSong(String s_name) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=songs&search="+ s_name);
+        response = httpclient.execute(httpost);
+        ArrayList<Song> mySongs= new ArrayList<Song>();
+        String temp = responseToString(response); String tempstr,laststr;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    mySongs.add(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return mySongs;
+    }
+    
+    public Song getSong(int s_id) throws Exception
+    {
+        ArrayList<Song> mySongs = getSong();
+        for (int x=0;x<mySongs.size();x++)
+        {
+            if (s_id == mySongs.get(x).song_id)
+                return mySongs.get(x);
+        }
+        return null;
+    }
+    
+    public ArrayList<Playlist> getPlaylist() throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists");
+        response = httpclient.execute(httpost);
+        ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int playlists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+					System.out.println (playlist_id);
+                    String playlist_name = st.nextToken();  st.nextToken();
+					int member_id = Integer.parseInt(st.nextToken());st.nextToken();
+					String member_name = st.nextToken();
+                    myPlaylists.add(playlists, new Playlist(playlist_id, member_id, playlist_name, member_name));
+                    System.out.println("added playlist " + playlist_name + " " + playlist_id);
+                    playlists++;
+                }
+				else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id + " " +track_number); 
+                }
+            }
+        }
+        return myPlaylists;
+    }
+    
+    public ArrayList<Playlist> getPlaylist(String playlist_n) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&search=" + playlist_n);
+        response = httpclient.execute(httpost);
+        ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int playlists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+					System.out.println (playlist_id);
+                    String playlist_name = st.nextToken();  st.nextToken();
+					int member_id = Integer.parseInt(st.nextToken());st.nextToken();
+					String member_name = st.nextToken();
+                    myPlaylists.add(playlists, new Playlist(playlist_id, member_id, playlist_name, member_name));
+                    System.out.println("added playlist " + playlist_name + " " + playlist_id);
+                    playlists++;
+                }
+				else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id + " " +track_number); 
+                }
+            }
+        }
+        return myPlaylists;
+    }
+    
+    public Playlist getPlaylist(int pl_id) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=playlists&id=" + pl_id);
+        response = httpclient.execute(httpost);
+        ArrayList<Playlist> myPlaylists= new ArrayList<Playlist>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int playlists = 0;
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if (tempstr.equalsIgnoreCase("playlist_id")) //type of result (playlist, album, ect)
+                {
+                    int playlist_id = Integer.parseInt(st.nextToken());st.nextToken();
+					System.out.println (playlist_id);
+                    String playlist_name = st.nextToken();  st.nextToken();
+					int member_id = Integer.parseInt(st.nextToken());st.nextToken();
+					String member_name = st.nextToken();
+                    myPlaylists.add(playlists, new Playlist(playlist_id, member_id, playlist_name, member_name));
+                    System.out.println("added playlist " + playlist_name + " " + playlist_id);
+                    playlists++;
+                }
+				else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String album_name = st.nextToken(); st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myPlaylists.get(playlists-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id + " " +track_number); 
+                }
+            }
+        }
+		if (myPlaylists.size() > 0)
+        	return myPlaylists.get(0);
+		else
+			return null;
+    }
+    
+    public ArrayList<Playlist> getMemberPlaylist(int member_id) throws Exception
+    {
+        ArrayList<Playlist> myPlaylists = getPlaylist();
+		ArrayList<Playlist> membersPlaylists = getPlaylist();
+        for (int x=0;x<myPlaylists.size();x++)
+        {
+            if (member_id == myPlaylists.get(x).member_id)
+                membersPlaylists.add(myPlaylists.get(x));
+        }
+		if (membersPlaylists.size() > 0)
+        	return membersPlaylists;
+		else
+			return null;
+    }
+    
+    public ArrayList<Playlist> getMemberPlaylist(String member_name) throws Exception
+    {
+        ArrayList<Playlist> myPlaylists = getPlaylist();
+		ArrayList<Playlist> membersPlaylists = getPlaylist();
+        for (int x=0;x<myPlaylists.size();x++)
+        {
+            if (member_name == myPlaylists.get(x).username)
+                membersPlaylists.add(myPlaylists.get(x));
+        }
+		if (membersPlaylists.size() > 0)
+        	return membersPlaylists;
+		else
+			return null;
+    }
+    
+    public ArrayList<Album> getAlbum() throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums");
+        response = httpclient.execute(httpost);
+        ArrayList<Album> myAlbums= new ArrayList<Album>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int albums = 0; String album_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    album_name = st.nextToken();
+                    myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+					albums++;
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myAlbums;
+    }
+    
+    public ArrayList<Album> getAlbum(String album_n) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&search=" + album_n);
+        response = httpclient.execute(httpost);
+        ArrayList<Album> myAlbums= new ArrayList<Album>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int albums = 0; String album_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    album_name = st.nextToken();
+                    myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+					albums++;
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+        return myAlbums;
+    }
+    
+    public Album getAlbum(int alb_id) throws Exception
+    {
+        HttpPost httpost = new HttpPost("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=read&type=albums&id=" + alb_id);
+        response = httpclient.execute(httpost);
+        ArrayList<Album> myAlbums= new ArrayList<Album>();
+        String temp = responseToString(response); String tempstr,laststr;
+        int albums = 0; String album_name = "";
+        StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
+        st.nextToken(); //success:
+        
+        if (st.nextToken().equalsIgnoreCase("true")) //true or false
+        {
+            st.nextToken(); //results:
+            while(st.hasMoreTokens())
+            {
+                tempstr = st.nextToken();
+				if ((tempstr.equalsIgnoreCase("songs")) && st.hasMoreTokens())
+				{
+					tempstr = st.nextToken();
+				}
+                if(tempstr.equalsIgnoreCase("album_id"))
+                {
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String artist_name = st.nextToken();  st.nextToken(); 
+                    album_name = st.nextToken();
+                    myAlbums.add(new Album(album_id,artist_id,artist_name,album_name));
+                    System.out.println("adding album " + album_name + " " + album_id); 
+					albums++;
+                }
+                else if(tempstr.equalsIgnoreCase("song_id"))
+                {
+                    int song_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    String song_name = st.nextToken();  st.nextToken(); 
+                    int album_id = Integer.parseInt(st.nextToken());st.nextToken();
+                    int artist_id = Integer.parseInt(st.nextToken()); st.nextToken();
+                    String artist_name = st.nextToken(); st.nextToken();
+                    int track_number = Integer.parseInt(st.nextToken());
+                    myAlbums.get(albums-1).addSong(new Song(song_id,song_name,track_number, album_id, album_name, artist_id, artist_name));
+                    System.out.println("adding song " + song_name + " " + song_id); 
+                }
+            }
+        }
+		if (myAlbums.size() > 0)
+        	return myAlbums.get(0);
+		else
+			return null;
+    }
 }

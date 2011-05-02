@@ -119,7 +119,7 @@ public class CreeperServlet extends HttpServlet
 					query.executeUpdate();
 					rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
-					out.println("{\"success\":true;\"id\":"+rs.getInt(1)+"}");
+					out.println("{\"success\":true,\"id\":"+rs.getInt(1)+"}");
 					rs.close();
 					out.close(); db.close(); return;
 				}
@@ -171,7 +171,7 @@ public class CreeperServlet extends HttpServlet
 					query.executeUpdate();
 					rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
-					out.println("{\"success\":true;\"id\":"+rs.getInt(1)+"}");
+					out.println("{\"success\":true,\"id\":"+rs.getInt(1)+"}");
 					rs.close();
 					out.close(); db.close(); return;
 				}
@@ -225,32 +225,36 @@ public class CreeperServlet extends HttpServlet
 				String name = req.getParameter("name");
 				String songs = req.getParameter("songs");
 				// Do we have all parameters?
-				if (name == null || songs == null) 
+				if (name == null) 
 				{
 					out.println("{\"success\":false,\"error\":\"Missing a parameter needed for playlist creation.\"}");
 					out.close(); db.close(); return;
 				}
-				int[] song_ids;
+				int[] song_ids = new int[0];
+				ResultSet rs;
 				try
 				{
-					//get the integer array of song ids
-					song_ids = gson.fromJson(songs, int[].class); 
-					for (int i = 0; i < song_ids.length; i++)
+					if (songs != null)
 					{
-						//check if each song id valid
-						if (song_ids[i] < 1) throw new Exception();
+						//get the integer array of song ids
+						song_ids = gson.fromJson(songs, int[].class); 
+						for (int i = 0; i < song_ids.length; i++)
+						{
+							//check if each song id valid
+							if (song_ids[i] < 1) throw new Exception();
+						}
+						//clip off the square brackets
+						String song_id_list = songs.substring(1, songs.length() - 1);
+						//check all song ids are valid
+						rs = db.query("SELECT COUNT(*) FROM song WHERE song_id IN ("+song_id_list+")");
+						rs.next();
+						if (rs.getInt(1) != song_ids.length) //check length of results
+						{
+							out.println("{\"success\":false,\"error\":\"At least one of the provided songs does not exist.\"}");
+							out.close(); db.close(); return;
+						}
+						rs.close();
 					}
-					//clip off the square brackets
-					String song_id_list = songs.substring(1, songs.length() - 1);
-					//check all song ids are valid
-					ResultSet rs = db.query("SELECT COUNT(*) FROM song WHERE song_id IN ("+song_id_list+")");
-					rs.next();
-					if (rs.getInt(1) != song_ids.length) //check length of results
-					{
-						out.println("{\"success\":false,\"error\":\"At least one of the provided songs does not exist.\"}");
-						out.close(); db.close(); return;
-					}
-					rs.close();
 					//all good, insertion time!
 					PreparedStatement query = db.preparedStatement("INSERT INTO playlist (`name`, member_id) VALUES (?, ?)");
 					query.setString(1, name);
@@ -259,13 +263,16 @@ public class CreeperServlet extends HttpServlet
 					rs = db.query("SELECT LAST_INSERT_ID()");
 					rs.next();
 					int playlist_id = rs.getInt(1);
-					for (int i = 0; i < song_ids.length; i++)
+					if (songs != null)
 					{
-						query = db.preparedStatement("INSERT INTO playlistsong (playlist_id, song_id, track_number) VALUES (?, ?, ?)");
-						query.setInt(1, playlist_id);
-						query.setInt(2, song_ids[i]);
-						query.setInt(3, i);
-						query.executeUpdate();
+						for (int i = 0; i < song_ids.length; i++)
+						{
+							query = db.preparedStatement("INSERT INTO playlistsong (playlist_id, song_id, track_number) VALUES (?, ?, ?)");
+							query.setInt(1, playlist_id);
+							query.setInt(2, song_ids[i]);
+							query.setInt(3, i);
+							query.executeUpdate();
+						}
 					}
 					rs.close();
 					out.println("{\"success\":true,\"id\":"+playlist_id+"}");
@@ -955,8 +962,10 @@ public class CreeperServlet extends HttpServlet
 						out.close(); db.close(); return;
 					}
 					rs.close();
-					db.query("DELETE FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
-					db.query("DELETE FROM playlistsong WHERE playlist_id = " + Integer.parseInt(playlist_id));
+					PreparedStatement query = db.preparedStatement("DELETE FROM playlist WHERE playlist_id = " + Integer.parseInt(playlist_id) + " AND member_id = " + uid);
+					query.executeUpdate();
+					query = db.preparedStatement("DELETE FROM playlistsong WHERE playlist_id = " + Integer.parseInt(playlist_id));
+					query.executeUpdate();
 					out.println("{\"success\":true}");
 				}
 				catch (NumberFormatException e)

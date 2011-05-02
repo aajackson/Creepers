@@ -17,6 +17,8 @@ $("document").ready(function()
  		{
 			if(data.success)
 			{
+				login=true;
+				loginUser=user;
 				$("li#first").html('<a class="login">'+user+'\'s profile</a> ');
 				$("a.login").click(function(event)
 				{
@@ -28,6 +30,8 @@ $("document").ready(function()
 				{
 					$.getJSON("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=update&type=user&action=logout",function(data)
 					{
+						login=false;
+						loginUser="";
 						loadPage("./home.html");
 						$("li#first").html('<a href="#" class="login">login</a>');
 						$("a.login").click(function(event)

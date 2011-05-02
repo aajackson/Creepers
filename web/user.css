@@ -1,5 +1,5 @@
-table {
-	width:100%;
+table.selected_playlist {
+	width:47%;
 }
 
 table th {

@@ -47,7 +47,6 @@ $("document").ready(function()
 			{
 				"sPaginationType":"full_numbers"
 			});
-			console.log(4);
 		}
 	});
 	

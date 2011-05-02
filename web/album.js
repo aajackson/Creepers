@@ -21,7 +21,7 @@ $("document").ready(function()
 							'<tr>'+
 							  '<th><input id="select_all" type="checkbox" /></th>'+
 							  '<th>Track #</th>'+
-							  '<th>Name</th>'+
+							  '<th>Song Name</th>'+
 							  '<th>Artist</th>'+
 							'</tr>'+
 						  '</thead>'+
@@ -36,7 +36,7 @@ $("document").ready(function()
 			{
 				$("div#album_songs tbody").append(
 					'<tr>'+
-					  '<td><input type="checkbox" value="'+songs[i].song_id+'"></td>'+
+					  '<td><input class="song" type="checkbox" value="'+songs[i].song_id+'"></td>'+
 					  '<td>'+songs[i].track_number+'</td>'+
 					  '<td>'+songs[i].name+'</td>'+
 					  '<td>'+songs[i].artist_name+'</td>'+
@@ -49,6 +49,38 @@ $("document").ready(function()
 			{
 				"aoColumnDefs": [{ "bSortable": false, "aTargets": [ 0 ] }],
 				"sPaginationType":"full_numbers"
+			});
+			
+			$("input#select_all").click(function(event)
+			{				
+				var c = this.checked;
+				$("input.song").each(function()
+				{
+					this.checked = c;
+				});
+			});
+			
+			$("button#addbtn").click(function(event)
+			{
+				if(login == true)
+				{
+					event.preventDefault();
+					var ss = $("input.song:checked");
+					var addSongs = [];
+					
+					for(var i = 0; i < ss.length; i++)
+					{
+						addSongs = addSongs.concat(ss[i].value);
+					}
+					
+					selectSongs = addSongs;
+					
+					loadPage("./add.html");
+				}
+				else
+				{
+					alert("Please log in first!");
+				}
 			});
 		}
 	});

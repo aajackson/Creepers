@@ -119,7 +119,6 @@ $("document").ready(function()
 				}
 				else
 				{
-					console.log(1);
 					$("div#songs_results").append( //Create the table
 						'<button title="Add selected songs to a playlist" type="submit" id="addbtn" value="add">Add Selected to Playlist</button>'+
 						'<table id="songs_table">'+
@@ -137,26 +136,56 @@ $("document").ready(function()
 						'</table>'+
 						'<button title="Add selected songs to a playlist" type="submit" id="addbtn" value="add">Add Selected to Playlist</button>'+
 						'<br style="clear:both" />');
-					console.log(2);
 				
 					for(var i = 0; i < data.results.length; i++) //Add Each Playlist
 					{
+						var id = data.results[i].song_id;
 						$("div#songs_results tbody").append(
 							'<tr>'+
-							  '<td><input type="checkbox" value="'+id+'"></td>'+
+							  '<td><input type="checkbox" class="song" value="'+id+'"></td>'+
 							  '<td>'+data.results[i].name+'</td>'+
 							  '<td>'+data.results[i].album_name+'</td>'+
 							  '<td>'+data.results[i].track_number+'</td>'+
 							  '<td>'+data.results[i].artist_name+'</td>'+
 							'</tr>');
 					}
-					console.log(3);
 					$("#songs_table").dataTable(
 					{
 						"aoColumnDefs": [{ "bSortable": false, "aTargets": [ 0 ] }],
 						"sPaginationType":"full_numbers"
 					});
-					console.log(4);
+					
+					$("input#select_all").click(function(event)
+					{
+						var c = this.checked;
+						$("input.song").each(function()
+						{
+							this.checked = c;
+						});
+					});
+					
+					$("button#addbtn").click(function(event)
+					{
+						if(login == true)
+						{
+							event.preventDefault();
+							var ss = $("input.song:checked");
+							var addSongs = [];
+							
+							for(var i = 0; i < ss.length; i++)
+							{
+								addSongs = addSongs.concat(ss[i].value);
+							}
+							
+							selectSongs = addSongs;
+							
+							loadPage("./add.html");
+						}
+						else
+						{
+							alert("Please log in first!");
+						}
+					});
 				}
 			});
 		}

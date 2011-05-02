@@ -4,7 +4,9 @@ var currentPlaylistID = 0;
 var currentAlbumID = 0;
 var currentArtistID = 0;
 var currentMemberID = 0;
-
+var selectSongs = [];
+var login;
+var loginUser="";
 
 $(document).ready(function()
 {

@@ -18,8 +18,9 @@ $("document").ready(function()
 			if(data.success)
 			{
 				login=true;
-				loginUser=user;
-				$("li#first").html('<a class="login">'+user+'\'s profile</a> ');
+				loginUser=data.username;
+				loginID=data.user_id;
+				$("li#first").html('<a class="login">'+data.username+'\'s profile</a> ');
 				$("a.login").click(function(event)
 				{
 					loadPage("./user.html");
@@ -32,6 +33,7 @@ $("document").ready(function()
 					{
 						login=false;
 						loginUser="";
+						loginID=-1;
 						loadPage("./home.html");
 						$("li#first").html('<a href="#" class="login">login</a>');
 						$("a.login").click(function(event)

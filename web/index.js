@@ -7,6 +7,7 @@ var currentMemberID = 0;
 var selectSongs = [];
 var login;
 var loginUser="";
+var loginID;
 
 $(document).ready(function()
 {

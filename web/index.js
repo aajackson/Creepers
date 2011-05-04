@@ -71,6 +71,8 @@ $(document).ready(function()
 		$("input#search_members").attr("checked",true);
 		loadPage("./search.html");
 	});
+	
+	
 								   
 });
 

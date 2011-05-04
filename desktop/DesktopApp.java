@@ -636,7 +636,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(pickfrom);
 			getContentPane().add(list);
 			getContentPane().add(or);
-			getContentPane().add(createArtist);
+			getContentPane().add(createAlbum);
 			getContentPane().add(inputText);
 			getContentPane().add(nextButton);
 		}
@@ -665,7 +665,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 			getContentPane().add(pickfrom);
 			getContentPane().add(list);
 			getContentPane().add(or);
-			getContentPane().add(createAlbum);
+			getContentPane().add(createArtist);
 			getContentPane().add(inputText);
 			getContentPane().add(nextButton2);
 		}
@@ -694,7 +694,7 @@ public class DesktopApp extends JFrame implements ActionListener{
 		else if(button == finalizeButton)
 		{
 			try {
-				System.out.println(songInputText.getText()+" "+album_id+" "+artist_id+" "+Integer.parseInt(inputText.getText()));
+				//System.out.println(songInputText.getText()+" "+album_id+" "+artist_id+" "+Integer.parseInt(inputText.getText()));
 				songlist.add(myfavs.createSong(songInputText.getText(), album_id, artist_id, Integer.parseInt(inputText.getText())));
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block

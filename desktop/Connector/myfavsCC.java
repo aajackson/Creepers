@@ -175,7 +175,7 @@ public class myfavsCC
      **/
     public Song createSong(String name, int album_id, int artist_id, int track_number) throws Exception
     {
-        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id" + artist_id + "track_number" + track_number));
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=song&name=" + name + "&album_id=" + album_id + "&artist_id=" + artist_id + "track_number=" + track_number));
         response = httpclient.execute(httpost);  
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
@@ -199,7 +199,7 @@ public class myfavsCC
      **/
     public Album createAlbum(String name, int artist_id) throws Exception
     {
-        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id" + artist_id));
+        HttpPost httpost = new HttpPost(webFriendly("http://khadajmcs.dyndns-free.com/creepers/Servlet?method=create&type=album&name=" + name + "&artist_id=" + artist_id));
         response = httpclient.execute(httpost);  
         String temp = responseToString(response);
         StringTokenizer st = new StringTokenizer(temp, "{\":[],;}");
